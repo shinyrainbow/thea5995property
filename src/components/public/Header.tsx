@@ -78,10 +78,10 @@ export default function Header() {
           <Image
             src="/logo.png"
             alt="The A 5995 Property"
-            width={140}
-            height={48}
+            width={56}
+            height={56}
             className={cn(
-              'h-10 w-auto sm:h-12 transition-all duration-500',
+              'h-12 w-auto sm:h-14 transition-all duration-500',
               !scrolled && 'brightness-0 invert',
             )}
             priority
@@ -142,7 +142,7 @@ export default function Header() {
         mobileMenuOpen ? 'translate-x-0' : 'translate-x-full',
       )}>
         <div className="flex items-center justify-between border-b border-luxury-100 px-4 py-4">
-          <Image src="/logo.png" alt="The A 5995 Property" width={120} height={40} className="h-8 w-auto" />
+          <Image src="/logo.png" alt="The A 5995 Property" width={48} height={48} className="h-10 w-auto" />
           <button type="button" onClick={() => setMobileMenuOpen(false)} className="rounded-lg p-2 text-primary-900 hover:bg-luxury-100" aria-label="Close menu">
             <X className="h-5 w-5" />
           </button>

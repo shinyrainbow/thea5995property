@@ -29,7 +29,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-primary-900">
+    <section className="relative flex min-h-[100svh] -mt-20 items-center justify-center overflow-hidden bg-primary-900">
       {/* Background image placeholder - gradient when no image */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-900/70 to-primary-900/90" />
 
