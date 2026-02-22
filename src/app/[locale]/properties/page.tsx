@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase';
 import PropertyGrid from '@/components/public/PropertyGrid';
 import PropertyFilter from '@/components/public/PropertyFilter';
 import type { PropertyWithDetails } from '@/types';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Building2, Search } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Metadata
@@ -144,20 +144,30 @@ export default async function PropertiesPage({
   return (
     <div className="min-h-screen bg-luxury-50">
       {/* Page Header */}
-      <div className="bg-primary-700 py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="font-heading text-3xl font-bold text-white md:text-4xl">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-700 to-primary-800 py-16 md:py-20">
+        <div className="absolute inset-0 bg-grid-pattern" />
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-secondary-400/8 blur-3xl" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary-400 to-transparent" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-secondary-400/30 bg-secondary-400/10 px-4 py-1.5">
+            <Search className="h-4 w-4 text-secondary-400" />
+            <span className="text-sm font-medium text-secondary-300">
+              {t('resultsFound', { count: String(totalCount) })}
+            </span>
+          </div>
+          <h1 className="font-heading text-3xl font-bold text-white md:text-4xl lg:text-5xl">
             {tCommon('properties')}
           </h1>
-          <p className="mt-2 text-luxury-200">
-            {t('resultsFound', { count: String(totalCount) })}
-          </p>
+          <div className="mt-4 flex items-center gap-3">
+            <div className="h-px w-12 bg-gradient-to-r from-secondary-400 to-transparent" />
+          </div>
         </div>
-      </div>
+      </section>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Filters */}
-        <div className="mb-8">
+        <div className="mb-8 -mt-8 relative z-10">
           <PropertyFilter />
         </div>
 
@@ -188,11 +198,9 @@ export default async function PropertiesPage({
             {/* Page Numbers */}
             {Array.from({ length: totalPages }, (_, i) => i + 1)
               .filter((p) => {
-                // Show first, last, and pages near current
                 return p === 1 || p === totalPages || Math.abs(p - page) <= 2;
               })
               .map((p, idx, arr) => {
-                // Add ellipsis
                 const elements: React.ReactNode[] = [];
                 if (idx > 0 && p - arr[idx - 1] > 1) {
                   elements.push(

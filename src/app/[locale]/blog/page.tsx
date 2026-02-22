@@ -8,7 +8,7 @@ import { Link } from '@/i18n/routing';
 import { supabase } from '@/lib/supabase';
 import { getLocalizedField, formatDate } from '@/lib/utils';
 import type { BlogPost, Locale } from '@/types';
-import { Calendar, ArrowRight, ChevronLeft, ChevronRight, Newspaper } from 'lucide-react';
+import { Calendar, ArrowRight, ChevronLeft, ChevronRight, Newspaper, BookOpen } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Static params
@@ -88,13 +88,26 @@ export default async function BlogPage({
   return (
     <div className="min-h-screen">
       {/* Hero Banner */}
-      <section className="relative bg-primary-700 py-16 md:py-20">
-        <div className="absolute inset-0 bg-[url('/images/blog-hero.jpg')] bg-cover bg-center opacity-20" />
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-700 to-primary-800 py-20 md:py-28">
+        <div className="absolute inset-0 bg-grid-pattern" />
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-secondary-400/8 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-secondary-400/5 blur-3xl" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary-400 to-transparent" />
+
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary-400/30 bg-secondary-400/10 px-4 py-1.5">
+            <BookOpen className="h-4 w-4 text-secondary-400" />
+            <span className="text-sm font-medium text-secondary-300">{t('title')}</span>
+          </div>
           <h1 className="font-heading text-3xl font-bold text-white md:text-4xl lg:text-5xl">
             {t('heroTitle')}
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-luxury-200">
+          <div className="mx-auto mt-4 flex items-center justify-center gap-3">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary-400" />
+            <div className="h-1.5 w-1.5 rounded-full bg-secondary-400" />
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary-400" />
+          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-primary-200/90 leading-relaxed">
             {t('heroSubtitle')}
           </p>
         </div>
@@ -114,7 +127,7 @@ export default async function BlogPage({
                   return (
                     <article
                       key={post.id}
-                      className="group flex flex-col overflow-hidden rounded-xl border border-luxury-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                      className="group flex flex-col overflow-hidden rounded-2xl border border-luxury-200 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                     >
                       {/* Featured Image */}
                       <div className="relative aspect-[16/10] overflow-hidden bg-luxury-100">
@@ -126,8 +139,9 @@ export default async function BlogPage({
                             loading="lazy"
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-700/10 to-secondary-400/10">
-                            <Newspaper className="h-12 w-12 text-luxury-300" />
+                          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-700 to-primary-900">
+                            <div className="absolute inset-0 bg-grid-pattern" />
+                            <Newspaper className="relative h-12 w-12 text-white/20" />
                           </div>
                         )}
                       </div>
@@ -157,7 +171,7 @@ export default async function BlogPage({
                         {/* Read More */}
                         <Link
                           href={`/blog/${slug}`}
-                          className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-secondary-400 transition-colors hover:text-secondary-500"
+                          className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-secondary-500 transition-colors hover:text-secondary-600"
                         >
                           {t('readMore')}
                           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
@@ -244,16 +258,20 @@ export default async function BlogPage({
             </>
           ) : (
             /* Empty State */
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-luxury-100">
-                <Newspaper className="h-10 w-10 text-luxury-400" />
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-700 to-primary-900 shadow-lg">
+                <div className="absolute inset-0 bg-grid-pattern rounded-2xl" />
+                <Newspaper className="relative h-12 w-12 text-secondary-400/60" />
               </div>
-              <h2 className="mb-2 font-heading text-2xl font-semibold text-primary-700">
+              <h2 className="mb-3 font-heading text-2xl font-bold text-primary-700">
                 {t('noPosts')}
               </h2>
+              <p className="mb-8 max-w-sm text-luxury-500">
+                Our blog is coming soon with insights about Thailand&apos;s real estate market.
+              </p>
               <Link
                 href="/"
-                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-600"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-primary-600 hover:shadow-lg"
               >
                 {tCommon('home')}
                 <ArrowRight className="h-4 w-4" />

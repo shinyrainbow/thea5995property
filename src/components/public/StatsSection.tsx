@@ -7,7 +7,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Building2, Heart, Check, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
 // Animated counter hook
@@ -85,14 +84,14 @@ function StatItem({
 
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white/10">
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
         {icon}
       </div>
       <p className="font-heading text-4xl font-bold text-white md:text-5xl">
         {count.toLocaleString()}
         {suffix}
       </p>
-      <p className="mt-2 text-sm font-medium tracking-wide text-secondary-300 uppercase">
+      <p className="mt-2 text-sm font-medium tracking-wider text-secondary-300 uppercase">
         {label}
       </p>
     </div>
@@ -157,9 +156,15 @@ export default function StatsSection() {
   return (
     <section
       ref={sectionRef}
-      className="bg-primary-700 py-16 md:py-20"
+      className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-700 to-primary-800 py-20 md:py-24"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Pattern overlay */}
+      <div className="absolute inset-0 bg-grid-pattern" />
+      {/* Decorative blobs */}
+      <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-secondary-400/8 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-secondary-400/5 blur-3xl" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
           {stats.map((stat, i) => (
             <StatItem

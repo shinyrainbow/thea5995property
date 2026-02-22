@@ -83,7 +83,6 @@ export default function Header() {
 
   function isActive(href: string): boolean {
     if (href === '/') return pathname === '/';
-    // Strip query string for comparison
     const cleanHref = href.split('?')[0];
     return pathname.startsWith(cleanHref);
   }
@@ -93,10 +92,13 @@ export default function Header() {
       className={cn(
         'fixed inset-x-0 top-0 z-40 transition-all duration-300',
         scrolled
-          ? 'bg-white/95 shadow-md backdrop-blur-md'
-          : 'bg-white/80 backdrop-blur-sm',
+          ? 'bg-white shadow-lg shadow-primary-900/5 backdrop-blur-md'
+          : 'bg-white/90 backdrop-blur-sm',
       )}
     >
+      {/* Gold accent line */}
+      <div className="h-0.5 bg-gradient-to-r from-secondary-400 via-secondary-300 to-secondary-400" />
+
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link
@@ -114,17 +116,17 @@ export default function Header() {
         </Link>
 
         {/* Desktop navigation */}
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
+        <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Main navigation">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                'rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200',
+                'rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
                 isActive(link.href)
-                  ? 'bg-primary-700 text-white'
-                  : 'text-primary-700 hover:bg-luxury-100',
+                  ? 'bg-primary-700 text-white shadow-sm'
+                  : 'text-primary-700 hover:bg-luxury-100 hover:text-primary-800',
               )}
             >
               {getLabel(link)}
@@ -133,7 +135,7 @@ export default function Header() {
         </nav>
 
         {/* Right side: Language switcher + Mobile menu button */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div className="hidden sm:block">
             <LanguageSwitcher />
           </div>
@@ -170,7 +172,7 @@ export default function Header() {
       {/* Mobile menu panel */}
       <div
         className={cn(
-          'fixed inset-y-0 right-0 z-40 w-full max-w-sm bg-white shadow-xl transition-transform duration-300 lg:hidden',
+          'fixed inset-y-0 right-0 z-40 w-full max-w-sm bg-white shadow-2xl transition-transform duration-300 lg:hidden',
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >

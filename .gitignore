@@ -44,6 +44,9 @@ yarn-error.log*
 credentials.json
 service-account.json
 secrets/
+*accessKeys*
+*_accessKeys*
+*.csv
 
 # vercel
 .vercel

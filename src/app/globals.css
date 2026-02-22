@@ -42,9 +42,6 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
-
 /* Base styles */
 * {
   margin: 0;
@@ -86,6 +83,18 @@ h1, h2, h3, h4, h5, h6 {
   animation: heroText 1s ease-out forwards;
 }
 
+@utility bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+@utility bg-dot-pattern {
+  background-image: radial-gradient(circle, rgba(196, 162, 101, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
 /* Keyframes */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -100,6 +109,11 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes heroText {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* Scrollbar */
@@ -118,4 +132,10 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-luxury-500);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-secondary-400);
+  color: white;
 }
