@@ -1,5 +1,5 @@
 // =============================================================================
-// THE A 5995 - Properties Listing Page
+// THE A 5995 - Properties Listing Page (techproperty.co style)
 // =============================================================================
 
 import type { Metadata } from 'next';
@@ -9,11 +9,7 @@ import { supabase } from '@/lib/supabase';
 import PropertyGrid from '@/components/public/PropertyGrid';
 import PropertyFilter from '@/components/public/PropertyFilter';
 import type { PropertyWithDetails } from '@/types';
-import { ChevronLeft, ChevronRight, Building2, Search } from 'lucide-react';
-
-// ---------------------------------------------------------------------------
-// Metadata
-// ---------------------------------------------------------------------------
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export async function generateMetadata({
   params,
@@ -22,16 +18,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'metadata' });
-
   return {
     title: t('propertiesTitle'),
     description: t('propertiesDescription'),
   };
 }
-
-// ---------------------------------------------------------------------------
-// Page Component
-// ---------------------------------------------------------------------------
 
 export default async function PropertiesPage({
   params,
@@ -47,7 +38,6 @@ export default async function PropertiesPage({
   const t = await getTranslations({ locale, namespace: 'search' });
   const tCommon = await getTranslations({ locale, namespace: 'common' });
 
-  // Parse search params
   const page = Number(resolvedSearchParams.page) || 1;
   const perPage = 12;
   const search = (resolvedSearchParams.search as string) || '';
@@ -65,66 +55,38 @@ export default async function PropertiesPage({
   try {
     let query = supabase
       .from('properties')
-      .select('*, property_type:property_types(*), images:property_images(*)', {
-        count: 'exact',
-      })
+      .select('*, property_type:property_types(*), images:property_images(*)', { count: 'exact' })
       .eq('status', 'active');
 
-    // Apply filters
     if (search) {
-      query = query.or(
-        `title_en.ilike.%${search}%,title_th.ilike.%${search}%,title_zh.ilike.%${search}%,district.ilike.%${search}%,province.ilike.%${search}%`,
-      );
+      query = query.or(`title_en.ilike.%${search}%,title_th.ilike.%${search}%,title_zh.ilike.%${search}%,district.ilike.%${search}%,province.ilike.%${search}%`);
     }
-    if (transactionType) {
-      query = query.eq('transaction_type', transactionType);
-    }
-    if (province) {
-      query = query.eq('province', province);
-    }
-    if (minPrice) {
-      query = query.gte('price', Number(minPrice));
-    }
-    if (maxPrice) {
-      query = query.lte('price', Number(maxPrice));
-    }
-    if (bedrooms) {
-      query = query.gte('bedrooms', Number(bedrooms));
-    }
+    if (transactionType) query = query.eq('transaction_type', transactionType);
+    if (province) query = query.eq('province', province);
+    if (minPrice) query = query.gte('price', Number(minPrice));
+    if (maxPrice) query = query.lte('price', Number(maxPrice));
+    if (bedrooms) query = query.gte('bedrooms', Number(bedrooms));
 
-    // Sort
     switch (sortBy) {
-      case 'price_asc':
-        query = query.order('price', { ascending: true });
-        break;
-      case 'price_desc':
-        query = query.order('price', { ascending: false });
-        break;
-      case 'oldest':
-        query = query.order('created_at', { ascending: true });
-        break;
-      default: // newest
-        query = query.order('created_at', { ascending: false });
-        break;
+      case 'price_asc': query = query.order('price', { ascending: true }); break;
+      case 'price_desc': query = query.order('price', { ascending: false }); break;
+      case 'oldest': query = query.order('created_at', { ascending: true }); break;
+      default: query = query.order('created_at', { ascending: false }); break;
     }
 
-    // Pagination
     const from = (page - 1) * perPage;
-    const to = from + perPage - 1;
-    query = query.range(from, to);
+    query = query.range(from, from + perPage - 1);
 
     const { data, count } = await query;
     properties = (data as PropertyWithDetails[]) || [];
     totalCount = count || 0;
   } catch {
-    // Supabase not connected - fallback to empty
     properties = [];
     totalCount = 0;
   }
 
   const totalPages = Math.ceil(totalCount / perPage);
 
-  // Build pagination URL helper
   function buildPageUrl(pageNum: number): string {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
@@ -136,120 +98,78 @@ export default async function PropertiesPage({
     if (bedrooms) params.set('bedrooms', bedrooms);
     if (sortBy && sortBy !== 'newest') params.set('sort_by', sortBy);
     if (pageNum > 1) params.set('page', String(pageNum));
-
     const qs = params.toString();
     return qs ? `/properties?${qs}` : '/properties';
   }
 
   return (
     <div className="min-h-screen bg-luxury-50">
-      {/* Page Header */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-700 to-primary-800 py-16 md:py-20">
-        <div className="absolute inset-0 bg-grid-pattern" />
-        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-secondary-400/8 blur-3xl" />
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary-400 to-transparent" />
-
+      {/* Header */}
+      <section className="relative overflow-hidden bg-primary-900 py-20 md:py-24">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-900/70 to-primary-900/90" />
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}
+        />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-secondary-400/30 bg-secondary-400/10 px-4 py-1.5">
-            <Search className="h-4 w-4 text-secondary-400" />
-            <span className="text-sm font-medium text-secondary-300">
-              {t('resultsFound', { count: String(totalCount) })}
-            </span>
-          </div>
+          <p className="mb-3 text-xs font-medium uppercase tracking-luxury text-secondary-400">
+            {t('resultsFound', { count: String(totalCount) })}
+          </p>
           <h1 className="font-heading text-3xl font-bold text-white md:text-4xl lg:text-5xl">
             {tCommon('properties')}
           </h1>
-          <div className="mt-4 flex items-center gap-3">
-            <div className="h-px w-12 bg-gradient-to-r from-secondary-400 to-transparent" />
-          </div>
+          <div className="mt-4 h-px w-12 bg-secondary-500" />
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Filters */}
-        <div className="mb-8 -mt-8 relative z-10">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-10 -mt-10 relative z-10">
           <PropertyFilter />
         </div>
 
-        {/* Property Grid */}
         <PropertyGrid properties={properties} />
 
-        {/* Pagination */}
         {totalPages > 1 && (
-          <nav
-            className="mt-12 flex items-center justify-center gap-2"
-            aria-label="Pagination"
-          >
-            {/* Previous */}
+          <nav className="mt-16 flex items-center justify-center gap-2" aria-label="Pagination">
             {page > 1 ? (
-              <Link
-                href={buildPageUrl(page - 1)}
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-luxury-200 bg-white text-primary-700 transition-colors hover:bg-luxury-50"
-                aria-label={tCommon('previous')}
-              >
+              <Link href={buildPageUrl(page - 1)} className="flex h-10 w-10 items-center justify-center border border-luxury-200 bg-white text-primary-900 transition-colors hover:bg-luxury-50" aria-label={tCommon('previous')}>
                 <ChevronLeft className="h-4 w-4" />
               </Link>
             ) : (
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-luxury-200 bg-luxury-100 text-luxury-400 cursor-not-allowed">
+              <span className="flex h-10 w-10 items-center justify-center border border-luxury-200 bg-luxury-100 text-luxury-400 cursor-not-allowed">
                 <ChevronLeft className="h-4 w-4" />
               </span>
             )}
 
-            {/* Page Numbers */}
             {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((p) => {
-                return p === 1 || p === totalPages || Math.abs(p - page) <= 2;
-              })
+              .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
               .map((p, idx, arr) => {
                 const elements: React.ReactNode[] = [];
                 if (idx > 0 && p - arr[idx - 1] > 1) {
-                  elements.push(
-                    <span
-                      key={`ellipsis-${p}`}
-                      className="flex h-10 w-10 items-center justify-center text-luxury-500"
-                    >
-                      ...
-                    </span>,
-                  );
+                  elements.push(<span key={`e-${p}`} className="flex h-10 w-10 items-center justify-center text-luxury-500">...</span>);
                 }
                 elements.push(
-                  <Link
-                    key={p}
-                    href={buildPageUrl(p)}
-                    className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
-                      p === page
-                        ? 'bg-primary-700 text-white'
-                        : 'border border-luxury-200 bg-white text-primary-700 hover:bg-luxury-50'
-                    }`}
-                  >
+                  <Link key={p} href={buildPageUrl(p)} className={`flex h-10 w-10 items-center justify-center text-sm font-medium transition-colors ${p === page ? 'bg-primary-900 text-white' : 'border border-luxury-200 bg-white text-primary-900 hover:bg-luxury-50'}`}>
                     {p}
                   </Link>,
                 );
                 return elements;
               })}
 
-            {/* Next */}
             {page < totalPages ? (
-              <Link
-                href={buildPageUrl(page + 1)}
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-luxury-200 bg-white text-primary-700 transition-colors hover:bg-luxury-50"
-                aria-label={tCommon('next')}
-              >
+              <Link href={buildPageUrl(page + 1)} className="flex h-10 w-10 items-center justify-center border border-luxury-200 bg-white text-primary-900 transition-colors hover:bg-luxury-50" aria-label={tCommon('next')}>
                 <ChevronRight className="h-4 w-4" />
               </Link>
             ) : (
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-luxury-200 bg-luxury-100 text-luxury-400 cursor-not-allowed">
+              <span className="flex h-10 w-10 items-center justify-center border border-luxury-200 bg-luxury-100 text-luxury-400 cursor-not-allowed">
                 <ChevronRight className="h-4 w-4" />
               </span>
             )}
           </nav>
         )}
 
-        {/* Page info */}
         {totalPages > 1 && (
-          <p className="mt-4 text-center text-sm text-luxury-500">
-            {tCommon('page')} {page} {tCommon('of')} {totalPages}
-          </p>
+          <p className="mt-4 text-center text-sm text-luxury-500">{tCommon('page')} {page} {tCommon('of')} {totalPages}</p>
         )}
       </div>
     </div>

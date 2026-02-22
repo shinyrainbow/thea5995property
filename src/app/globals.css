@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Primary - Deep Navy */
+  /* Primary - Deep Navy (matching techproperty.co) */
   --color-primary-50: #f0f3f8;
   --color-primary-100: #d9e0ed;
   --color-primary-200: #b3c1db;
@@ -55,7 +55,7 @@ html {
 
 body {
   font-family: var(--font-sans);
-  color: var(--color-primary-700);
+  color: var(--color-primary-900);
   background: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -68,31 +68,19 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom utilities */
 @utility tracking-luxury {
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
 }
 
 @utility animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
+  animation: fadeIn 0.8s ease-out forwards;
 }
 
 @utility animate-slide-up {
-  animation: slideUp 0.6s ease-out forwards;
+  animation: slideUp 0.8s ease-out forwards;
 }
 
 @utility animate-hero-text {
-  animation: heroText 1s ease-out forwards;
-}
-
-@utility bg-grid-pattern {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-@utility bg-dot-pattern {
-  background-image: radial-gradient(circle, rgba(196, 162, 101, 0.15) 1px, transparent 1px);
-  background-size: 24px 24px;
+  animation: heroText 1.2s ease-out forwards;
 }
 
 /* Keyframes */
@@ -102,23 +90,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes heroText {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+@keyframes heroText {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -127,7 +110,7 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-luxury-400);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

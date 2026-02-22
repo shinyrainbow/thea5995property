@@ -1,5 +1,5 @@
 // =============================================================================
-// THE A 5995 - Header Component
+// THE A 5995 - Header Component (techproperty.co style)
 // =============================================================================
 
 'use client';
@@ -11,10 +11,6 @@ import { Link, usePathname } from '@/i18n/routing';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import LanguageSwitcher from './LanguageSwitcher';
-
-// ---------------------------------------------------------------------------
-// Nav link type
-// ---------------------------------------------------------------------------
 
 interface NavLink {
   href: string;
@@ -32,10 +28,6 @@ const navLinks: NavLink[] = [
   { href: '/blog', labelKey: 'blog', namespace: 'common' },
 ];
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
 export default function Header() {
   const common = useTranslations('common');
   const nav = useTranslations('nav');
@@ -43,90 +35,74 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // ---- Track scroll for sticky effect ----
   useEffect(() => {
-    function handleScroll() {
-      setScrolled(window.scrollY > 20);
-    }
-
+    function handleScroll() { setScrolled(window.scrollY > 10); }
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ---- Close mobile menu on path change ----
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
+  useEffect(() => { setMobileMenuOpen(false); }, [pathname]);
 
-  // ---- Close mobile menu on escape ----
   useEffect(() => {
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') setMobileMenuOpen(false);
-    }
+    function handleEscape(e: KeyboardEvent) { if (e.key === 'Escape') setMobileMenuOpen(false); }
     if (mobileMenuOpen) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
-      return () => {
-        document.removeEventListener('keydown', handleEscape);
-        document.body.style.overflow = '';
-      };
+      return () => { document.removeEventListener('keydown', handleEscape); document.body.style.overflow = ''; };
     }
   }, [mobileMenuOpen]);
 
   function getLabel(link: NavLink): string {
-    if (link.namespace === 'nav') {
-      return nav(link.labelKey as 'forSale' | 'forRent');
-    }
+    if (link.namespace === 'nav') return nav(link.labelKey as 'forSale' | 'forRent');
     return common(link.labelKey as 'home' | 'properties' | 'about' | 'contact' | 'blog');
   }
 
   function isActive(href: string): boolean {
     if (href === '/') return pathname === '/';
-    const cleanHref = href.split('?')[0];
-    return pathname.startsWith(cleanHref);
+    return pathname.startsWith(href.split('?')[0]);
   }
 
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-40 transition-all duration-300',
+        'fixed inset-x-0 top-0 z-40 transition-all duration-500',
         scrolled
-          ? 'bg-white shadow-lg shadow-primary-900/5 backdrop-blur-md'
-          : 'bg-white/90 backdrop-blur-sm',
+          ? 'bg-white/95 backdrop-blur-md shadow-sm'
+          : 'bg-transparent',
       )}
     >
-      {/* Gold accent line */}
-      <div className="h-0.5 bg-gradient-to-r from-secondary-400 via-secondary-300 to-secondary-400" />
-
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 rounded"
-        >
+        <Link href="/" className="flex items-center">
           <Image
             src="/logo.png"
             alt="The A 5995 Property"
             width={140}
             height={48}
-            className="h-10 w-auto sm:h-12"
+            className={cn(
+              'h-10 w-auto sm:h-12 transition-all duration-500',
+              !scrolled && 'brightness-0 invert',
+            )}
             priority
           />
         </Link>
 
-        {/* Desktop navigation */}
-        <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Main navigation">
+        {/* Desktop nav */}
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                'rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
-                isActive(link.href)
-                  ? 'bg-primary-700 text-white shadow-sm'
-                  : 'text-primary-700 hover:bg-luxury-100 hover:text-primary-800',
+                'px-3 py-2 text-sm font-medium transition-colors duration-300',
+                scrolled
+                  ? isActive(link.href)
+                    ? 'text-secondary-500'
+                    : 'text-primary-900 hover:text-secondary-500'
+                  : isActive(link.href)
+                    ? 'text-secondary-400'
+                    : 'text-white/80 hover:text-white',
               )}
             >
               {getLabel(link)}
@@ -134,83 +110,57 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Right side: Language switcher + Mobile menu button */}
+        {/* Right side */}
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">
             <LanguageSwitcher />
           </div>
 
-          {/* Mobile hamburger */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className={cn(
-              'rounded-lg p-2 text-primary-700 transition-colors lg:hidden',
-              'hover:bg-luxury-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+              'rounded-lg p-2 transition-colors lg:hidden',
+              scrolled ? 'text-primary-900 hover:bg-luxury-100' : 'text-white hover:bg-white/10',
             )}
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile overlay */}
       {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 top-0 z-30 bg-primary-900/40 backdrop-blur-sm lg:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 top-0 z-30 bg-primary-900/50 backdrop-blur-sm lg:hidden" onClick={() => setMobileMenuOpen(false)} aria-hidden="true" />
       )}
 
-      {/* Mobile menu panel */}
-      <div
-        className={cn(
-          'fixed inset-y-0 right-0 z-40 w-full max-w-sm bg-white shadow-2xl transition-transform duration-300 lg:hidden',
-          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full',
-        )}
-      >
-        <div className="flex items-center justify-between border-b border-luxury-100 px-4 py-3">
-          <Image
-            src="/logo.png"
-            alt="The A 5995 Property"
-            width={120}
-            height={40}
-            className="h-8 w-auto"
-          />
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(false)}
-            className="rounded-lg p-2 text-primary-700 hover:bg-luxury-100"
-            aria-label="Close menu"
-          >
+      {/* Mobile panel */}
+      <div className={cn(
+        'fixed inset-y-0 right-0 z-40 w-full max-w-sm bg-white shadow-2xl transition-transform duration-300 lg:hidden',
+        mobileMenuOpen ? 'translate-x-0' : 'translate-x-full',
+      )}>
+        <div className="flex items-center justify-between border-b border-luxury-100 px-4 py-4">
+          <Image src="/logo.png" alt="The A 5995 Property" width={120} height={40} className="h-8 w-auto" />
+          <button type="button" onClick={() => setMobileMenuOpen(false)} className="rounded-lg p-2 text-primary-900 hover:bg-luxury-100" aria-label="Close menu">
             <X className="h-5 w-5" />
           </button>
         </div>
-
-        <nav className="flex flex-col gap-1 px-4 py-4" aria-label="Mobile navigation">
+        <nav className="flex flex-col gap-1 px-4 py-6" aria-label="Mobile navigation">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                'rounded-lg px-4 py-3 text-base font-medium transition-colors',
-                isActive(link.href)
-                  ? 'bg-primary-700 text-white'
-                  : 'text-primary-700 hover:bg-luxury-100',
+                'px-4 py-3 text-base font-medium transition-colors',
+                isActive(link.href) ? 'text-secondary-500' : 'text-primary-900 hover:text-secondary-500',
               )}
             >
               {getLabel(link)}
             </Link>
           ))}
         </nav>
-
         <div className="border-t border-luxury-100 px-4 py-4">
           <LanguageSwitcher />
         </div>

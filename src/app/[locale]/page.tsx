@@ -1,5 +1,5 @@
 // =============================================================================
-// THE A 5995 - Homepage
+// THE A 5995 - Homepage (inspired by techproperty.co)
 // =============================================================================
 
 import type { Metadata } from 'next';
@@ -24,38 +24,25 @@ import {
   Factory,
   BedDouble,
   Landmark,
-  Sparkles,
 } from 'lucide-react';
 
-// ---------------------------------------------------------------------------
-// Icon mapping for property types
-// ---------------------------------------------------------------------------
-
 const iconMap: Record<string, React.ReactNode> = {
-  Home: <Home className="h-7 w-7" />,
-  Building2: <Building2 className="h-7 w-7" />,
-  Map: <Map className="h-7 w-7" />,
-  Castle: <Castle className="h-7 w-7" />,
-  Hotel: <Hotel className="h-7 w-7" />,
-  Building: <Building className="h-7 w-7" />,
-  Briefcase: <Briefcase className="h-7 w-7" />,
-  Store: <Store className="h-7 w-7" />,
-  Factory: <Factory className="h-7 w-7" />,
-  BedDouble: <BedDouble className="h-7 w-7" />,
-  Landmark: <Landmark className="h-7 w-7" />,
+  Home: <Home className="h-6 w-6" />,
+  Building2: <Building2 className="h-6 w-6" />,
+  Map: <Map className="h-6 w-6" />,
+  Castle: <Castle className="h-6 w-6" />,
+  Hotel: <Hotel className="h-6 w-6" />,
+  Building: <Building className="h-6 w-6" />,
+  Briefcase: <Briefcase className="h-6 w-6" />,
+  Store: <Store className="h-6 w-6" />,
+  Factory: <Factory className="h-6 w-6" />,
+  BedDouble: <BedDouble className="h-6 w-6" />,
+  Landmark: <Landmark className="h-6 w-6" />,
 };
-
-// ---------------------------------------------------------------------------
-// Static params
-// ---------------------------------------------------------------------------
 
 export function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'th' }, { locale: 'zh' }];
 }
-
-// ---------------------------------------------------------------------------
-// Metadata
-// ---------------------------------------------------------------------------
 
 export async function generateMetadata({
   params,
@@ -64,16 +51,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'hero' });
-
   return {
     title: `THE A 5995 | ${t('headline')}`,
     description: t('subtitle'),
   };
 }
-
-// ---------------------------------------------------------------------------
-// Page Component
-// ---------------------------------------------------------------------------
 
 export default async function HomePage({
   params,
@@ -109,7 +91,6 @@ export default async function HomePage({
     propertyTypes = [];
   }
 
-  // If no property types from DB, use static ones
   if (propertyTypes.length === 0) {
     propertyTypes = Object.entries(PROPERTY_TYPE_SLUGS).map(([key, val]) => ({
       id: key,
@@ -125,26 +106,105 @@ export default async function HomePage({
 
   return (
     <>
-      {/* Hero Section */}
       <Hero />
 
-      {/* Featured Properties Section */}
-      <section className="py-16 md:py-24 bg-luxury-50">
+      {/* Property Collection - grid with overlay cards like techproperty.co */}
+      <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-secondary-400/30 bg-secondary-400/10 px-4 py-1.5">
-              <Sparkles className="h-4 w-4 text-secondary-500" />
-              <span className="text-sm font-medium text-secondary-600">Featured</span>
+          <div className="mb-16 text-center">
+            <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
+              Collection
+            </p>
+            <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
+              {t('propertyTypes')}
+            </h2>
+            <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
+              {t('propertyTypesSubtitle')}
+            </p>
+          </div>
+
+          {/* Collection grid - tall image-overlay cards */}
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {propertyTypes.slice(0, 6).map((type) => {
+              const name = getLocalizedField(type, 'name', locale);
+              const slug = getLocalizedField(type, 'slug', locale);
+              const icon = iconMap[type.icon] || <Building2 className="h-6 w-6" />;
+
+              return (
+                <Link
+                  key={type.id}
+                  href={`/${slug}`}
+                  className="group relative h-[320px] overflow-hidden rounded-lg bg-primary-900"
+                >
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary-900/90 via-primary-900/40 to-transparent transition-opacity group-hover:from-primary-900/95" />
+
+                  {/* Subtle pattern */}
+                  <div
+                    className="absolute inset-0 opacity-[0.04]"
+                    style={{
+                      backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+                      backgroundSize: '32px 32px',
+                    }}
+                  />
+
+                  {/* Content */}
+                  <div className="absolute inset-x-0 bottom-0 p-8">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-secondary-400 backdrop-blur-sm transition-colors group-hover:bg-secondary-500 group-hover:text-white">
+                      {icon}
+                    </div>
+                    <h3 className="font-heading text-2xl font-bold text-white">
+                      {name}
+                    </h3>
+                    <p className="mt-2 flex items-center gap-2 text-sm font-medium text-white/60 opacity-0 transform translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+                      Explore Collection
+                      <ArrowRight className="h-4 w-4" />
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Remaining types as smaller cards */}
+          {propertyTypes.length > 6 && (
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+              {propertyTypes.slice(6).map((type) => {
+                const name = getLocalizedField(type, 'name', locale);
+                const slug = getLocalizedField(type, 'slug', locale);
+                const icon = iconMap[type.icon] || <Building2 className="h-6 w-6" />;
+
+                return (
+                  <Link
+                    key={type.id}
+                    href={`/${slug}`}
+                    className="group flex items-center gap-3 rounded-lg border border-luxury-200 bg-white p-4 transition-all duration-300 hover:border-primary-900/30 hover:shadow-md"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-luxury-50 text-primary-900 transition-colors group-hover:bg-primary-900 group-hover:text-white">
+                      {icon}
+                    </div>
+                    <span className="text-sm font-semibold text-primary-900">{name}</span>
+                  </Link>
+                );
+              })}
             </div>
-            <h2 className="font-heading text-3xl font-bold text-primary-700 md:text-4xl">
+          )}
+        </div>
+      </section>
+
+      {/* Featured Properties */}
+      <section className="py-24 md:py-32 bg-luxury-50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
+            <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
+              Featured
+            </p>
+            <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
               {t('featuredProperties')}
             </h2>
-            <div className="mx-auto mt-4 flex items-center justify-center gap-3">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary-400" />
-              <div className="h-1.5 w-1.5 rounded-full bg-secondary-400" />
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary-400" />
-            </div>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-luxury-500">
+            <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
               {t('featuredSubtitle')}
             </p>
           </div>
@@ -152,10 +212,10 @@ export default async function HomePage({
           <PropertyGrid properties={properties} />
 
           {properties.length > 0 && (
-            <div className="mt-12 text-center">
+            <div className="mt-16 text-center">
               <Link
                 href="/properties"
-                className="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-primary-600 hover:shadow-lg"
+                className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
               >
                 {t('viewAllProperties')}
                 <ArrowRight className="h-4 w-4" />
@@ -165,76 +225,33 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* Property Types Section */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
-            <h2 className="font-heading text-3xl font-bold text-primary-700 md:text-4xl">
-              {t('propertyTypes')}
-            </h2>
-            <div className="mx-auto mt-4 flex items-center justify-center gap-3">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary-400" />
-              <div className="h-1.5 w-1.5 rounded-full bg-secondary-400" />
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary-400" />
-            </div>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-luxury-500">
-              {t('propertyTypesSubtitle')}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {propertyTypes.map((type) => {
-              const name = getLocalizedField(type, 'name', locale);
-              const slug = getLocalizedField(type, 'slug', locale);
-              const icon = iconMap[type.icon] || <Building2 className="h-7 w-7" />;
-
-              return (
-                <Link
-                  key={type.id}
-                  href={`/${slug}`}
-                  className="group flex flex-col items-center gap-3 rounded-2xl border border-luxury-200 bg-white p-6 text-center transition-all duration-300 hover:border-secondary-400/50 hover:shadow-xl hover:-translate-y-1"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-luxury-50 to-luxury-100 text-primary-700 transition-all duration-300 group-hover:from-secondary-400 group-hover:to-secondary-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-secondary-400/25">
-                    {icon}
-                  </div>
-                  <span className="text-sm font-semibold text-primary-700 group-hover:text-secondary-500 transition-colors">
-                    {name}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
+      {/* Stats */}
       <StatsSection />
 
-      {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-luxury-50">
+      {/* CTA */}
+      <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="font-heading text-3xl font-bold text-primary-700 md:text-4xl">
+          <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
+            Get Started
+          </p>
+          <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
             {t('ctaTitle')}
           </h2>
-          <div className="mx-auto mt-4 flex items-center justify-center gap-3">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary-400" />
-            <div className="h-1.5 w-1.5 rounded-full bg-secondary-400" />
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary-400" />
-          </div>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-luxury-500">
+          <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
             {t('ctaSubtitle')}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/properties"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-primary-600 hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-primary-900 px-8 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-primary-800"
             >
               {tCommon('properties')}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-secondary-400 px-8 py-3.5 text-sm font-semibold text-secondary-600 transition-all duration-200 hover:bg-secondary-400 hover:text-white"
+              className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
             >
               {t('ctaButton')}
             </Link>
