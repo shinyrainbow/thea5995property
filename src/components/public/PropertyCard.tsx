@@ -6,50 +6,16 @@ import { Link } from '@/i18n/routing';
 import { MapPin, BedDouble, Bath, Maximize, Star } from 'lucide-react';
 import { cn, getLocalizedField, formatPrice } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
-import type { Property, PropertyImage } from '@/types';
+import type { Property, PropertyImage, PropertyType } from '@/types';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 export interface PropertyCardProps {
-  property: Property & { images: PropertyImage[] };
+  property: Property & { images: PropertyImage[]; property_type?: PropertyType };
   locale: string;
   className?: string;
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function getStatusBadgeVariant(
-  status: string,
-): 'success' | 'warning' | 'danger' | 'info' | 'default' {
-  switch (status) {
-    case 'active':
-      return 'success';
-    case 'sold':
-      return 'danger';
-    case 'rented':
-      return 'warning';
-    default:
-      return 'default';
-  }
-}
-
-function getStatusLabel(status: string): string {
-  switch (status) {
-    case 'active':
-      return 'Active';
-    case 'sold':
-      return 'Sold';
-    case 'rented':
-      return 'Rented';
-    case 'draft':
-      return 'Draft';
-    default:
-      return status;
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -74,19 +40,22 @@ export default function PropertyCard({
     : title;
 
   const isSale = property.transaction_type === 'sale';
+  const typeName = property.property_type
+    ? getLocalizedField(property.property_type, 'name', locale)
+    : null;
 
   return (
     <Link
       href={`/properties/${slug}`}
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-xl border border-luxury-200 bg-white',
+        'group relative flex h-full flex-col overflow-hidden rounded-xl border border-luxury-200 bg-white',
         'transition-all duration-300',
         'hover:shadow-lg hover:shadow-luxury-200/50 hover:-translate-y-1',
         className,
       )}
     >
       {/* Featured ribbon */}
-      {property.featured && (
+      {property.featured === true && (
         <div className="absolute left-0 top-4 z-10 flex items-center gap-1 rounded-r-full bg-secondary-400 px-3 py-1 text-xs font-bold text-primary-700 shadow-md">
           <Star className="h-3 w-3 fill-current" />
           Featured
@@ -102,42 +71,43 @@ export default function PropertyCard({
           loading="lazy"
         />
 
-        {/* Gradient overlay with price */}
+        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-primary-900/80 via-transparent to-transparent" />
 
-        {/* Price tag */}
-        <div className="absolute bottom-3 left-3">
-          <span className="font-heading text-xl font-bold text-white drop-shadow-lg">
+        {/* Property type badge - top left */}
+        {typeName ? (
+          <div className="absolute left-3 top-3">
+            <Badge variant="default" className="text-xs shadow-sm bg-white/90 text-primary-700 backdrop-blur-sm">
+              {typeName.toUpperCase()}
+            </Badge>
+          </div>
+        ) : null}
+
+        {/* Price tag - top right */}
+        <div className="absolute right-3 top-3">
+          <span className="inline-block rounded-md bg-primary-900/80 px-2.5 py-1 font-heading text-sm font-bold text-white backdrop-blur-sm">
             {price}
+            {!isSale ? (
+              <span className="ml-0.5 text-xs font-normal text-luxury-200">/mo</span>
+            ) : null}
           </span>
-          {!isSale && (
-            <span className="ml-1 text-sm text-luxury-200">/month</span>
-          )}
         </div>
 
-        {/* Badges - top right */}
-        <div className="absolute right-3 top-3 flex flex-col gap-1.5">
+        {/* Transaction badge - bottom left */}
+        <div className="absolute bottom-3 left-3 flex gap-1.5">
           <Badge
             variant={isSale ? 'info' : 'success'}
             className="text-xs shadow-sm"
           >
             {isSale ? 'For Sale' : 'For Rent'}
           </Badge>
-          {property.status !== 'active' && (
-            <Badge
-              variant={getStatusBadgeVariant(property.status)}
-              className="text-xs shadow-sm"
-            >
-              {getStatusLabel(property.status)}
-            </Badge>
-          )}
         </div>
       </div>
 
       {/* Card body */}
       <div className="flex flex-1 flex-col p-4">
-        {/* Title */}
-        <h3 className="mb-1.5 line-clamp-2 font-heading text-lg font-semibold text-primary-700 group-hover:text-secondary-500 transition-colors">
+        {/* Title - fixed min-height for consistent sizing */}
+        <h3 className="mb-1.5 min-h-13 line-clamp-2 font-heading text-lg font-semibold text-primary-700 group-hover:text-secondary-500 transition-colors">
           {title}
         </h3>
 
@@ -145,32 +115,30 @@ export default function PropertyCard({
         <div className="mb-3 flex items-center gap-1 text-sm text-luxury-500">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-secondary-400" />
           <span className="truncate">
-            {property.district}, {property.province}
+            {[property.district, property.province].filter(Boolean).join(', ')}
           </span>
         </div>
 
-        {/* Amenities row */}
-        <div className="mt-auto flex items-center gap-4 border-t border-luxury-100 pt-3">
-          {property.bedrooms !== null && property.bedrooms > 0 && (
+        {/* Amenities row - fixed min-height */}
+        <div className="mt-auto flex items-center gap-4 border-t border-luxury-100 pt-3 min-h-10">
+          {Number(property.bedrooms) > 0 ? (
             <div className="flex items-center gap-1.5 text-sm text-luxury-600">
               <BedDouble className="h-4 w-4 text-luxury-400" />
-              <span>{property.bedrooms}</span>
+              <span>{property.bedrooms} Bed</span>
             </div>
-          )}
-          {property.bathrooms !== null && property.bathrooms > 0 && (
+          ) : null}
+          {Number(property.bathrooms) > 0 ? (
             <div className="flex items-center gap-1.5 text-sm text-luxury-600">
               <Bath className="h-4 w-4 text-luxury-400" />
-              <span>{property.bathrooms}</span>
+              <span>{property.bathrooms} Bath</span>
             </div>
-          )}
-          {(property.building_size || property.land_size) && (
+          ) : null}
+          {Number(property.building_size || property.land_size) > 0 ? (
             <div className="flex items-center gap-1.5 text-sm text-luxury-600">
               <Maximize className="h-4 w-4 text-luxury-400" />
-              <span>
-                {property.building_size || property.land_size} sqm
-              </span>
+              <span>{property.building_size || property.land_size} sqm</span>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </Link>
