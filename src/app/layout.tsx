@@ -7,7 +7,7 @@
 // =============================================================================
 
 import type { Metadata } from 'next';
-import { Playfair_Display, Inter } from 'next/font/google';
+import { Playfair_Display, Inter, Kanit } from 'next/font/google';
 import './globals.css';
 
 // ---------------------------------------------------------------------------
@@ -24,6 +24,13 @@ export const playfairDisplay = Playfair_Display({
 export const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+export const kanit = Kanit({
+  subsets: ['thai', 'latin'],
+  variable: '--font-thai',
   display: 'swap',
   weight: ['300', '400', '500', '600', '700'],
 });

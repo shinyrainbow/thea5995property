@@ -7,7 +7,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { routing } from '@/i18n/routing';
-import { playfairDisplay, inter } from '@/app/layout';
+import { playfairDisplay, inter, kanit } from '@/app/layout';
 import Header from '@/components/public/Header';
 import Footer from '@/components/public/Footer';
 
@@ -78,7 +78,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${playfairDisplay.variable} ${inter.variable} antialiased`}
+        className={`${playfairDisplay.variable} ${inter.variable} ${kanit.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
           <div className="flex min-h-screen flex-col">

@@ -25,7 +25,7 @@ const languages: { code: Locale; flag: string; label: string }[] = [
 // Component
 // ---------------------------------------------------------------------------
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ variant = 'dark' }: { variant?: 'dark' | 'light' }) {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
@@ -71,9 +71,11 @@ export default function LanguageSwitcher() {
         type="button"
         onClick={() => setOpen(!open)}
         className={cn(
-          'flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium',
-          'text-primary-700 transition-colors duration-200',
-          'hover:bg-luxury-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+          'flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+          variant === 'light'
+            ? 'text-white/80 hover:text-white hover:bg-white/10'
+            : 'text-primary-700 hover:bg-luxury-100',
         )}
         aria-expanded={open}
         aria-haspopup="listbox"

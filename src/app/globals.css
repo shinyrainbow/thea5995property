@@ -42,6 +42,12 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
+/* Thai locale font override - un-layered to override @theme variables */
+html[lang="th"] {
+  --font-sans: var(--font-thai), "Kanit", system-ui, sans-serif;
+  --font-heading: var(--font-thai), "Kanit", system-ui, sans-serif;
+}
+
 /* Base styles - MUST be in @layer base to not override Tailwind utilities */
 @layer base {
   html {

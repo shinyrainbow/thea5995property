@@ -110,7 +110,7 @@ export default function Header() {
         {/* Right side */}
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">
-            <LanguageSwitcher />
+            <LanguageSwitcher variant={scrolled ? 'dark' : 'light'} />
           </div>
 
           <button
