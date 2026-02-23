@@ -56,25 +56,28 @@ export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ------------------------------------------------------------------
-  // 1. Admin route protection
+  // 1. Admin routes — skip intl middleware entirely
   // ------------------------------------------------------------------
-  if (isProtectedAdminRoute(pathname)) {
-    const sessionToken =
-      request.cookies.get(SECURE_AUTH_COOKIE_NAME)?.value ??
-      request.cookies.get(AUTH_COOKIE_NAME)?.value;
+  if (pathname.startsWith('/admin')) {
+    // Protect all admin routes except the login page
+    if (isProtectedAdminRoute(pathname)) {
+      const sessionToken =
+        request.cookies.get(SECURE_AUTH_COOKIE_NAME)?.value ??
+        request.cookies.get(AUTH_COOKIE_NAME)?.value;
 
-    if (!sessionToken) {
-      // Build the login URL preserving the locale prefix if present
-      const localeMatch = pathname.match(/^\/(en|th|zh)(\/|$)/);
-      const localePrefix = localeMatch ? `/${localeMatch[1]}` : '';
-      const loginUrl = new URL(`${localePrefix}/admin/login`, request.url);
-      loginUrl.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(loginUrl);
+      if (!sessionToken) {
+        const loginUrl = new URL('/admin/login', request.url);
+        loginUrl.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
     }
+
+    // Let Next.js handle admin routes directly (no locale rewriting)
+    return NextResponse.next();
   }
 
   // ------------------------------------------------------------------
-  // 2. next-intl locale routing
+  // 2. Public routes — next-intl locale routing
   // ------------------------------------------------------------------
   return intlMiddleware(request);
 }
