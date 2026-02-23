@@ -271,9 +271,9 @@ export default async function BlogDetailPage({
 
       <div className="min-h-screen">
         {/* Featured Image Hero */}
-        <section className="relative bg-primary-700">
+        <section className="relative bg-primary-900 -mt-20">
           {post.featured_image ? (
-            <div className="relative h-64 md:h-96">
+            <div className="relative h-80 md:h-[28rem] pt-20">
               <img
                 src={post.featured_image}
                 alt={title}
@@ -282,7 +282,7 @@ export default async function BlogDetailPage({
               <div className="absolute inset-0 bg-gradient-to-t from-primary-900/80 to-transparent" />
             </div>
           ) : (
-            <div className="h-32 md:h-48" />
+            <div className="h-40 md:h-56 pt-20" />
           )}
         </section>
 

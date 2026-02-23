@@ -80,10 +80,7 @@ export default function Header() {
             alt="The A 5995 Property"
             width={56}
             height={56}
-            className={cn(
-              'h-12 w-auto sm:h-14 transition-all duration-500',
-              !scrolled && 'brightness-0 invert',
-            )}
+            className="h-12 w-auto sm:h-14 rounded-lg transition-all duration-500"
             priority
           />
         </Link>

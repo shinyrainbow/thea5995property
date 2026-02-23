@@ -43,7 +43,7 @@ export default async function ContactPage({
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-primary-900 py-24 md:py-32">
+      <section className="relative overflow-hidden bg-primary-900 -mt-20 pt-36 pb-24 md:pt-44 md:pb-32">
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-900/70 to-primary-900/90" />
         <div
           className="absolute inset-0 opacity-[0.03]"
