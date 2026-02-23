@@ -76,11 +76,14 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <Image
-            src="/logo.png"
+            src="/logo-image.png"
             alt="The A 5995 Property"
             width={56}
             height={56}
-            className="h-12 w-auto sm:h-14 rounded-lg transition-all duration-500"
+            className={cn(
+              'h-12 w-auto sm:h-14 transition-all duration-500',
+              !scrolled && 'brightness-0 invert',
+            )}
             priority
           />
         </Link>
@@ -139,7 +142,7 @@ export default function Header() {
         mobileMenuOpen ? 'translate-x-0' : 'translate-x-full',
       )}>
         <div className="flex items-center justify-between border-b border-luxury-100 px-4 py-4">
-          <Image src="/logo.png" alt="The A 5995 Property" width={48} height={48} className="h-10 w-auto" />
+          <Image src="/logo-image.png" alt="The A 5995 Property" width={48} height={48} className="h-10 w-auto" />
           <button type="button" onClick={() => setMobileMenuOpen(false)} className="rounded-lg p-2 text-primary-900 hover:bg-luxury-100" aria-label="Close menu">
             <X className="h-5 w-5" />
           </button>

@@ -63,7 +63,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {/* About */}
           <div>
-            <Image src="/logo.png" alt="The A 5995 Property" width={56} height={56} className="h-14 w-auto brightness-0 invert mb-6" />
+            <Image src="/logo-image.png" alt="The A 5995 Property" width={56} height={56} className="h-14 w-auto brightness-0 invert mb-6" />
             <p className="text-sm text-white/50 leading-relaxed">{t('aboutDescription')}</p>
             <div className="mt-8 flex gap-3">
               {[

@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
         {/* Logo / Branding */}
         <div className="text-center mb-8">
           <Image
-            src="/logo.png"
+            src="/logo-image.png"
             alt="The A 5995 Property"
             width={160}
             height={160}

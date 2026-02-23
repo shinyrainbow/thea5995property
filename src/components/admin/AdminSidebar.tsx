@@ -63,7 +63,7 @@ export default function AdminSidebar({ userName, userEmail }: AdminSidebarProps)
       <div className="p-4 border-b border-primary-600">
         <Link href="/admin" className="flex items-center gap-3">
           <Image
-            src="/logo.png"
+            src="/logo-image.png"
             alt="The A 5995 Property"
             width={isCollapsed ? 40 : 140}
             height={isCollapsed ? 40 : 48}
