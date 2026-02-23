@@ -12,6 +12,7 @@ import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard,
   Building2,
+  FolderKanban,
   MessageSquare,
   FileText,
   Settings,
@@ -31,6 +32,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Properties', href: '/admin/properties', icon: Building2 },
+  { label: 'Projects', href: '/admin/projects', icon: FolderKanban },
   { label: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
   { label: 'Blog', href: '/admin/blog', icon: FileText },
   { label: 'Settings', href: '/admin/settings', icon: Settings },

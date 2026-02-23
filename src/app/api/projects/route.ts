@@ -1,16 +1,16 @@
 // =============================================================================
-// THE A 5995 - Properties API Route
+// THE A 5995 - Projects API Route
 // =============================================================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { createServerClient } from '@/lib/supabase';
-import { propertySchema } from '@/lib/validations';
+import { projectSchema } from '@/lib/validations';
 import { generateSlug } from '@/lib/utils';
-import type { PaginatedResponse, PropertyWithDetails } from '@/types';
+import type { PaginatedResponse, ProjectWithDetails } from '@/types';
 
 // ---------------------------------------------------------------------------
-// GET /api/properties - List properties with filters
+// GET /api/projects - List projects with filters
 // ---------------------------------------------------------------------------
 
 export async function GET(request: NextRequest) {
@@ -20,27 +20,21 @@ export async function GET(request: NextRequest) {
 
     // Parse query parameters
     const type = searchParams.get('type');
-    const transaction = searchParams.get('transaction');
     const province = searchParams.get('province');
-    const minPrice = searchParams.get('minPrice');
-    const maxPrice = searchParams.get('maxPrice');
-    const bedrooms = searchParams.get('bedrooms');
     const search = searchParams.get('search');
-    const sort = searchParams.get('sort') || 'newest';
     const status = searchParams.get('status');
-    const featured = searchParams.get('featured');
-    const projectId = searchParams.get('project_id');
+    const sort = searchParams.get('sort') || 'newest';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const perPage = Math.min(parseInt(searchParams.get('perPage') || '12', 10), 100);
 
     // Build the query
     let query = supabase
-      .from('properties')
+      .from('projects')
       .select(
         `
         *,
         property_type:property_types(*),
-        images:property_images(*)
+        images:project_images(*)
         `,
         { count: 'exact' },
       );
@@ -48,7 +42,7 @@ export async function GET(request: NextRequest) {
     // Check if the request is from an admin (to show all statuses)
     const session = await auth();
     if (!session) {
-      // Public users only see active properties
+      // Public users only see active projects
       query = query.eq('status', 'active');
     } else if (status) {
       query = query.eq('status', status);
@@ -59,48 +53,18 @@ export async function GET(request: NextRequest) {
       query = query.eq('property_type_id', type);
     }
 
-    if (transaction) {
-      query = query.eq('transaction_type', transaction);
-    }
-
-    if (projectId) {
-      query = query.eq('project_id', projectId);
-    }
-
     if (province) {
       query = query.ilike('province', `%${province}%`);
     }
 
-    if (minPrice) {
-      query = query.gte('price', parseFloat(minPrice));
-    }
-
-    if (maxPrice) {
-      query = query.lte('price', parseFloat(maxPrice));
-    }
-
-    if (bedrooms) {
-      query = query.gte('bedrooms', parseInt(bedrooms, 10));
-    }
-
-    if (featured === 'true') {
-      query = query.eq('featured', true);
-    }
-
     if (search) {
       query = query.or(
-        `title_en.ilike.%${search}%,title_th.ilike.%${search}%,title_zh.ilike.%${search}%,address.ilike.%${search}%,district.ilike.%${search}%`,
+        `name_en.ilike.%${search}%,name_th.ilike.%${search}%,name_zh.ilike.%${search}%,address.ilike.%${search}%,district.ilike.%${search}%`,
       );
     }
 
     // Apply sorting
     switch (sort) {
-      case 'price_asc':
-        query = query.order('price', { ascending: true });
-        break;
-      case 'price_desc':
-        query = query.order('price', { ascending: false });
-        break;
       case 'oldest':
         query = query.order('created_at', { ascending: true });
         break;
@@ -118,16 +82,16 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await query;
 
     if (error) {
-      console.error('Properties query error:', error);
+      console.error('Projects query error:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch properties' },
+        { error: 'Failed to fetch projects' },
         { status: 500 },
       );
     }
 
     const total = count ?? 0;
-    const response: PaginatedResponse<PropertyWithDetails> = {
-      data: (data as unknown as PropertyWithDetails[]) ?? [],
+    const response: PaginatedResponse<ProjectWithDetails> = {
+      data: (data as unknown as ProjectWithDetails[]) ?? [],
       total,
       page,
       per_page: perPage,
@@ -136,7 +100,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Properties GET error:', error);
+    console.error('Projects GET error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },
@@ -145,7 +109,7 @@ export async function GET(request: NextRequest) {
 }
 
 // ---------------------------------------------------------------------------
-// POST /api/properties - Create a new property (admin only)
+// POST /api/projects - Create a new project (admin only)
 // ---------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
@@ -159,7 +123,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate with Zod
-    const validation = propertySchema.safeParse(body);
+    const validation = projectSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: validation.error.flatten() },
@@ -169,15 +133,15 @@ export async function POST(request: NextRequest) {
 
     const data = validation.data;
 
-    // Generate slugs from titles
-    const slug_en = generateSlug(data.title_en);
-    const slug_th = generateSlug(data.title_th);
-    const slug_zh = generateSlug(data.title_zh);
+    // Generate slugs from names
+    const slug_en = generateSlug(data.name_en);
+    const slug_th = generateSlug(data.name_th);
+    const slug_zh = generateSlug(data.name_zh);
 
     const supabase = createServerClient();
 
-    const { data: property, error } = await supabase
-      .from('properties')
+    const { data: project, error } = await supabase
+      .from('projects')
       .insert({
         ...data,
         slug_en,
@@ -188,25 +152,25 @@ export async function POST(request: NextRequest) {
         `
         *,
         property_type:property_types(*),
-        images:property_images(*)
+        images:project_images(*)
         `,
       )
       .single();
 
     if (error) {
-      console.error('Property insert error:', error);
+      console.error('Project insert error:', error);
       return NextResponse.json(
-        { error: 'Failed to create property' },
+        { error: 'Failed to create project' },
         { status: 500 },
       );
     }
 
     return NextResponse.json(
-      { success: true, data: property },
+      { success: true, data: project },
       { status: 201 },
     );
   } catch (error) {
-    console.error('Properties POST error:', error);
+    console.error('Projects POST error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },

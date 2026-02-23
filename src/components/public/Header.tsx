@@ -14,13 +14,14 @@ import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavLink {
   href: string;
-  labelKey: 'home' | 'properties' | 'forSale' | 'forRent' | 'about' | 'contact' | 'blog';
+  labelKey: 'home' | 'properties' | 'projects' | 'forSale' | 'forRent' | 'about' | 'contact' | 'blog';
   namespace: 'common' | 'nav';
 }
 
 const navLinks: NavLink[] = [
   { href: '/', labelKey: 'home', namespace: 'common' },
   { href: '/properties', labelKey: 'properties', namespace: 'common' },
+  { href: '/projects', labelKey: 'projects', namespace: 'common' },
   { href: '/properties?transaction_type=sale', labelKey: 'forSale', namespace: 'nav' },
   { href: '/properties?transaction_type=rent', labelKey: 'forRent', namespace: 'nav' },
   { href: '/about', labelKey: 'about', namespace: 'common' },
@@ -55,7 +56,7 @@ export default function Header() {
 
   function getLabel(link: NavLink): string {
     if (link.namespace === 'nav') return nav(link.labelKey as 'forSale' | 'forRent');
-    return common(link.labelKey as 'home' | 'properties' | 'about' | 'contact' | 'blog');
+    return common(link.labelKey as 'home' | 'properties' | 'projects' | 'about' | 'contact' | 'blog');
   }
 
   function isActive(href: string): boolean {

@@ -101,6 +101,7 @@ export default async function HomePage({
       name_th: val.name_th,
       name_zh: val.name_zh,
       icon: val.icon,
+      has_projects: ['condo', 'townhouse', 'apartment'].includes(key),
     }));
   }
 

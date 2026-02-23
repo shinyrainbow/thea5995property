@@ -7,6 +7,7 @@
     "about": "About",
     "contact": "Contact",
     "blog": "Blog",
+    "projects": "Projects",
     "search": "Search",
     "viewAll": "View All",
     "learnMore": "Learn More",
@@ -225,9 +226,33 @@
     "addBlogPost": "Add Blog Post",
     "editBlogPost": "Edit Blog Post"
   },
+  "project": {
+    "allProjects": "Projects",
+    "projectsFound": "{count} projects found",
+    "projectDetails": "Project Details",
+    "projectInfo": "Project Info",
+    "developer": "Developer",
+    "yearBuilt": "Year Built",
+    "totalUnits": "Total Units",
+    "availableUnits": "Available Units",
+    "facilities": "Facilities",
+    "description": "Description",
+    "location": "Location",
+    "type": "Type",
+    "status": "Status",
+    "backToProjects": "Back to Projects",
+    "viewUnits": "View Units",
+    "noUnits": "No units available at this time",
+    "active": "Active",
+    "completed": "Completed",
+    "underConstruction": "Under Construction",
+    "draft": "Draft"
+  },
   "metadata": {
     "propertiesTitle": "Properties | THE A 5995",
     "propertiesDescription": "Browse luxury properties for sale and rent across Thailand",
+    "projectsTitle": "Projects | THE A 5995",
+    "projectsDescription": "Browse luxury property projects across Thailand",
     "blogTitle": "Blog | THE A 5995",
     "blogDescription": "Real estate insights, market updates, and lifestyle guides"
   }

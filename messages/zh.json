@@ -7,6 +7,7 @@
     "about": "关于我们",
     "contact": "联系我们",
     "blog": "博客",
+    "projects": "项目",
     "search": "搜索",
     "viewAll": "查看全部",
     "learnMore": "了解更多",
@@ -225,9 +226,33 @@
     "addBlogPost": "添加博客文章",
     "editBlogPost": "编辑博客文章"
   },
+  "project": {
+    "allProjects": "项目",
+    "projectsFound": "找到 {count} 个项目",
+    "projectDetails": "项目详情",
+    "projectInfo": "项目信息",
+    "developer": "开发商",
+    "yearBuilt": "建造年份",
+    "totalUnits": "总户数",
+    "availableUnits": "可用单元",
+    "facilities": "设施",
+    "description": "描述",
+    "location": "位置",
+    "type": "类型",
+    "status": "状态",
+    "backToProjects": "返回项目",
+    "viewUnits": "查看单元",
+    "noUnits": "目前没有可用单元",
+    "active": "活跃",
+    "completed": "已完成",
+    "underConstruction": "建设中",
+    "draft": "草稿"
+  },
   "metadata": {
     "propertiesTitle": "房产 | THE A 5995",
     "propertiesDescription": "浏览泰国各地出售和出租的豪华房产",
+    "projectsTitle": "项目 | THE A 5995",
+    "projectsDescription": "浏览泰国各地的豪华房产项目",
     "blogTitle": "博客 | THE A 5995",
     "blogDescription": "房地产见解、市场更新和生活方式指南"
   }

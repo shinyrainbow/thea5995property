@@ -1,14 +1,15 @@
 'use client';
 
 // =============================================================================
-// THE A 5995 - Property Form Component
+// THE A 5995 - Project Form Component
 // =============================================================================
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { propertySchema, type PropertySchemaType } from '@/lib/validations';
+import { projectSchema, type ProjectSchemaType } from '@/lib/validations';
+import type { ProjectWithDetails, PropertyType } from '@/types';
 import ImageUploader, { type UploadedImage } from '@/components/admin/ImageUploader';
 import { THAI_PROVINCES } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -21,8 +22,9 @@ import {
   Image as ImageIcon,
   Search,
   AlertCircle,
+  X,
+  Plus,
 } from 'lucide-react';
-import type { PropertyType, PropertyWithDetails } from '@/types';
 
 type TabKey = 'general' | 'thai' | 'chinese' | 'details' | 'location' | 'images' | 'seo';
 
@@ -42,19 +44,21 @@ const tabs: Tab[] = [
   { key: 'seo', label: 'SEO', icon: Search },
 ];
 
-interface PropertyFormProps {
-  property?: PropertyWithDetails;
+const PRESET_FACILITIES = ['Pool', 'Gym', 'Parking', 'Security', 'Garden', 'Playground', 'Sauna'];
+
+interface ProjectFormProps {
+  project?: ProjectWithDetails;
   propertyTypes: PropertyType[];
-  projects?: Array<{ id: string; name_en: string; property_type_id: string }>;
 }
 
-export default function PropertyForm({ property, propertyTypes, projects = [] }: PropertyFormProps) {
+export default function ProjectForm({ project, propertyTypes }: ProjectFormProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabKey>('general');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [facilityInput, setFacilityInput] = useState('');
   const [images, setImages] = useState<UploadedImage[]>(
-    property?.images?.map((img) => ({
+    project?.images?.map((img) => ({
       id: img.id,
       url: img.url,
       alt_en: img.alt_en,
@@ -65,7 +69,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
     })) ?? [],
   );
 
-  const isEditing = !!property;
+  const isEditing = !!project;
 
   const {
     register,
@@ -73,51 +77,79 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
     formState: { errors },
     watch,
     setValue,
-  } = useForm<PropertySchemaType>({
-    resolver: zodResolver(propertySchema),
-    defaultValues: property
+  } = useForm<ProjectSchemaType>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: project
       ? {
-          title_en: property.title_en,
-          title_th: property.title_th,
-          title_zh: property.title_zh,
-          description_en: property.description_en,
-          description_th: property.description_th,
-          description_zh: property.description_zh,
-          price: property.price,
-          transaction_type: property.transaction_type,
-          property_type_id: property.property_type_id,
-          project_id: property.project_id ?? null,
-          bedrooms: property.bedrooms,
-          bathrooms: property.bathrooms,
-          land_size: property.land_size,
-          building_size: property.building_size,
-          address: property.address,
-          district: property.district,
-          province: property.province,
-          latitude: property.latitude,
-          longitude: property.longitude,
-          status: property.status,
-          featured: property.featured,
-          seo_title_en: property.seo_title_en || '',
-          seo_title_th: property.seo_title_th || '',
-          seo_title_zh: property.seo_title_zh || '',
-          seo_description_en: property.seo_description_en || '',
-          seo_description_th: property.seo_description_th || '',
-          seo_description_zh: property.seo_description_zh || '',
+          name_en: project.name_en,
+          name_th: project.name_th,
+          name_zh: project.name_zh,
+          description_en: project.description_en,
+          description_th: project.description_th,
+          description_zh: project.description_zh,
+          property_type_id: project.property_type_id,
+          developer_name: project.developer_name || '',
+          facilities: project.facilities || [],
+          year_built: project.year_built,
+          total_units: project.total_units,
+          address: project.address,
+          district: project.district,
+          province: project.province,
+          latitude: project.latitude,
+          longitude: project.longitude,
+          status: project.status,
+          seo_title_en: project.seo_title_en || '',
+          seo_title_th: project.seo_title_th || '',
+          seo_title_zh: project.seo_title_zh || '',
+          seo_description_en: project.seo_description_en || '',
+          seo_description_th: project.seo_description_th || '',
+          seo_description_zh: project.seo_description_zh || '',
         }
       : {
           status: 'draft',
-          featured: false,
-          transaction_type: 'sale',
+          facilities: [],
         },
   });
 
-  const onSubmit = async (data: PropertySchemaType) => {
+  // Map form fields to their tab for error highlighting
+  const fieldToTab: Record<string, TabKey> = {
+    name_en: 'general',
+    description_en: 'general',
+    name_th: 'thai',
+    description_th: 'thai',
+    name_zh: 'chinese',
+    description_zh: 'chinese',
+    property_type_id: 'details',
+    developer_name: 'details',
+    facilities: 'details',
+    year_built: 'details',
+    total_units: 'details',
+    address: 'location',
+    district: 'location',
+    province: 'location',
+    latitude: 'location',
+    longitude: 'location',
+    seo_title_en: 'seo',
+    seo_title_th: 'seo',
+    seo_title_zh: 'seo',
+    seo_description_en: 'seo',
+    seo_description_th: 'seo',
+    seo_description_zh: 'seo',
+  };
+
+  // Get which tabs have errors
+  const tabsWithErrors = new Set<TabKey>();
+  for (const field of Object.keys(errors)) {
+    const tab = fieldToTab[field];
+    if (tab) tabsWithErrors.add(tab);
+  }
+
+  const onSubmit = async (data: ProjectSchemaType) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const url = isEditing ? `/api/properties/${property.id}` : '/api/properties';
+      const url = isEditing ? `/api/projects/${project.id}` : '/api/projects';
       const method = isEditing ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -128,33 +160,10 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save property');
+        throw new Error(errorData.error || 'Failed to save project');
       }
 
-      const result = await response.json();
-      const propertyId = result.data?.id || property?.id;
-
-      // Save images if we have a property ID
-      if (propertyId && images.length > 0) {
-        // Delete existing images and re-insert
-        const supabaseResponse = await fetch(`/api/properties/${propertyId}`, {
-          method: 'GET',
-        });
-        if (supabaseResponse.ok) {
-          // Save image records
-          for (const image of images) {
-            if (!image.id) {
-              await fetch('/api/properties/' + propertyId, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-              });
-            }
-          }
-        }
-      }
-
-      router.push('/admin/properties');
+      router.push('/admin/projects');
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -163,21 +172,35 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
     }
   };
 
-  const status = watch('status');
-  const featured = watch('featured');
-  const watchedPropertyTypeId = watch('property_type_id');
-
-  // Determine if the selected property type supports projects
-  const selectedPropertyType = propertyTypes.find((t) => t.id === watchedPropertyTypeId);
-  const showProjectDropdown = selectedPropertyType?.has_projects === true;
-  const filteredProjects = projects.filter((p) => p.property_type_id === watchedPropertyTypeId);
-
-  // Clear project_id when switching to a property type without projects
-  useEffect(() => {
-    if (!showProjectDropdown) {
-      setValue('project_id', null);
+  // On validation error, jump to the first tab with errors
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onValidationError = (formErrors: any) => {
+    const errorFields = Object.keys(formErrors);
+    for (const tab of tabs) {
+      if (errorFields.some((field: string) => fieldToTab[field] === tab.key)) {
+        setActiveTab(tab.key);
+        break;
+      }
     }
-  }, [showProjectDropdown, setValue]);
+  };
+
+  const status = watch('status');
+  const facilities = watch('facilities') || [];
+
+  const addFacility = (facility: string) => {
+    const trimmed = facility.trim();
+    if (trimmed && !facilities.includes(trimmed)) {
+      setValue('facilities', [...facilities, trimmed]);
+    }
+    setFacilityInput('');
+  };
+
+  const removeFacility = (index: number) => {
+    setValue(
+      'facilities',
+      facilities.filter((_, i) => i !== index),
+    );
+  };
 
   // Helper for input classes
   const inputClass =
@@ -186,7 +209,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
   const errorClass = 'mt-1 text-xs text-red-500';
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, onValidationError)} className="space-y-6">
       {/* Error Display */}
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-start gap-2">
@@ -195,7 +218,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
         </div>
       )}
 
-      {/* Status and Featured toggles */}
+      {/* Status Bar */}
       <div className="bg-white rounded-xl border border-luxury-200 p-5 flex flex-wrap gap-6">
         <div className="flex items-center gap-4">
           <label className="text-sm font-medium text-primary-600">Status:</label>
@@ -205,8 +228,8 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           >
             <option value="draft">Draft</option>
             <option value="active">Active</option>
-            <option value="sold">Sold</option>
-            <option value="rented">Rented</option>
+            <option value="under_construction">Under Construction</option>
+            <option value="completed">Completed</option>
           </select>
           <span
             className={cn(
@@ -215,30 +238,13 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
                 ? 'bg-green-100 text-green-700'
                 : status === 'draft'
                   ? 'bg-gray-100 text-gray-700'
-                  : 'bg-blue-100 text-blue-700',
+                  : status === 'under_construction'
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-blue-100 text-blue-700',
             )}
           >
-            {status}
+            {status === 'under_construction' ? 'Under Construction' : status}
           </span>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-primary-600">Featured:</label>
-          <button
-            type="button"
-            onClick={() => setValue('featured', !featured)}
-            className={cn(
-              'relative w-11 h-6 rounded-full transition-colors duration-200',
-              featured ? 'bg-secondary-400' : 'bg-luxury-300',
-            )}
-          >
-            <span
-              className={cn(
-                'absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 shadow-sm',
-                featured && 'translate-x-5',
-              )}
-            />
-          </button>
         </div>
       </div>
 
@@ -262,6 +268,9 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
                 >
                   <Icon className="w-4 h-4" />
                   {tab.label}
+                  {tabsWithErrors.has(tab.key) && (
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                  )}
                 </button>
               );
             })}
@@ -273,13 +282,13 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           {activeTab === 'general' && (
             <div className="space-y-5">
               <div>
-                <label className={labelClass}>Title (English) *</label>
+                <label className={labelClass}>Name (English) *</label>
                 <input
-                  {...register('title_en')}
+                  {...register('name_en')}
                   className={inputClass}
-                  placeholder="Luxury beachfront villa in Phuket"
+                  placeholder="Luxury condominium project in Phuket"
                 />
-                {errors.title_en && <p className={errorClass}>{errors.title_en.message}</p>}
+                {errors.name_en && <p className={errorClass}>{errors.name_en.message}</p>}
               </div>
               <div>
                 <label className={labelClass}>Description (English) *</label>
@@ -287,7 +296,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
                   {...register('description_en')}
                   rows={6}
                   className={cn(inputClass, 'resize-y')}
-                  placeholder="Describe the property in detail..."
+                  placeholder="Describe the project in detail..."
                 />
                 {errors.description_en && (
                   <p className={errorClass}>{errors.description_en.message}</p>
@@ -300,13 +309,13 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           {activeTab === 'thai' && (
             <div className="space-y-5">
               <div>
-                <label className={labelClass}>Title (Thai) *</label>
+                <label className={labelClass}>Name (Thai) *</label>
                 <input
-                  {...register('title_th')}
+                  {...register('name_th')}
                   className={inputClass}
-                  placeholder="Enter Thai title"
+                  placeholder="Enter Thai name"
                 />
-                {errors.title_th && <p className={errorClass}>{errors.title_th.message}</p>}
+                {errors.name_th && <p className={errorClass}>{errors.name_th.message}</p>}
               </div>
               <div>
                 <label className={labelClass}>Description (Thai) *</label>
@@ -327,13 +336,13 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           {activeTab === 'chinese' && (
             <div className="space-y-5">
               <div>
-                <label className={labelClass}>Title (Chinese) *</label>
+                <label className={labelClass}>Name (Chinese) *</label>
                 <input
-                  {...register('title_zh')}
+                  {...register('name_zh')}
                   className={inputClass}
-                  placeholder="Enter Chinese title"
+                  placeholder="Enter Chinese name"
                 />
-                {errors.title_zh && <p className={errorClass}>{errors.title_zh.message}</p>}
+                {errors.name_zh && <p className={errorClass}>{errors.name_zh.message}</p>}
               </div>
               <div>
                 <label className={labelClass}>Description (Chinese) *</label>
@@ -353,32 +362,6 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           {/* Details Tab */}
           {activeTab === 'details' && (
             <div className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className={labelClass}>Price (THB) *</label>
-                  <input
-                    type="number"
-                    {...register('price', { valueAsNumber: true })}
-                    className={inputClass}
-                    placeholder="5000000"
-                  />
-                  {errors.price && <p className={errorClass}>{errors.price.message}</p>}
-                </div>
-                <div>
-                  <label className={labelClass}>Transaction Type *</label>
-                  <select
-                    {...register('transaction_type')}
-                    className={inputClass}
-                  >
-                    <option value="sale">For Sale</option>
-                    <option value="rent">For Rent</option>
-                  </select>
-                  {errors.transaction_type && (
-                    <p className={errorClass}>{errors.transaction_type.message}</p>
-                  )}
-                </div>
-              </div>
-
               <div>
                 <label className={labelClass}>Property Type *</label>
                 <select
@@ -397,66 +380,111 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
                 )}
               </div>
 
-              {showProjectDropdown && (
-                <div>
-                  <label className={labelClass}>Project (Optional)</label>
-                  <select
-                    {...register('project_id')}
-                    className={inputClass}
-                  >
-                    <option value="">None (Standalone)</option>
-                    {filteredProjects.map((project) => (
-                      <option key={project.id} value={project.id}>
-                        {project.name_en}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div>
+                <label className={labelClass}>Developer Name</label>
+                <input
+                  {...register('developer_name')}
+                  className={inputClass}
+                  placeholder="e.g. Sansiri, Land & Houses"
+                />
+                {errors.developer_name && (
+                  <p className={errorClass}>{errors.developer_name.message}</p>
+                )}
+              </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className={labelClass}>Bedrooms</label>
+                  <label className={labelClass}>Year Built</label>
                   <input
                     type="number"
-                    {...register('bedrooms', { valueAsNumber: true })}
+                    {...register('year_built', { valueAsNumber: true })}
                     className={inputClass}
-                    placeholder="3"
+                    placeholder="2024"
                   />
-                  {errors.bedrooms && <p className={errorClass}>{errors.bedrooms.message}</p>}
+                  {errors.year_built && <p className={errorClass}>{errors.year_built.message}</p>}
                 </div>
                 <div>
-                  <label className={labelClass}>Bathrooms</label>
+                  <label className={labelClass}>Total Units</label>
                   <input
                     type="number"
-                    {...register('bathrooms', { valueAsNumber: true })}
+                    {...register('total_units', { valueAsNumber: true })}
                     className={inputClass}
-                    placeholder="2"
+                    placeholder="500"
                   />
-                  {errors.bathrooms && <p className={errorClass}>{errors.bathrooms.message}</p>}
-                </div>
-                <div>
-                  <label className={labelClass}>Land Size (sqm)</label>
-                  <input
-                    type="number"
-                    {...register('land_size', { valueAsNumber: true })}
-                    className={inputClass}
-                    placeholder="400"
-                  />
-                  {errors.land_size && <p className={errorClass}>{errors.land_size.message}</p>}
-                </div>
-                <div>
-                  <label className={labelClass}>Building Size (sqm)</label>
-                  <input
-                    type="number"
-                    {...register('building_size', { valueAsNumber: true })}
-                    className={inputClass}
-                    placeholder="200"
-                  />
-                  {errors.building_size && (
-                    <p className={errorClass}>{errors.building_size.message}</p>
+                  {errors.total_units && (
+                    <p className={errorClass}>{errors.total_units.message}</p>
                   )}
                 </div>
+              </div>
+
+              {/* Facilities */}
+              <div>
+                <label className={labelClass}>Facilities</label>
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={facilityInput}
+                    onChange={(e) => setFacilityInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addFacility(facilityInput);
+                      }
+                    }}
+                    className={inputClass}
+                    placeholder="Add a facility..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addFacility(facilityInput)}
+                    className="px-4 py-2.5 bg-secondary-400 text-white rounded-lg text-sm font-medium hover:bg-secondary-500 transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add
+                  </button>
+                </div>
+
+                {/* Preset facility buttons */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {PRESET_FACILITIES.map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => addFacility(preset)}
+                      disabled={facilities.includes(preset)}
+                      className={cn(
+                        'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                        facilities.includes(preset)
+                          ? 'bg-luxury-100 text-luxury-400 cursor-not-allowed'
+                          : 'bg-luxury-100 text-primary-600 hover:bg-luxury-200',
+                      )}
+                    >
+                      + {preset}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Facility chips */}
+                {facilities.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {facilities.map((facility, index) => (
+                      <span
+                        key={`${facility}-${index}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary-50 text-secondary-700 rounded-full text-sm font-medium"
+                      >
+                        {facility}
+                        <button
+                          type="button"
+                          onClick={() => removeFacility(index)}
+                          className="text-secondary-400 hover:text-secondary-600 transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {errors.facilities && <p className={errorClass}>{errors.facilities.message}</p>}
               </div>
             </div>
           )}
@@ -530,7 +558,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             <ImageUploader
               images={images}
               onChange={setImages}
-              folder="properties"
+              folder="projects"
             />
           )}
 
@@ -618,7 +646,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
       <div className="flex items-center justify-end gap-3">
         <button
           type="button"
-          onClick={() => router.push('/admin/properties')}
+          onClick={() => router.push('/admin/projects')}
           className="px-6 py-2.5 border border-luxury-200 rounded-lg text-sm font-medium text-luxury-600 hover:bg-luxury-50 transition-colors"
         >
           Cancel
@@ -646,7 +674,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           ) : (
             <>
               <Save className="w-4 h-4" />
-              {isEditing ? 'Update Property' : 'Create Property'}
+              {isEditing ? 'Update Project' : 'Save Project'}
             </>
           )}
         </button>

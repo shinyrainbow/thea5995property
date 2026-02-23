@@ -65,16 +65,17 @@ COMMENT ON TABLE admin_users IS 'Platform administrator accounts';
 -- =============================================================================
 
 CREATE TABLE property_types (
-  id         SERIAL      PRIMARY KEY,
-  slug_en    TEXT        UNIQUE NOT NULL,
-  slug_th    TEXT        UNIQUE NOT NULL,
-  slug_zh    TEXT        UNIQUE NOT NULL,
-  name_en    TEXT        NOT NULL,
-  name_th    TEXT        NOT NULL,
-  name_zh    TEXT        NOT NULL,
-  icon       TEXT,
-  sort_order INTEGER     DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  id           SERIAL      PRIMARY KEY,
+  slug_en      TEXT        UNIQUE NOT NULL,
+  slug_th      TEXT        UNIQUE NOT NULL,
+  slug_zh      TEXT        UNIQUE NOT NULL,
+  name_en      TEXT        NOT NULL,
+  name_th      TEXT        NOT NULL,
+  name_zh      TEXT        NOT NULL,
+  icon         TEXT,
+  has_projects BOOLEAN     DEFAULT FALSE,
+  sort_order   INTEGER     DEFAULT 0,
+  created_at   TIMESTAMPTZ DEFAULT NOW()
 );
 
 COMMENT ON TABLE property_types IS 'Property category lookup (trilingual)';
@@ -153,6 +154,104 @@ CREATE TABLE property_images (
 );
 
 COMMENT ON TABLE property_images IS 'Property listing images with trilingual alt text';
+
+
+-- =============================================================================
+-- 5b. TABLE: projects
+-- =============================================================================
+-- Development projects for property types that support them (condo, townhouse,
+-- apartment). A project groups multiple property units under a single
+-- development with shared info (developer, facilities, location).
+-- =============================================================================
+
+CREATE TABLE projects (
+  id                 UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  -- Trilingual name
+  name_en            TEXT          NOT NULL,
+  name_th            TEXT,
+  name_zh            TEXT,
+
+  -- Trilingual slugs (locale-specific SEO URLs)
+  slug_en            TEXT          UNIQUE NOT NULL,
+  slug_th            TEXT          UNIQUE,
+  slug_zh            TEXT          UNIQUE,
+
+  -- Trilingual description
+  description_en     TEXT,
+  description_th     TEXT,
+  description_zh     TEXT,
+
+  -- Must be a project-supporting type (condo, townhouse, apartment)
+  property_type_id   INTEGER       REFERENCES property_types(id),
+
+  -- Project-specific fields
+  developer_name     TEXT,
+  facilities         TEXT[],
+  year_built         INTEGER,
+  total_units        INTEGER,
+
+  -- Location
+  address            TEXT,
+  district           TEXT,
+  province           TEXT,
+  latitude           DECIMAL(10,8),
+  longitude          DECIMAL(11,8),
+
+  -- Status
+  status             TEXT          NOT NULL DEFAULT 'draft'
+                                   CHECK (status IN ('active', 'completed', 'under_construction', 'draft')),
+
+  -- SEO fields (trilingual)
+  seo_title_en       TEXT,
+  seo_title_th       TEXT,
+  seo_title_zh       TEXT,
+  seo_description_en TEXT,
+  seo_description_th TEXT,
+  seo_description_zh TEXT,
+
+  created_at         TIMESTAMPTZ   DEFAULT NOW(),
+  updated_at         TIMESTAMPTZ   DEFAULT NOW()
+);
+
+-- Trigger: auto-update updated_at on row change
+CREATE TRIGGER set_projects_updated_at
+  BEFORE UPDATE ON projects
+  FOR EACH ROW
+  EXECUTE FUNCTION trigger_set_updated_at();
+
+COMMENT ON TABLE projects IS 'Real estate development projects (trilingual with SEO)';
+
+
+-- =============================================================================
+-- 5c. TABLE: project_images
+-- =============================================================================
+-- Stores image references for projects. Same pattern as property_images.
+-- =============================================================================
+
+CREATE TABLE project_images (
+  id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id  UUID        REFERENCES projects(id) ON DELETE CASCADE,
+  url         TEXT        NOT NULL,
+  alt_en      TEXT,
+  alt_th      TEXT,
+  alt_zh      TEXT,
+  sort_order  INTEGER     DEFAULT 0,
+  is_primary  BOOLEAN     DEFAULT FALSE,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE project_images IS 'Project images with trilingual alt text';
+
+
+-- =============================================================================
+-- 5d. Link properties to projects (optional relationship)
+-- =============================================================================
+-- A property can optionally belong to a project. When a project is deleted,
+-- the property remains but its project_id is set to NULL.
+-- =============================================================================
+
+ALTER TABLE properties ADD COLUMN project_id UUID REFERENCES projects(id) ON DELETE SET NULL;
 
 
 -- =============================================================================
@@ -349,6 +448,26 @@ CREATE INDEX idx_blog_contents_sort ON blog_contents (blog_post_id, sort_order);
 -- property_types indexes
 CREATE INDEX idx_property_types_sort ON property_types (sort_order);
 
+-- projects indexes
+CREATE INDEX idx_projects_property_type_id ON projects (property_type_id);
+CREATE INDEX idx_projects_slug_en ON projects (slug_en);
+CREATE INDEX idx_projects_slug_th ON projects (slug_th);
+CREATE INDEX idx_projects_slug_zh ON projects (slug_zh);
+CREATE INDEX idx_projects_status ON projects (status);
+CREATE INDEX idx_projects_province ON projects (province);
+CREATE INDEX idx_projects_created_at ON projects (created_at DESC);
+CREATE INDEX idx_projects_active_recent ON projects (status, created_at DESC)
+  WHERE status = 'active';
+
+-- project_images indexes
+CREATE INDEX idx_project_images_project_id ON project_images (project_id);
+CREATE INDEX idx_project_images_primary ON project_images (project_id, is_primary)
+  WHERE is_primary = TRUE;
+CREATE INDEX idx_project_images_sort ON project_images (project_id, sort_order);
+
+-- properties.project_id index
+CREATE INDEX idx_properties_project_id ON properties (project_id);
+
 
 -- =============================================================================
 -- 11. ROW LEVEL SECURITY (RLS)
@@ -363,6 +482,8 @@ CREATE INDEX idx_property_types_sort ON property_types (sort_order);
 -- ---------------------------------------------------------------------------
 ALTER TABLE admin_users       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE property_types    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE projects          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE project_images    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE properties        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE property_images   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inquiries         ENABLE ROW LEVEL SECURITY;
@@ -479,6 +600,70 @@ CREATE POLICY "property_images_update_authenticated"
 
 CREATE POLICY "property_images_delete_authenticated"
   ON property_images FOR DELETE
+  TO authenticated
+  USING (true);
+
+-- ---------------------------------------------------------------------------
+-- projects: Public can read active projects, authenticated full CRUD
+-- ---------------------------------------------------------------------------
+CREATE POLICY "projects_select_public"
+  ON projects FOR SELECT
+  TO anon
+  USING (status = 'active');
+
+CREATE POLICY "projects_select_authenticated"
+  ON projects FOR SELECT
+  TO authenticated
+  USING (true);
+
+CREATE POLICY "projects_insert_authenticated"
+  ON projects FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "projects_update_authenticated"
+  ON projects FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "projects_delete_authenticated"
+  ON projects FOR DELETE
+  TO authenticated
+  USING (true);
+
+-- ---------------------------------------------------------------------------
+-- project_images: Public can read images of active projects, auth full CRUD
+-- ---------------------------------------------------------------------------
+CREATE POLICY "project_images_select_public"
+  ON project_images FOR SELECT
+  TO anon
+  USING (
+    EXISTS (
+      SELECT 1 FROM projects
+      WHERE projects.id = project_images.project_id
+        AND projects.status = 'active'
+    )
+  );
+
+CREATE POLICY "project_images_select_authenticated"
+  ON project_images FOR SELECT
+  TO authenticated
+  USING (true);
+
+CREATE POLICY "project_images_insert_authenticated"
+  ON project_images FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "project_images_update_authenticated"
+  ON project_images FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "project_images_delete_authenticated"
+  ON project_images FOR DELETE
   TO authenticated
   USING (true);
 
@@ -612,18 +797,18 @@ CREATE POLICY "blog_contents_delete_authenticated"
 -- Sort order matches the display priority (1 = first).
 -- =============================================================================
 
-INSERT INTO property_types (slug_en, slug_th, slug_zh, name_en, name_th, name_zh, icon, sort_order) VALUES
-  ('condo',     'คอนโด',         '公寓',     'Condo',     'คอนโดมิเนียม',  '公寓',     'condo',     1),
-  ('townhouse', 'ทาวน์เฮาส์',     '联排别墅',  'Townhouse', 'ทาวน์เฮาส์',    '联排别墅',  'townhouse', 2),
-  ('house',     'บ้าน',          '房屋',     'House',     'บ้านเดี่ยว',     '房屋',     'house',     3),
-  ('land',      'ที่ดิน',         '土地',     'Land',      'ที่ดิน',         '土地',     'land',      4),
-  ('villa',     'วิลล่า',        '别墅',     'Villa',     'วิลล่า',        '别墅',     'villa',     5),
-  ('apartment', 'อพาร์ทเมนท์',    '公寓楼',    'Apartment', 'อพาร์ทเมนท์',    '公寓楼',    'apartment', 6),
-  ('office',    'สำนักงาน',       '办公室',    'Office',    'สำนักงาน',       '办公室',    'office',    7),
-  ('store',     'ร้านค้า',        '商铺',     'Store',     'ร้านค้า',        '商铺',     'store',     8),
-  ('factory',   'โรงงาน',        '工厂',     'Factory',   'โรงงาน',        '工厂',     'factory',   9),
-  ('hotel',     'โรงแรม',        '酒店',     'Hotel',     'โรงแรม',        '酒店',     'hotel',     10),
-  ('building',  'อาคาร',         '大楼',     'Building',  'อาคาร',         '大楼',     'building',  11);
+INSERT INTO property_types (slug_en, slug_th, slug_zh, name_en, name_th, name_zh, icon, has_projects, sort_order) VALUES
+  ('condo',     'คอนโด',         '公寓',     'Condo',     'คอนโดมิเนียม',  '公寓',     'condo',     TRUE,  1),
+  ('townhouse', 'ทาวน์เฮาส์',     '联排别墅',  'Townhouse', 'ทาวน์เฮาส์',    '联排别墅',  'townhouse', TRUE,  2),
+  ('house',     'บ้าน',          '房屋',     'House',     'บ้านเดี่ยว',     '房屋',     'house',     FALSE, 3),
+  ('land',      'ที่ดิน',         '土地',     'Land',      'ที่ดิน',         '土地',     'land',      FALSE, 4),
+  ('villa',     'วิลล่า',        '别墅',     'Villa',     'วิลล่า',        '别墅',     'villa',     FALSE, 5),
+  ('apartment', 'อพาร์ทเมนท์',    '公寓楼',    'Apartment', 'อพาร์ทเมนท์',    '公寓楼',    'apartment', TRUE,  6),
+  ('office',    'สำนักงาน',       '办公室',    'Office',    'สำนักงาน',       '办公室',    'office',    FALSE, 7),
+  ('store',     'ร้านค้า',        '商铺',     'Store',     'ร้านค้า',        '商铺',     'store',     FALSE, 8),
+  ('factory',   'โรงงาน',        '工厂',     'Factory',   'โรงงาน',        '工厂',     'factory',   FALSE, 9),
+  ('hotel',     'โรงแรม',        '酒店',     'Hotel',     'โรงแรม',        '酒店',     'hotel',     FALSE, 10),
+  ('building',  'อาคาร',         '大楼',     'Building',  'อาคาร',         '大楼',     'building',  FALSE, 11);
 
 
 -- =============================================================================
@@ -638,7 +823,7 @@ INSERT INTO property_types (slug_en, slug_th, slug_zh, name_en, name_th, name_zh
 INSERT INTO admin_users (email, password_hash, name, role) VALUES
   (
     'admin@thea5995.com',
-    '$2a$12$LQv3c1yqBo9SkvXS7QTJPOoGEFmzxQBaLmIBk9bQz1TFpFJYMdhS6',
+    '$2b$12$VEuq1HOnnEALUE0a.Lo7j.SKWzfUT4cyS693hrlEPNzZ3pgtX6GYC',
     'Super Admin',
     'super_admin'
   );

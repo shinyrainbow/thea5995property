@@ -23,6 +23,8 @@ import {
   Map,
   Home,
   Ruler,
+  FolderKanban,
+  ChevronRight,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -38,7 +40,7 @@ async function getPropertyBySlug(
     const slugColumn = `slug_${locale}`;
     const { data, error } = await supabase
       .from('properties')
-      .select('*, property_type:property_types(*), images:property_images(*)')
+      .select('*, property_type:property_types(*), images:property_images(*), project:projects(*)')
       .eq(slugColumn, slug)
       .eq('status', 'active')
       .single();
@@ -50,7 +52,7 @@ async function getPropertyBySlug(
       if (loc === locale) continue;
       const { data: fallbackData } = await supabase
         .from('properties')
-        .select('*, property_type:property_types(*), images:property_images(*)')
+        .select('*, property_type:property_types(*), images:property_images(*), project:projects(*)')
         .eq(`slug_${loc}`, slug)
         .eq('status', 'active')
         .single();
@@ -72,7 +74,7 @@ async function getSimilarProperties(
   try {
     const { data } = await supabase
       .from('properties')
-      .select('*, property_type:property_types(*), images:property_images(*)')
+      .select('*, property_type:property_types(*), images:property_images(*), project:projects(*)')
       .eq('property_type_id', propertyTypeId)
       .eq('status', 'active')
       .neq('id', propertyId)
@@ -218,13 +220,27 @@ export default async function PropertyDetailPage({
         {/* Back navigation */}
         <div className="bg-white border-b border-luxury-200 pt-20">
           <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-            <Link
-              href="/properties"
-              className="inline-flex items-center gap-2 text-sm text-luxury-500 transition-colors hover:text-primary-700"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              {tCommon('back')}
-            </Link>
+            <div className="flex items-center gap-2 text-sm">
+              <Link
+                href="/properties"
+                className="inline-flex items-center gap-2 text-luxury-500 transition-colors hover:text-primary-700"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                {tCommon('back')}
+              </Link>
+              {property.project && (
+                <>
+                  <ChevronRight className="h-3.5 w-3.5 text-luxury-400" />
+                  <Link
+                    href={`/projects/${getLocalizedField(property.project, 'slug', locale)}`}
+                    className="inline-flex items-center gap-1.5 text-secondary-500 transition-colors hover:text-secondary-600"
+                  >
+                    <FolderKanban className="h-3.5 w-3.5" />
+                    {getLocalizedField(property.project, 'name', locale)}
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
 

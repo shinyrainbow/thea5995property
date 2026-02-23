@@ -7,6 +7,7 @@
     "about": "เกี่ยวกับเรา",
     "contact": "ติดต่อเรา",
     "blog": "บล็อก",
+    "projects": "โครงการ",
     "search": "ค้นหา",
     "viewAll": "ดูทั้งหมด",
     "learnMore": "เรียนรู้เพิ่มเติม",
@@ -225,9 +226,33 @@
     "addBlogPost": "เพิ่มบทความ",
     "editBlogPost": "แก้ไขบทความ"
   },
+  "project": {
+    "allProjects": "โครงการ",
+    "projectsFound": "พบ {count} โครงการ",
+    "projectDetails": "รายละเอียดโครงการ",
+    "projectInfo": "ข้อมูลโครงการ",
+    "developer": "ผู้พัฒนา",
+    "yearBuilt": "ปีที่สร้าง",
+    "totalUnits": "จำนวนยูนิตทั้งหมด",
+    "availableUnits": "ยูนิตที่มีอยู่",
+    "facilities": "สิ่งอำนวยความสะดวก",
+    "description": "รายละเอียด",
+    "location": "ที่ตั้ง",
+    "type": "ประเภท",
+    "status": "สถานะ",
+    "backToProjects": "กลับไปโครงการ",
+    "viewUnits": "ดูยูนิต",
+    "noUnits": "ไม่มียูนิตที่พร้อมในขณะนี้",
+    "active": "ใช้งาน",
+    "completed": "เสร็จสมบูรณ์",
+    "underConstruction": "กำลังก่อสร้าง",
+    "draft": "ร่าง"
+  },
   "metadata": {
     "propertiesTitle": "อสังหาริมทรัพย์ | THE A 5995",
     "propertiesDescription": "เรียกดูอสังหาริมทรัพย์หรูสำหรับขายและเช่าทั่วประเทศไทย",
+    "projectsTitle": "โครงการ | THE A 5995",
+    "projectsDescription": "เรียกดูโครงการอสังหาริมทรัพย์หรูทั่วประเทศไทย",
     "blogTitle": "บล็อก | THE A 5995",
     "blogDescription": "ข้อมูลเชิงลึกอสังหาริมทรัพย์ อัปเดตตลาด และคู่มือไลฟ์สไตล์"
   }

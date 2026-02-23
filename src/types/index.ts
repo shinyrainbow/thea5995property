@@ -16,6 +16,8 @@ export type InquiryStatus = 'new' | 'read' | 'replied' | 'archived';
 
 export type AdminRole = 'super_admin' | 'admin';
 
+export type ProjectStatus = 'active' | 'completed' | 'under_construction' | 'draft';
+
 export type BlogPostStatus = 'draft' | 'published';
 
 export type BlogContentType = 'text' | 'image' | 'gallery' | 'quote' | 'heading';
@@ -57,6 +59,7 @@ export interface Property {
   province: string;
   latitude: number | null;
   longitude: number | null;
+  project_id: string | null;
   status: PropertyStatus;
   featured: boolean;
   created_at: string;
@@ -78,6 +81,7 @@ export interface PropertyType {
   name_th: string;
   name_zh: string;
   icon: string;
+  has_projects: boolean;
 }
 
 export interface PropertyImage {
@@ -161,6 +165,49 @@ export interface BlogContent {
   sort_order: number;
 }
 
+export interface Project {
+  id: string;
+  name_en: string;
+  name_th: string;
+  name_zh: string;
+  slug_en: string;
+  slug_th: string;
+  slug_zh: string;
+  description_en: string;
+  description_th: string;
+  description_zh: string;
+  property_type_id: string;
+  developer_name: string | null;
+  facilities: string[];
+  year_built: number | null;
+  total_units: number | null;
+  address: string;
+  district: string;
+  province: string;
+  latitude: number | null;
+  longitude: number | null;
+  status: ProjectStatus;
+  seo_title_en: string | null;
+  seo_title_th: string | null;
+  seo_title_zh: string | null;
+  seo_description_en: string | null;
+  seo_description_th: string | null;
+  seo_description_zh: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectImage {
+  id: string;
+  project_id: string;
+  url: string;
+  alt_en: string;
+  alt_th: string;
+  alt_zh: string;
+  sort_order: number;
+  is_primary: boolean;
+}
+
 // ---------------------------------------------------------------------------
 // Joined / Extended Types
 // ---------------------------------------------------------------------------
@@ -169,6 +216,13 @@ export interface BlogContent {
 export interface PropertyWithDetails extends Property {
   property_type: PropertyType;
   images: PropertyImage[];
+  project?: Project | null;
+}
+
+/** Project with its images and property type joined in. */
+export interface ProjectWithDetails extends Project {
+  property_type: PropertyType;
+  images: ProjectImage[];
 }
 
 /** Blog post with all its content blocks and author joined in. */
@@ -217,6 +271,7 @@ export interface PropertyFormInput {
   price: number;
   transaction_type: TransactionType;
   property_type_id: string;
+  project_id?: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
   land_size: number | null;
@@ -228,6 +283,32 @@ export interface PropertyFormInput {
   longitude: number | null;
   status: PropertyStatus;
   featured: boolean;
+  seo_title_en?: string;
+  seo_title_th?: string;
+  seo_title_zh?: string;
+  seo_description_en?: string;
+  seo_description_th?: string;
+  seo_description_zh?: string;
+}
+
+export interface ProjectFormInput {
+  name_en: string;
+  name_th: string;
+  name_zh: string;
+  description_en: string;
+  description_th: string;
+  description_zh: string;
+  property_type_id: string;
+  developer_name?: string;
+  facilities: string[];
+  year_built?: number | null;
+  total_units?: number | null;
+  address: string;
+  district: string;
+  province: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  status: ProjectStatus;
   seo_title_en?: string;
   seo_title_th?: string;
   seo_title_zh?: string;

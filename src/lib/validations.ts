@@ -63,6 +63,9 @@ export const propertySchema = z.object({
   latitude: z.number().min(-90).max(90).nullable().optional(),
   longitude: z.number().min(-180).max(180).nullable().optional(),
 
+  // Project (optional — only for types with has_projects)
+  project_id: z.string().uuid().nullable().optional(),
+
   // Status & visibility
   status: z.enum(['active', 'sold', 'rented', 'draft']),
   featured: z.boolean(),
@@ -205,3 +208,48 @@ export const propertyFiltersSchema = z.object({
 });
 
 export type PropertyFiltersSchemaType = z.infer<typeof propertyFiltersSchema>;
+
+// ---------------------------------------------------------------------------
+// Project Schema
+// ---------------------------------------------------------------------------
+
+export const projectSchema = z.object({
+  // Multilingual names
+  name_en: requiredString.max(200, 'Name must be under 200 characters'),
+  name_th: requiredString.max(200, 'Name must be under 200 characters'),
+  name_zh: requiredString.max(200, 'Name must be under 200 characters'),
+
+  // Multilingual descriptions
+  description_en: requiredString.max(5000, 'Description is too long'),
+  description_th: requiredString.max(5000, 'Description is too long'),
+  description_zh: requiredString.max(5000, 'Description is too long'),
+
+  // Property type (must be one with has_projects = true)
+  property_type_id: requiredString,
+
+  // Project-specific fields
+  developer_name: optionalString,
+  facilities: z.array(z.string()),
+  year_built: z.number().int().min(1900).max(2100).nullable().optional(),
+  total_units: z.number().int().positive().nullable().optional(),
+
+  // Location
+  address: requiredString.max(500, 'Address is too long'),
+  district: requiredString.max(100, 'District name is too long'),
+  province: requiredString.max(100, 'Province name is too long'),
+  latitude: z.number().min(-90).max(90).nullable().optional(),
+  longitude: z.number().min(-180).max(180).nullable().optional(),
+
+  // Status
+  status: z.enum(['active', 'completed', 'under_construction', 'draft']),
+
+  // SEO (optional)
+  seo_title_en: optionalString,
+  seo_title_th: optionalString,
+  seo_title_zh: optionalString,
+  seo_description_en: optionalString,
+  seo_description_th: optionalString,
+  seo_description_zh: optionalString,
+});
+
+export type ProjectSchemaType = z.infer<typeof projectSchema>;
