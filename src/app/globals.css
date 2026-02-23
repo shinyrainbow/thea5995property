@@ -1,41 +1,41 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Primary - Deep Navy (matching techproperty.co) */
-  --color-primary-50: #f0f3f8;
-  --color-primary-100: #d9e0ed;
-  --color-primary-200: #b3c1db;
-  --color-primary-300: #8da2c9;
-  --color-primary-400: #4d6a9e;
-  --color-primary-500: #2d4a7a;
-  --color-primary-600: #243d66;
-  --color-primary-700: #1B2A4A;
-  --color-primary-800: #142038;
-  --color-primary-900: #0d1526;
+  /* Primary - Blue-Gray */
+  --color-primary-50: #f1f4f8;
+  --color-primary-100: #dce2eb;
+  --color-primary-200: #b8c4d4;
+  --color-primary-300: #92a4ba;
+  --color-primary-400: #6b829e;
+  --color-primary-500: #4f6580;
+  --color-primary-600: #3e5069;
+  --color-primary-700: #334155;
+  --color-primary-800: #283545;
+  --color-primary-900: #1e2a3a;
 
-  /* Secondary - Warm Gold */
-  --color-secondary-50: #fdf8f0;
-  --color-secondary-100: #f5e6cc;
-  --color-secondary-200: #e8cf9e;
-  --color-secondary-300: #d4b576;
-  --color-secondary-400: #C4A265;
-  --color-secondary-500: #b08d4a;
-  --color-secondary-600: #96763a;
-  --color-secondary-700: #7a5f2e;
-  --color-secondary-800: #5e4922;
-  --color-secondary-900: #423316;
+  /* Secondary - Soft Gold Accent */
+  --color-secondary-50: #fdf9f2;
+  --color-secondary-100: #f5ead5;
+  --color-secondary-200: #ebd5ab;
+  --color-secondary-300: #d9bc7f;
+  --color-secondary-400: #c9a96a;
+  --color-secondary-500: #b59352;
+  --color-secondary-600: #9a7c42;
+  --color-secondary-700: #7e6435;
+  --color-secondary-800: #614d28;
+  --color-secondary-900: #44361c;
 
-  /* Luxury Neutrals */
-  --color-luxury-50: #FAF8F5;
-  --color-luxury-100: #F5F0EA;
-  --color-luxury-200: #E8E2D9;
-  --color-luxury-300: #D4CCC0;
-  --color-luxury-400: #B5AA99;
-  --color-luxury-500: #8B7E6A;
-  --color-luxury-600: #6B5F4E;
-  --color-luxury-700: #4A4035;
-  --color-luxury-800: #2E2720;
-  --color-luxury-900: #1A1510;
+  /* Luxury Neutrals - Cool-toned */
+  --color-luxury-50: #f7f8fa;
+  --color-luxury-100: #eef0f4;
+  --color-luxury-200: #dfe3e9;
+  --color-luxury-300: #cbd1da;
+  --color-luxury-400: #a8b1be;
+  --color-luxury-500: #7c8797;
+  --color-luxury-600: #5f6a7a;
+  --color-luxury-700: #464f5e;
+  --color-luxury-800: #303744;
+  --color-luxury-900: #1d222b;
 
   /* Fonts */
   --font-heading: "Playfair Display", Georgia, serif;
