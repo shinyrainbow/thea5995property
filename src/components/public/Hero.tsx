@@ -5,10 +5,10 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
 import { Search, ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export default function Hero() {
   const t = useTranslations('hero');
@@ -30,17 +30,21 @@ export default function Hero() {
 
   return (
     <section className="relative flex min-h-[100svh] -mt-20 items-center justify-center overflow-hidden bg-primary-900">
-      {/* Background image placeholder - gradient when no image */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-900/70 to-primary-900/90" />
-
-      {/* Subtle pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-          backgroundSize: '40px 40px',
-        }}
+      {/* Background image */}
+      <Image
+        src="/images/hero-bg.jpg"
+        alt="Luxury property"
+        fill
+        className="object-cover"
+        priority
+        quality={85}
       />
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-primary-900/70" />
+
+      {/* Subtle gradient for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-primary-900/90 via-primary-900/40 to-primary-900/60" />
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-32 text-center sm:px-6 lg:px-8">
@@ -61,7 +65,7 @@ export default function Hero() {
 
         {/* Divider */}
         <div
-          className="mx-auto mt-8 h-px w-16 bg-secondary-500 animate-fade-in"
+          className="mx-auto mt-8 h-px w-16 bg-secondary-400 animate-fade-in"
           style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}
         />
 
@@ -91,7 +95,7 @@ export default function Hero() {
           </div>
           <button
             type="submit"
-            className="rounded-md bg-secondary-500 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-secondary-600"
+            className="rounded-md bg-secondary-400 px-8 py-3 text-sm font-semibold text-primary-900 transition-colors hover:bg-secondary-300"
           >
             {t('exploreProperties')}
           </button>
@@ -106,11 +110,10 @@ export default function Hero() {
             { value: '500+', label: 'Properties' },
             { value: '10+', label: 'Years' },
             { value: '1,200+', label: 'Clients' },
-          ].map((stat, i) => (
+          ].map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="text-2xl font-bold text-white">{stat.value}</p>
               <p className="mt-1 text-xs font-medium uppercase tracking-wider text-white/50">{stat.label}</p>
-              {i < 2 && <div className="sr-only" />}
             </div>
           ))}
         </div>

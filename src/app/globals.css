@@ -1,41 +1,41 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Primary - Light Blue */
-  --color-primary-50: #f0f7ff;
-  --color-primary-100: #e0edff;
-  --color-primary-200: #b8d8ff;
-  --color-primary-300: #85bfff;
-  --color-primary-400: #52a3ff;
-  --color-primary-500: #2b87f0;
-  --color-primary-600: #1a6fd4;
-  --color-primary-700: #1558ab;
-  --color-primary-800: #164888;
-  --color-primary-900: #143b6b;
+  /* Primary - Dark Navy (techproperty.co) */
+  --color-primary-50: #f0f1f5;
+  --color-primary-100: #d8dbe5;
+  --color-primary-200: #b1b6cb;
+  --color-primary-300: #8a91b1;
+  --color-primary-400: #636b97;
+  --color-primary-500: #3d467d;
+  --color-primary-600: #303866;
+  --color-primary-700: #252b50;
+  --color-primary-800: #1d2240;
+  --color-primary-900: #1a1a2e;
 
-  /* Secondary - Warm Gold Accent */
-  --color-secondary-50: #fef9f0;
-  --color-secondary-100: #fcefd8;
-  --color-secondary-200: #f5d9a8;
-  --color-secondary-300: #ebc278;
-  --color-secondary-400: #daa84e;
-  --color-secondary-500: #c49235;
-  --color-secondary-600: #a67928;
-  --color-secondary-700: #886222;
-  --color-secondary-800: #6b4d1e;
-  --color-secondary-900: #4d3717;
+  /* Secondary - Rich Gold (techproperty.co) */
+  --color-secondary-50: #fdf8eb;
+  --color-secondary-100: #f8ebc4;
+  --color-secondary-200: #f0d78f;
+  --color-secondary-300: #e6c05a;
+  --color-secondary-400: #d4af37;
+  --color-secondary-500: #b8962a;
+  --color-secondary-600: #9a7c22;
+  --color-secondary-700: #7c631c;
+  --color-secondary-800: #604c17;
+  --color-secondary-900: #453612;
 
-  /* Luxury Neutrals - Clean Gray */
-  --color-luxury-50: #f9fafb;
-  --color-luxury-100: #f3f4f6;
-  --color-luxury-200: #e5e7eb;
-  --color-luxury-300: #d1d5db;
-  --color-luxury-400: #9ca3af;
-  --color-luxury-500: #6b7280;
-  --color-luxury-600: #4b5563;
-  --color-luxury-700: #374151;
-  --color-luxury-800: #1f2937;
-  --color-luxury-900: #111827;
+  /* Luxury Neutrals - Warm Cream (techproperty.co) */
+  --color-luxury-50: #faf7f2;
+  --color-luxury-100: #f5f0e8;
+  --color-luxury-200: #e8e1d5;
+  --color-luxury-300: #d5cbbf;
+  --color-luxury-400: #b5a999;
+  --color-luxury-500: #8b7e6a;
+  --color-luxury-600: #6b5f4e;
+  --color-luxury-700: #4a4035;
+  --color-luxury-800: #2e2720;
+  --color-luxury-900: #1a1510;
 
   /* Fonts */
   --font-heading: "Playfair Display", Georgia, serif;
