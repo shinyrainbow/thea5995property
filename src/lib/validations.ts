@@ -48,7 +48,7 @@ export const propertySchema = z.object({
   transaction_type: z.enum(['sale', 'rent'], {
     message: 'Please select sale or rent',
   }),
-  property_type_id: requiredString,
+  property_type_id: z.coerce.string().min(1, 'This field is required'),
 
   // Dimensions (nullable for property types like land)
   bedrooms: optionalPositiveNumber,
@@ -225,7 +225,7 @@ export const projectSchema = z.object({
   description_zh: requiredString.max(5000, 'Description is too long'),
 
   // Property type (must be one with has_projects = true)
-  property_type_id: requiredString,
+  property_type_id: z.coerce.string().min(1, 'This field is required'),
 
   // Project-specific fields
   developer_name: optionalString,

@@ -39,14 +39,15 @@ export async function GET(request: NextRequest) {
         { count: 'exact' },
       );
 
-    // Check if the request is from an admin (to show all statuses)
+    // Filter by status
     const session = await auth();
-    if (!session) {
+    if (status && status !== 'all') {
+      query = query.eq('status', status);
+    } else if (!status && !session) {
       // Public users only see active projects
       query = query.eq('status', 'active');
-    } else if (status) {
-      query = query.eq('status', status);
     }
+    // status=all or admin with no status param → return all projects
 
     // Apply filters
     if (type) {

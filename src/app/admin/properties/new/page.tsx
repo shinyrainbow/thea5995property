@@ -20,7 +20,7 @@ export default function CreatePropertyPage() {
       try {
         const [typesRes, projectsRes] = await Promise.all([
           fetch('/api/property-types'),
-          fetch('/api/projects?perPage=100'),
+          fetch('/api/projects?perPage=100&status=all'),
         ]);
         if (typesRes.ok) {
           const data = await typesRes.json();
