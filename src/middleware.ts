@@ -59,17 +59,22 @@ export default function middleware(request: NextRequest) {
   // 1. Admin routes — skip intl middleware entirely
   // ------------------------------------------------------------------
   if (pathname.startsWith('/admin')) {
+    const sessionToken =
+      request.cookies.get(SECURE_AUTH_COOKIE_NAME)?.value ??
+      request.cookies.get(AUTH_COOKIE_NAME)?.value;
+
     // Protect all admin routes except the login page
     if (isProtectedAdminRoute(pathname)) {
-      const sessionToken =
-        request.cookies.get(SECURE_AUTH_COOKIE_NAME)?.value ??
-        request.cookies.get(AUTH_COOKIE_NAME)?.value;
-
       if (!sessionToken) {
         const loginUrl = new URL('/admin/login', request.url);
         loginUrl.searchParams.set('callbackUrl', pathname);
         return NextResponse.redirect(loginUrl);
       }
+    }
+
+    // If already logged in, redirect away from login page to dashboard
+    if (stripLocalePrefix(pathname) === '/admin/login' && sessionToken) {
+      return NextResponse.redirect(new URL('/admin', request.url));
     }
 
     // Let Next.js handle admin routes directly (no locale rewriting)
