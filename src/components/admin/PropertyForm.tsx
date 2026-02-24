@@ -111,22 +111,13 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
       const result = await response.json();
       const propertyId = result.data?.id || property?.id;
 
-      // Save images if we have a property ID
-      if (propertyId && images.length > 0) {
-        const supabaseResponse = await fetch(`/api/properties/${propertyId}`, {
-          method: 'GET',
+      // Save images to property_images table
+      if (propertyId) {
+        await fetch(`/api/properties/${propertyId}/images`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ images }),
         });
-        if (supabaseResponse.ok) {
-          for (const image of images) {
-            if (!image.id) {
-              await fetch('/api/properties/' + propertyId, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-              });
-            }
-          }
-        }
       }
 
       router.push('/admin/properties');

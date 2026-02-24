@@ -128,6 +128,18 @@ export default function ProjectForm({ project, propertyTypes }: ProjectFormProps
         throw new Error(errorData.error || 'Failed to save project');
       }
 
+      const result = await response.json();
+      const projectId = result.data?.id || project?.id;
+
+      // Save images to project_images table
+      if (projectId) {
+        await fetch(`/api/projects/${projectId}/images`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ images }),
+        });
+      }
+
       router.push('/admin/projects');
       router.refresh();
     } catch (err) {
