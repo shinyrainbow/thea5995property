@@ -21,7 +21,17 @@ export default function CreateProjectPage() {
         if (response.ok) {
           const data = await response.json();
           const allTypes: PropertyType[] = data.data || [];
-          setPropertyTypes(allTypes.filter((t) => t.has_projects));
+          const projectTypes = allTypes.filter((t) => t.has_projects);
+          // Fallback: if no types have has_projects set, show common project types
+          if (projectTypes.length === 0) {
+            const fallbackSlugs = ['condo', 'townhouse', 'apartment'];
+            const fallback = allTypes.filter((t) =>
+              fallbackSlugs.includes(t.slug_en?.toLowerCase() ?? ''),
+            );
+            setPropertyTypes(fallback.length > 0 ? fallback : allTypes);
+          } else {
+            setPropertyTypes(projectTypes);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch property types:', error);

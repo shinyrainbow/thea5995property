@@ -39,7 +39,16 @@ export default function EditProjectPage() {
         if (typesRes.ok) {
           const typesData = await typesRes.json();
           const allTypes: PropertyType[] = typesData.data || [];
-          setPropertyTypes(allTypes.filter((t) => t.has_projects));
+          const projectTypes = allTypes.filter((t) => t.has_projects);
+          if (projectTypes.length === 0) {
+            const fallbackSlugs = ['condo', 'townhouse', 'apartment'];
+            const fallback = allTypes.filter((t) =>
+              fallbackSlugs.includes(t.slug_en?.toLowerCase() ?? ''),
+            );
+            setPropertyTypes(fallback.length > 0 ? fallback : allTypes);
+          } else {
+            setPropertyTypes(projectTypes);
+          }
         }
       } catch (err) {
         setError('Failed to load project data');

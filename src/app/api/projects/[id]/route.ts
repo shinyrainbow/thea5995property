@@ -82,12 +82,18 @@ export async function PUT(
     const slug_th = generateSlug(data.name_th);
     const slug_zh = generateSlug(data.name_zh);
 
+    // Ensure property_type_id is an integer (DB column is SERIAL/INTEGER)
+    const property_type_id = typeof data.property_type_id === 'string'
+      ? parseInt(data.property_type_id, 10)
+      : data.property_type_id;
+
     const supabase = createServerClient();
 
     const { data: project, error } = await supabase
       .from('projects')
       .update({
         ...data,
+        property_type_id,
         slug_en,
         slug_th,
         slug_zh,
