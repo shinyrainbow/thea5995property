@@ -5,7 +5,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
-import { supabase } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase';
 import { getLocalizedField, PROPERTY_TYPE_SLUGS } from '@/lib/utils';
 import type { PropertyWithDetails, PropertyType } from '@/types';
 import Hero from '@/components/public/Hero';
@@ -67,6 +67,7 @@ export default async function HomePage({
 
   const t = await getTranslations({ locale, namespace: 'home' });
   const tCommon = await getTranslations({ locale, namespace: 'common' });
+  const supabase = createServerClient();
 
   // Fetch featured properties
   let properties: PropertyWithDetails[] = [];

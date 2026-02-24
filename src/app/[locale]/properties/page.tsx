@@ -5,7 +5,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
-import { supabase } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase';
+const supabase = createServerClient();
 import PropertyGrid from '@/components/public/PropertyGrid';
 import PropertyFilter from '@/components/public/PropertyFilter';
 import type { PropertyWithDetails } from '@/types';

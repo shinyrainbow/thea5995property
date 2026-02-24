@@ -5,7 +5,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
-import { supabase } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase';
+const supabase = createServerClient();
 import ProjectGrid from '@/components/public/ProjectGrid';
 import type { ProjectWithDetails } from '@/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';

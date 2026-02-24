@@ -6,7 +6,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
-import { supabase } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase';
+const supabase = createServerClient();
 import { getLocalizedField, formatDate } from '@/lib/utils';
 import type { BlogPostWithContent, BlogPost, BlogContent, Locale } from '@/types';
 import {
