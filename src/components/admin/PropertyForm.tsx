@@ -68,6 +68,8 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           bathrooms: property.bathrooms,
           land_size: property.land_size,
           building_size: property.building_size,
+          room_size: property.room_size,
+          floor: property.floor,
           address: property.address,
           district: property.district,
           province: property.province,
@@ -142,6 +144,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
   // Determine if the selected property type supports projects
   const selectedPropertyType = propertyTypes.find((t) => String(t.id) === String(watchedPropertyTypeId));
+  const isUnitType = ['condo', 'apartment', 'office'].includes(selectedPropertyType?.slug_en || '');
   const filteredProjects = projects.filter((p) => String(p.property_type_id) === String(watchedPropertyTypeId));
   const showProjectDropdown = selectedPropertyType?.has_projects === true || filteredProjects.length > 0;
 
@@ -414,6 +417,31 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
               <p className={errorClass}>{errors.building_size.message}</p>
             )}
           </div>
+          {isUnitType && (
+            <>
+              <div>
+                <label className={labelClass}>Room Size (sqm)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  {...register('room_size', { valueAsNumber: true })}
+                  className={inputClass}
+                  placeholder="35"
+                />
+                {errors.room_size && <p className={errorClass}>{errors.room_size.message}</p>}
+              </div>
+              <div>
+                <label className={labelClass}>Floor</label>
+                <input
+                  type="number"
+                  {...register('floor', { valueAsNumber: true })}
+                  className={inputClass}
+                  placeholder="12"
+                />
+                {errors.floor && <p className={errorClass}>{errors.floor.message}</p>}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

@@ -17,7 +17,6 @@ import type { Locale } from '@/types';
 
 interface InquiryFormData {
   name: string;
-  email: string;
   phone: string;
   message: string;
 }
@@ -46,7 +45,6 @@ export default function InquiryForm({ propertyId, className }: InquiryFormProps)
   } = useForm<InquiryFormData>({
     defaultValues: {
       name: '',
-      email: '',
       phone: '',
       message: propertyId ? t('propertyInquiry') : '',
     },
@@ -143,51 +141,20 @@ export default function InquiryForm({ propertyId, className }: InquiryFormProps)
           )}
         </div>
 
-        {/* Email */}
-        <div>
-          <label
-            htmlFor="inquiry-email"
-            className="mb-1.5 block text-sm font-medium text-primary-700"
-          >
-            {t('email')} <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="inquiry-email"
-            type="email"
-            placeholder={t('emailPlaceholder')}
-            {...register('email', {
-              required: 'Email is required',
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: 'Please enter a valid email',
-              },
-            })}
-            className={cn(
-              'w-full rounded-lg border border-luxury-200 bg-white px-4 py-2.5 text-sm text-primary-700',
-              'placeholder:text-luxury-400',
-              'focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20',
-              'transition-colors',
-              errors.email && 'border-red-400 focus:border-red-400 focus:ring-red-400/20',
-            )}
-          />
-          {errors.email && (
-            <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
-          )}
-        </div>
-
         {/* Phone */}
         <div>
           <label
             htmlFor="inquiry-phone"
             className="mb-1.5 block text-sm font-medium text-primary-700"
           >
-            {t('phone')}
+            {t('phone')} <span className="text-red-500">*</span>
           </label>
           <input
             id="inquiry-phone"
             type="tel"
             placeholder={t('phonePlaceholder')}
             {...register('phone', {
+              required: 'Phone number is required',
               pattern: {
                 value: /^[+]?[\d\s()-]{7,20}$/,
                 message: 'Please enter a valid phone number',

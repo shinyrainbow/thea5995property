@@ -31,14 +31,16 @@ export default function Header() {
   const common = useTranslations('common');
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const isHomePage = pathname === '/';
+  const [scrolled, setScrolled] = useState(!isHomePage);
 
   useEffect(() => {
+    if (!isHomePage) { setScrolled(true); return; }
     function handleScroll() { setScrolled(window.scrollY > 10); }
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isHomePage]);
 
   useEffect(() => { setMobileMenuOpen(false); }, [pathname]);
 

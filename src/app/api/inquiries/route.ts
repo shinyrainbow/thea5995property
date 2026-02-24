@@ -101,8 +101,8 @@ export async function POST(request: NextRequest) {
       .insert({
         property_id: data.property_id || null,
         name: data.name,
-        email: data.email,
-        phone: data.phone || null,
+        email: data.email || null,
+        phone: data.phone,
         message: data.message,
         locale: data.locale,
         status: 'new',

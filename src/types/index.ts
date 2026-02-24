@@ -54,6 +54,8 @@ export interface Property {
   bathrooms: number | null;
   land_size: number | null;
   building_size: number | null;
+  room_size: number | null;
+  floor: number | null;
   address: string;
   district: string;
   province: string;
@@ -276,6 +278,8 @@ export interface PropertyFormInput {
   bathrooms: number | null;
   land_size: number | null;
   building_size: number | null;
+  room_size: number | null;
+  floor: number | null;
   address: string;
   district: string;
   province: string;

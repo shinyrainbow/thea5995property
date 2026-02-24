@@ -53,6 +53,8 @@ export const propertySchema = z.object({
   bathrooms: optionalPositiveNumber,
   land_size: optionalPositiveNumber,
   building_size: optionalPositiveNumber,
+  room_size: optionalPositiveNumber,
+  floor: z.number().int().min(0).nullable().optional(),
 
   // Location (optional when property belongs to a project — inherited from project)
   address: z.string().max(500, 'Address is too long').optional().or(z.literal('')),
@@ -102,8 +104,11 @@ export const inquirySchema = z.object({
   name: requiredString
     .min(2, 'Name must be at least 2 characters')
     .max(100, 'Name is too long'),
-  email: emailField,
-  phone: phoneField,
+  email: emailField.optional().or(z.literal('')),
+  phone: z
+    .string()
+    .min(1, 'Phone number is required')
+    .regex(/^[+]?[\d\s()-]{7,20}$/, 'Please enter a valid phone number'),
   message: requiredString
     .min(10, 'Message must be at least 10 characters')
     .max(2000, 'Message is too long'),
