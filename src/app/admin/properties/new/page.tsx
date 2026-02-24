@@ -12,23 +12,37 @@ import Link from 'next/link';
 
 export default function CreatePropertyPage() {
   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
+  const [projects, setProjects] = useState<Array<{ id: string; name_en: string; property_type_id: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchPropertyTypes() {
+    async function fetchData() {
       try {
-        const response = await fetch('/api/property-types');
-        if (response.ok) {
-          const data = await response.json();
+        const [typesRes, projectsRes] = await Promise.all([
+          fetch('/api/property-types'),
+          fetch('/api/projects?perPage=100'),
+        ]);
+        if (typesRes.ok) {
+          const data = await typesRes.json();
           setPropertyTypes(data.data || []);
         }
+        if (projectsRes.ok) {
+          const data = await projectsRes.json();
+          setProjects(
+            (data.data || []).map((p: { id: string; name_en: string; property_type_id: string }) => ({
+              id: p.id,
+              name_en: p.name_en,
+              property_type_id: String(p.property_type_id),
+            })),
+          );
+        }
       } catch (error) {
-        console.error('Failed to fetch property types:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchPropertyTypes();
+    fetchData();
   }, []);
 
   if (isLoading) {
@@ -58,7 +72,7 @@ export default function CreatePropertyPage() {
         </div>
       </div>
 
-      <PropertyForm propertyTypes={propertyTypes} />
+      <PropertyForm propertyTypes={propertyTypes} projects={projects} />
     </div>
   );
 }

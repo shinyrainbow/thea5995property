@@ -168,9 +168,10 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
   const watchedPropertyTypeId = watch('property_type_id');
 
   // Determine if the selected property type supports projects
-  const selectedPropertyType = propertyTypes.find((t) => t.id === watchedPropertyTypeId);
-  const showProjectDropdown = selectedPropertyType?.has_projects === true;
-  const filteredProjects = projects.filter((p) => p.property_type_id === watchedPropertyTypeId);
+  const selectedPropertyType = propertyTypes.find((t) => String(t.id) === String(watchedPropertyTypeId));
+  const filteredProjects = projects.filter((p) => String(p.property_type_id) === String(watchedPropertyTypeId));
+  // Show project dropdown if the type has has_projects flag OR if there are matching projects
+  const showProjectDropdown = selectedPropertyType?.has_projects === true || filteredProjects.length > 0;
 
   // Clear project_id when switching to a property type without projects
   useEffect(() => {
@@ -401,13 +402,16 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
                 <div>
                   <label className={labelClass}>Project (Optional)</label>
                   <select
-                    {...register('project_id')}
+                    value={watch('project_id') || ''}
+                    onChange={(e) =>
+                      setValue('project_id', e.target.value || null)
+                    }
                     className={inputClass}
                   >
                     <option value="">None (Standalone)</option>
-                    {filteredProjects.map((project) => (
-                      <option key={project.id} value={project.id}>
-                        {project.name_en}
+                    {filteredProjects.map((proj) => (
+                      <option key={proj.id} value={proj.id}>
+                        {proj.name_en}
                       </option>
                     ))}
                   </select>

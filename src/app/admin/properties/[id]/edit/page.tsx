@@ -17,15 +17,17 @@ export default function EditPropertyPage() {
 
   const [property, setProperty] = useState<PropertyWithDetails | null>(null);
   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
+  const [projects, setProjects] = useState<Array<{ id: string; name_en: string; property_type_id: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [propertyRes, typesRes] = await Promise.all([
+        const [propertyRes, typesRes, projectsRes] = await Promise.all([
           fetch(`/api/properties/${id}`),
           fetch('/api/property-types'),
+          fetch('/api/projects?perPage=100'),
         ]);
 
         if (!propertyRes.ok) {
@@ -39,6 +41,17 @@ export default function EditPropertyPage() {
         if (typesRes.ok) {
           const typesData = await typesRes.json();
           setPropertyTypes(typesData.data || []);
+        }
+
+        if (projectsRes.ok) {
+          const projectsData = await projectsRes.json();
+          setProjects(
+            (projectsData.data || []).map((p: { id: string; name_en: string; property_type_id: string }) => ({
+              id: p.id,
+              name_en: p.name_en,
+              property_type_id: String(p.property_type_id),
+            })),
+          );
         }
       } catch (err) {
         setError('Failed to load property data');
@@ -91,7 +104,7 @@ export default function EditPropertyPage() {
         </div>
       </div>
 
-      <PropertyForm property={property} propertyTypes={propertyTypes} />
+      <PropertyForm property={property} propertyTypes={propertyTypes} projects={projects} />
     </div>
   );
 }

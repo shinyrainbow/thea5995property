@@ -14,16 +14,14 @@ import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavLink {
   href: string;
-  labelKey: 'home' | 'properties' | 'projects' | 'forSale' | 'forRent' | 'about' | 'contact' | 'blog';
-  namespace: 'common' | 'nav';
+  labelKey: 'home' | 'properties' | 'projects' | 'about' | 'contact' | 'blog';
+  namespace: 'common';
 }
 
 const navLinks: NavLink[] = [
   { href: '/', labelKey: 'home', namespace: 'common' },
   { href: '/properties', labelKey: 'properties', namespace: 'common' },
   { href: '/projects', labelKey: 'projects', namespace: 'common' },
-  { href: '/properties?transaction_type=sale', labelKey: 'forSale', namespace: 'nav' },
-  { href: '/properties?transaction_type=rent', labelKey: 'forRent', namespace: 'nav' },
   { href: '/about', labelKey: 'about', namespace: 'common' },
   { href: '/contact', labelKey: 'contact', namespace: 'common' },
   { href: '/blog', labelKey: 'blog', namespace: 'common' },
@@ -31,7 +29,6 @@ const navLinks: NavLink[] = [
 
 export default function Header() {
   const common = useTranslations('common');
-  const nav = useTranslations('nav');
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -55,8 +52,7 @@ export default function Header() {
   }, [mobileMenuOpen]);
 
   function getLabel(link: NavLink): string {
-    if (link.namespace === 'nav') return nav(link.labelKey as 'forSale' | 'forRent');
-    return common(link.labelKey as 'home' | 'properties' | 'projects' | 'about' | 'contact' | 'blog');
+    return common(link.labelKey);
   }
 
   function isActive(href: string): boolean {
@@ -75,15 +71,26 @@ export default function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center relative h-12 sm:h-14">
           <Image
             src="/logo-image.png"
             alt="The A 5995 Property"
             width={56}
             height={56}
             className={cn(
-              'h-12 w-auto sm:h-14 transition-all duration-500',
-              !scrolled && 'brightness-0 invert',
+              'h-12 w-auto sm:h-14 transition-opacity duration-500 absolute',
+              scrolled ? 'opacity-100' : 'opacity-0',
+            )}
+            priority
+          />
+          <Image
+            src="/logo-white.png"
+            alt="The A 5995 Property"
+            width={56}
+            height={56}
+            className={cn(
+              'h-12 w-auto sm:h-14 transition-opacity duration-500',
+              scrolled ? 'opacity-0' : 'opacity-100',
             )}
             priority
           />
