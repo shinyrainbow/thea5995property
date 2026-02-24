@@ -54,10 +54,10 @@ export const propertySchema = z.object({
   land_size: optionalPositiveNumber,
   building_size: optionalPositiveNumber,
 
-  // Location
-  address: requiredString.max(500, 'Address is too long'),
-  district: requiredString.max(100, 'District name is too long'),
-  province: requiredString.max(100, 'Province name is too long'),
+  // Location (optional when property belongs to a project — inherited from project)
+  address: z.string().max(500, 'Address is too long').optional().or(z.literal('')),
+  district: z.string().max(100, 'District name is too long').optional().or(z.literal('')),
+  province: z.string().max(100, 'Province name is too long').optional().or(z.literal('')),
   latitude: z.number().min(-90).max(90).nullable().optional(),
   longitude: z.number().min(-180).max(180).nullable().optional(),
 
@@ -77,15 +77,16 @@ export const propertySchema = z.object({
   seo_description_zh: optionalString,
 }).refine(
   (data) => {
-    // Titles & descriptions are required only when property does NOT belong to a project
+    // Title, description, and location are required only for standalone properties (no project)
     if (!data.project_id) {
       return !!data.title_en && !!data.title_th && !!data.title_zh
-        && !!data.description_en && !!data.description_th && !!data.description_zh;
+        && !!data.description_en && !!data.description_th && !!data.description_zh
+        && !!data.address && !!data.district && !!data.province;
     }
     return true;
   },
   {
-    message: 'Title and description are required for standalone properties',
+    message: 'Title, description, and location are required for standalone properties',
     path: ['title_en'],
   },
 );

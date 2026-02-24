@@ -78,11 +78,11 @@ export async function PUT(
     const data = validation.data;
     const supabase = createServerClient();
 
-    // If property belongs to a project, inherit title & description from the project
+    // If property belongs to a project, inherit title, description & location from the project
     if (data.project_id) {
       const { data: project } = await supabase
         .from('projects')
-        .select('name_en, name_th, name_zh, description_en, description_th, description_zh')
+        .select('name_en, name_th, name_zh, description_en, description_th, description_zh, address, district, province, latitude, longitude')
         .eq('id', data.project_id)
         .single();
       if (project) {
@@ -92,6 +92,11 @@ export async function PUT(
         data.description_en = data.description_en || project.description_en;
         data.description_th = data.description_th || project.description_th;
         data.description_zh = data.description_zh || project.description_zh;
+        data.address = data.address || project.address;
+        data.district = data.district || project.district;
+        data.province = data.province || project.province;
+        data.latitude = data.latitude ?? project.latitude;
+        data.longitude = data.longitude ?? project.longitude;
       }
     }
 

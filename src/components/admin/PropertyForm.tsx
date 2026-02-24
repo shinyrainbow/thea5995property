@@ -4,12 +4,13 @@
 // THE A 5995 - Property Form Component
 // =============================================================================
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { propertySchema, type PropertySchemaType } from '@/lib/validations';
 import ImageUploader, { type UploadedImage } from '@/components/admin/ImageUploader';
+import MapPicker from '@/components/admin/MapPicker';
 import { THAI_PROVINCES } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 import {
@@ -154,6 +155,15 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
       setValue('project_id', null);
     }
   }, [showProjectDropdown, setValue]);
+
+  // Map pin handler
+  const handleLocationChange = useCallback(
+    (lat: number, lng: number) => {
+      setValue('latitude', lat);
+      setValue('longitude', lng);
+    },
+    [setValue],
+  );
 
   // Helper classes
   const inputClass =
@@ -411,69 +421,52 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
         </div>
       </div>
 
-      {/* Location */}
-      <div className={sectionClass}>
-        <h3 className={sectionTitle}>Location</h3>
+      {/* Location — hidden when property belongs to a project */}
+      {!hasProject && (
+        <div className={sectionClass}>
+          <h3 className={sectionTitle}>Location</h3>
 
-        <div>
-          <label className={labelClass}>Address *</label>
-          <input
-            {...register('address')}
-            className={inputClass}
-            placeholder="123 Beach Road, Soi 5"
+          <div>
+            <label className={labelClass}>Address *</label>
+            <input
+              {...register('address')}
+              className={inputClass}
+              placeholder="123 Beach Road, Soi 5"
+            />
+            {errors.address && <p className={errorClass}>{errors.address.message}</p>}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className={labelClass}>District *</label>
+              <input
+                {...register('district')}
+                className={inputClass}
+                placeholder="Mueang Phuket"
+              />
+              {errors.district && <p className={errorClass}>{errors.district.message}</p>}
+            </div>
+            <div>
+              <label className={labelClass}>Province *</label>
+              <select {...register('province')} className={inputClass}>
+                <option value="">Select province</option>
+                {THAI_PROVINCES.map((prov) => (
+                  <option key={prov} value={prov}>
+                    {prov}
+                  </option>
+                ))}
+              </select>
+              {errors.province && <p className={errorClass}>{errors.province.message}</p>}
+            </div>
+          </div>
+
+          <MapPicker
+            latitude={watch('latitude')}
+            longitude={watch('longitude')}
+            onLocationChange={handleLocationChange}
           />
-          {errors.address && <p className={errorClass}>{errors.address.message}</p>}
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
-            <label className={labelClass}>District *</label>
-            <input
-              {...register('district')}
-              className={inputClass}
-              placeholder="Mueang Phuket"
-            />
-            {errors.district && <p className={errorClass}>{errors.district.message}</p>}
-          </div>
-          <div>
-            <label className={labelClass}>Province *</label>
-            <select {...register('province')} className={inputClass}>
-              <option value="">Select province</option>
-              {THAI_PROVINCES.map((prov) => (
-                <option key={prov} value={prov}>
-                  {prov}
-                </option>
-              ))}
-            </select>
-            {errors.province && <p className={errorClass}>{errors.province.message}</p>}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
-            <label className={labelClass}>Latitude</label>
-            <input
-              type="number"
-              step="any"
-              {...register('latitude', { valueAsNumber: true })}
-              className={inputClass}
-              placeholder="7.8804"
-            />
-            {errors.latitude && <p className={errorClass}>{errors.latitude.message}</p>}
-          </div>
-          <div>
-            <label className={labelClass}>Longitude</label>
-            <input
-              type="number"
-              step="any"
-              {...register('longitude', { valueAsNumber: true })}
-              className={inputClass}
-              placeholder="98.3923"
-            />
-            {errors.longitude && <p className={errorClass}>{errors.longitude.message}</p>}
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Images */}
       <div className={sectionClass}>
