@@ -59,6 +59,7 @@ export interface Property {
   address: string;
   district: string;
   province: string;
+  amenities: string[] | null;
   latitude: number | null;
   longitude: number | null;
   project_id: string | null;
@@ -280,6 +281,7 @@ export interface PropertyFormInput {
   building_size: number | null;
   room_size: number | null;
   floor: number | null;
+  amenities: string[];
   address: string;
   district: string;
   province: string;

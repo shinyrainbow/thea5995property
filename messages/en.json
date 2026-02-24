@@ -56,6 +56,9 @@
     "location": "Location",
     "description": "Description",
     "gallery": "Gallery",
+    "roomSize": "Room Size",
+    "floor": "Floor",
+    "amenities": "Amenities",
     "transactionType": "Transaction Type",
     "type": "Property Type",
     "status": "Status"
@@ -133,9 +136,14 @@
   "hero": {
     "headline": "Luxury Real Estate in Thailand",
     "subtitle": "Discover exceptional properties across Thailand's most desirable locations. From beachfront villas to city penthouses, find your perfect home.",
-    "searchPlaceholder": "Search by location, property type...",
-    "exploreProperties": "Explore Properties",
-    "scrollDown": "Scroll to explore"
+    "searchPlaceholder": "Search by location, property name...",
+    "exploreProperties": "Search",
+    "scrollDown": "Scroll to explore",
+    "allTypes": "All Types",
+    "buyOrRent": "Buy or Rent",
+    "buy": "Buy",
+    "rent": "Rent",
+    "allLocations": "All Locations"
   },
   "home": {
     "featuredProperties": "Featured Properties",
@@ -317,6 +325,10 @@
     "metaDescEn": "Meta Description (EN)",
     "metaDescTh": "Meta Description (TH)",
     "metaDescZh": "Meta Description (ZH)",
+
+    "amenities": "Amenities",
+    "addCustomAmenity": "Add custom amenity...",
+    "add": "Add",
 
     "cancel": "Cancel",
     "saveAsDraft": "Save as Draft",

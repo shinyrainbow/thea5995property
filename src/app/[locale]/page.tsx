@@ -1,5 +1,5 @@
 // =============================================================================
-// THE A 5995 - Homepage (inspired by techproperty.co)
+// THE A 5995 - Homepage
 // =============================================================================
 
 import type { Metadata } from 'next';
@@ -8,37 +8,42 @@ import { Link } from '@/i18n/routing';
 import { createServerClient } from '@/lib/supabase';
 import { getLocalizedField, PROPERTY_TYPE_SLUGS } from '@/lib/utils';
 import type { PropertyWithDetails, PropertyType } from '@/types';
+import Image from 'next/image';
 import Hero from '@/components/public/Hero';
 import PropertyGrid from '@/components/public/PropertyGrid';
 import StatsSection from '@/components/public/StatsSection';
-import {
-  ArrowRight,
-  Home,
-  Building2,
-  Map,
-  Castle,
-  Hotel,
-  Building,
-  Briefcase,
-  Store,
-  Factory,
-  BedDouble,
-  Landmark,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
-const iconMap: Record<string, React.ReactNode> = {
-  Home: <Home className="h-6 w-6" />,
-  Building2: <Building2 className="h-6 w-6" />,
-  Map: <Map className="h-6 w-6" />,
-  Castle: <Castle className="h-6 w-6" />,
-  Hotel: <Hotel className="h-6 w-6" />,
-  Building: <Building className="h-6 w-6" />,
-  Briefcase: <Briefcase className="h-6 w-6" />,
-  Store: <Store className="h-6 w-6" />,
-  Factory: <Factory className="h-6 w-6" />,
-  BedDouble: <BedDouble className="h-6 w-6" />,
-  Landmark: <Landmark className="h-6 w-6" />,
+// Default images for each property type (slug_en -> image path)
+const propertyTypeImages: Record<string, string> = {
+  condo: '/images/property-types/condo.jpg',
+  townhouse: '/images/property-types/townhouse.jpg',
+  house: '/images/property-types/house.jpg',
+  land: '/images/property-types/land.jpg',
+  villa: '/images/property-types/villa.jpg',
+  apartment: '/images/property-types/apartment.jpg',
+  office: '/images/property-types/office.jpg',
+  store: '/images/property-types/store.jpg',
+  factory: '/images/property-types/factory.jpg',
+  hotel: '/images/property-types/hotel.jpg',
+  building: '/images/property-types/building.jpg',
 };
+
+// Bento grid layout: index -> CSS class for grid span
+// Creates an asymmetric, visually interesting layout
+const bentoLayout = [
+  'sm:col-span-2 sm:row-span-2',  // 0: large
+  'sm:col-span-1 sm:row-span-1',  // 1: small
+  'sm:col-span-1 sm:row-span-1',  // 2: small
+  'sm:col-span-1 sm:row-span-2',  // 3: tall
+  'sm:col-span-1 sm:row-span-1',  // 4: small
+  'sm:col-span-1 sm:row-span-1',  // 5: small
+  'sm:col-span-1 sm:row-span-1',  // 6: small
+  'sm:col-span-2 sm:row-span-1',  // 7: wide
+  'sm:col-span-1 sm:row-span-1',  // 8: small
+  'sm:col-span-1 sm:row-span-1',  // 9: small
+  'sm:col-span-1 sm:row-span-1',  // 10: small
+];
 
 export function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'th' }, { locale: 'zh' }];
@@ -110,7 +115,7 @@ export default async function HomePage({
     <>
       <Hero />
 
-      {/* Property Collection - grid with overlay cards like techproperty.co */}
+      {/* Property Types - Bento Grid */}
       <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
@@ -126,72 +131,46 @@ export default async function HomePage({
             </p>
           </div>
 
-          {/* Collection grid - tall image-overlay cards */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {propertyTypes.slice(0, 6).map((type) => {
+          {/* Bento grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 auto-rows-[180px] gap-4">
+            {propertyTypes.map((type, index) => {
               const name = getLocalizedField(type, 'name', locale);
               const slug = getLocalizedField(type, 'slug', locale);
-              const icon = iconMap[type.icon] || <Building2 className="h-6 w-6" />;
+              const imageSrc = propertyTypeImages[type.slug_en] || '/images/property-types/house.jpg';
+              const layoutClass = bentoLayout[index] || 'sm:col-span-1 sm:row-span-1';
 
               return (
                 <Link
                   key={type.id}
-                  href={`/${slug}`}
-                  className="group relative h-[320px] overflow-hidden rounded-lg bg-primary-900"
+                  href={`/properties?type=${type.id}`}
+                  className={`group relative overflow-hidden rounded-2xl ${layoutClass}`}
                 >
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary-900/90 via-primary-900/40 to-transparent transition-opacity group-hover:from-primary-900/95" />
-
-                  {/* Subtle pattern */}
-                  <div
-                    className="absolute inset-0 opacity-[0.04]"
-                    style={{
-                      backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-                      backgroundSize: '32px 32px',
-                    }}
+                  {/* Background Image */}
+                  <Image
+                    src={imageSrc}
+                    alt={name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
                   />
 
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-all duration-500 group-hover:from-black/80" />
+
                   {/* Content */}
-                  <div className="absolute inset-x-0 bottom-0 p-8">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-secondary-400 backdrop-blur-sm transition-colors group-hover:bg-secondary-500 group-hover:text-white">
-                      {icon}
-                    </div>
-                    <h3 className="font-heading text-2xl font-bold text-white">
+                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+                    <h3 className="font-heading text-lg font-bold text-white sm:text-xl lg:text-2xl drop-shadow-lg">
                       {name}
                     </h3>
-                    <p className="mt-2 flex items-center gap-2 text-sm font-medium text-white/60 opacity-0 transform translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
-                      Explore Collection
-                      <ArrowRight className="h-4 w-4" />
+                    <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-white/70 opacity-0 translate-y-3 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+                      {tCommon('viewAll')}
+                      <ArrowRight className="h-3.5 w-3.5" />
                     </p>
                   </div>
                 </Link>
               );
             })}
           </div>
-
-          {/* Remaining types as smaller cards */}
-          {propertyTypes.length > 6 && (
-            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-              {propertyTypes.slice(6).map((type) => {
-                const name = getLocalizedField(type, 'name', locale);
-                const slug = getLocalizedField(type, 'slug', locale);
-                const icon = iconMap[type.icon] || <Building2 className="h-6 w-6" />;
-
-                return (
-                  <Link
-                    key={type.id}
-                    href={`/${slug}`}
-                    className="group flex items-center gap-3 rounded-lg border border-luxury-200 bg-white p-4 transition-all duration-300 hover:border-primary-900/30 hover:shadow-md"
-                  >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-luxury-50 text-primary-900 transition-colors group-hover:bg-primary-900 group-hover:text-white">
-                      {icon}
-                    </div>
-                    <span className="text-sm font-semibold text-primary-900">{name}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
         </div>
       </section>
 

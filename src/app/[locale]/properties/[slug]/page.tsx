@@ -26,6 +26,9 @@ import {
   Ruler,
   FolderKanban,
   ChevronRight,
+  Layers,
+  DoorOpen,
+  CheckCircle2,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -219,7 +222,7 @@ export default async function PropertyDetailPage({
 
       <div className="min-h-screen bg-luxury-50">
         {/* Back navigation */}
-        <div className="bg-white border-b border-luxury-200 pt-20">
+        <div className="bg-luxury-50 pt-20">
           <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
             <div className="flex items-center gap-2 text-sm">
               <Link
@@ -245,13 +248,15 @@ export default async function PropertyDetailPage({
           </div>
         </div>
 
+        {/* Full-width Image Gallery */}
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <PropertyGallery images={galleryImages} propertyTitle={title} />
+        </div>
+
+        <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Left column - Main content */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Image Gallery */}
-              <PropertyGallery images={galleryImages} propertyTitle={title} />
-
               {/* Property Info */}
               <div className="rounded-xl bg-white border border-luxury-200 p-6 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-4">
@@ -344,6 +349,28 @@ export default async function PropertyDetailPage({
                       </span>
                     </div>
                   )}
+                  {property.room_size !== null && property.room_size !== undefined && (
+                    <div className="flex flex-col items-center gap-2 rounded-lg bg-luxury-50 p-4">
+                      <DoorOpen className="h-6 w-6 text-secondary-400" />
+                      <span className="text-2xl font-bold text-primary-700">
+                        {property.room_size}
+                      </span>
+                      <span className="text-xs text-luxury-500">
+                        {t('roomSize')} ({t('sqm')})
+                      </span>
+                    </div>
+                  )}
+                  {property.floor !== null && property.floor !== undefined && (
+                    <div className="flex flex-col items-center gap-2 rounded-lg bg-luxury-50 p-4">
+                      <Layers className="h-6 w-6 text-secondary-400" />
+                      <span className="text-2xl font-bold text-primary-700">
+                        {property.floor}
+                      </span>
+                      <span className="text-xs text-luxury-500">
+                        {t('floor')}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -356,6 +383,26 @@ export default async function PropertyDetailPage({
                   {description}
                 </div>
               </div>
+
+              {/* Amenities */}
+              {property.amenities && property.amenities.length > 0 && (
+                <div className="rounded-xl bg-white border border-luxury-200 p-6 shadow-sm">
+                  <h2 className="mb-4 font-heading text-xl font-semibold text-primary-700">
+                    {t('amenities')}
+                  </h2>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {property.amenities.map((amenity: string) => (
+                      <div
+                        key={amenity}
+                        className="flex items-center gap-2 rounded-lg bg-luxury-50 px-3 py-2"
+                      >
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-secondary-400" />
+                        <span className="text-sm text-primary-700">{amenity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Location */}
               <div className="rounded-xl bg-white border border-luxury-200 p-6 shadow-sm">
@@ -400,6 +447,7 @@ export default async function PropertyDetailPage({
             </section>
           )}
         </div>
+
       </div>
     </>
   );

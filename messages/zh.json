@@ -56,6 +56,9 @@
     "location": "位置",
     "description": "描述",
     "gallery": "图库",
+    "roomSize": "房间面积",
+    "floor": "楼层",
+    "amenities": "设施设备",
     "transactionType": "交易类型",
     "type": "房产类型",
     "status": "状态"
@@ -133,9 +136,14 @@
   "hero": {
     "headline": "泰国豪华房地产",
     "subtitle": "在泰国最理想的地段发现卓越房产。从海滨别墅到城市顶层公寓，找到您的完美之家。",
-    "searchPlaceholder": "按位置、房产类型搜索...",
-    "exploreProperties": "探索房产",
-    "scrollDown": "向下滚动探索"
+    "searchPlaceholder": "按位置、房产名称搜索...",
+    "exploreProperties": "搜索",
+    "scrollDown": "向下滚动探索",
+    "allTypes": "所有类型",
+    "buyOrRent": "买或租",
+    "buy": "买",
+    "rent": "租",
+    "allLocations": "所有位置"
   },
   "home": {
     "featuredProperties": "精选房产",
@@ -317,6 +325,10 @@
     "metaDescEn": "Meta描述（英文）",
     "metaDescTh": "Meta描述（泰文）",
     "metaDescZh": "Meta描述（中文）",
+
+    "amenities": "设施设备",
+    "addCustomAmenity": "添加自定义设施...",
+    "add": "添加",
 
     "cancel": "取消",
     "saveAsDraft": "保存为草稿",

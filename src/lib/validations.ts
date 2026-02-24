@@ -56,6 +56,9 @@ export const propertySchema = z.object({
   room_size: optionalPositiveNumber,
   floor: z.number().int().min(0).nullable().optional(),
 
+  // Amenities
+  amenities: z.array(z.string()).optional(),
+
   // Location (optional when property belongs to a project — inherited from project)
   address: z.string().max(500, 'Address is too long').optional().or(z.literal('')),
   district: z.string().max(100, 'District name is too long').optional().or(z.literal('')),

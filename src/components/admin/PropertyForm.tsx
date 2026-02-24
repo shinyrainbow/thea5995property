@@ -46,6 +46,39 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
   const isEditing = !!property;
 
+  const COMMON_AMENITIES = [
+    'Swimming Pool', 'Gym / Fitness', 'Parking', 'Security 24/7',
+    'CCTV', 'Elevator', 'Garden', 'Balcony',
+    'Air Conditioning', 'Furnished', 'Pet Friendly', 'Wi-Fi',
+    'Sauna', 'Playground', 'Rooftop', 'Co-working Space',
+    'Laundry', 'Storage', 'Concierge', 'Shuttle Service',
+  ];
+
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
+    property?.amenities || [],
+  );
+  const [customAmenity, setCustomAmenity] = useState('');
+
+  const toggleAmenity = (amenity: string) => {
+    setSelectedAmenities((prev) => {
+      const next = prev.includes(amenity)
+        ? prev.filter((a) => a !== amenity)
+        : [...prev, amenity];
+      setValue('amenities', next);
+      return next;
+    });
+  };
+
+  const addCustomAmenity = () => {
+    const trimmed = customAmenity.trim();
+    if (trimmed && !selectedAmenities.includes(trimmed)) {
+      const next = [...selectedAmenities, trimmed];
+      setSelectedAmenities(next);
+      setValue('amenities', next);
+      setCustomAmenity('');
+    }
+  };
+
   const {
     register,
     handleSubmit,
@@ -84,12 +117,14 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           seo_title_zh: property.seo_title_zh || '',
           seo_description_en: property.seo_description_en || '',
           seo_description_th: property.seo_description_th || '',
+          amenities: property.amenities || [],
           seo_description_zh: property.seo_description_zh || '',
         }
       : {
           status: 'draft',
           featured: false,
           transaction_type: 'sale',
+          amenities: [],
         },
   });
 
@@ -450,6 +485,68 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             </>
           )}
         </div>
+      </div>
+
+      {/* Amenities */}
+      <div className={sectionClass}>
+        <h3 className={sectionTitle}>{t('amenities')}</h3>
+        <div className="flex flex-wrap gap-2">
+          {COMMON_AMENITIES.map((amenity) => (
+            <button
+              key={amenity}
+              type="button"
+              onClick={() => toggleAmenity(amenity)}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
+                selectedAmenities.includes(amenity)
+                  ? 'bg-secondary-400 border-secondary-400 text-primary-900'
+                  : 'bg-white border-luxury-200 text-luxury-600 hover:border-secondary-300',
+              )}
+            >
+              {amenity}
+            </button>
+          ))}
+        </div>
+        {/* Custom amenity input */}
+        <div className="flex gap-2 mt-3">
+          <input
+            type="text"
+            value={customAmenity}
+            onChange={(e) => setCustomAmenity(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomAmenity(); } }}
+            className={cn(inputClass, 'flex-1')}
+            placeholder={t('addCustomAmenity')}
+          />
+          <button
+            type="button"
+            onClick={addCustomAmenity}
+            className="px-4 py-2 bg-primary-700 text-white rounded-lg text-sm font-medium hover:bg-primary-800 transition-colors"
+          >
+            {t('add')}
+          </button>
+        </div>
+        {/* Show selected custom amenities (those not in COMMON_AMENITIES) */}
+        {selectedAmenities.filter((a) => !COMMON_AMENITIES.includes(a)).length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {selectedAmenities
+              .filter((a) => !COMMON_AMENITIES.includes(a))
+              .map((amenity) => (
+                <span
+                  key={amenity}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-secondary-400 border border-secondary-400 text-primary-900"
+                >
+                  {amenity}
+                  <button
+                    type="button"
+                    onClick={() => toggleAmenity(amenity)}
+                    className="ml-1 hover:text-red-600"
+                  >
+                    &times;
+                  </button>
+                </span>
+              ))}
+          </div>
+        )}
       </div>
 
       {/* Location — hidden when property belongs to a project */}
