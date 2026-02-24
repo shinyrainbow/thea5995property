@@ -33,22 +33,20 @@ const phoneField = z
 // ---------------------------------------------------------------------------
 
 export const propertySchema = z.object({
-  // Multilingual titles (English required, Thai & Chinese required)
-  title_en: requiredString.max(200, 'Title must be under 200 characters'),
-  title_th: requiredString.max(200, 'Title must be under 200 characters'),
-  title_zh: requiredString.max(200, 'Title must be under 200 characters'),
-
-  // Multilingual descriptions
-  description_en: requiredString.max(5000, 'Description is too long'),
-  description_th: requiredString.max(5000, 'Description is too long'),
-  description_zh: requiredString.max(5000, 'Description is too long'),
+  // Multilingual titles & descriptions (optional when property belongs to a project)
+  title_en: z.string().max(200, 'Title must be under 200 characters').optional().or(z.literal('')),
+  title_th: z.string().max(200, 'Title must be under 200 characters').optional().or(z.literal('')),
+  title_zh: z.string().max(200, 'Title must be under 200 characters').optional().or(z.literal('')),
+  description_en: z.string().max(5000, 'Description is too long').optional().or(z.literal('')),
+  description_th: z.string().max(5000, 'Description is too long').optional().or(z.literal('')),
+  description_zh: z.string().max(5000, 'Description is too long').optional().or(z.literal('')),
 
   // Core fields
   price: positiveNumber,
   transaction_type: z.enum(['sale', 'rent'], {
     message: 'Please select sale or rent',
   }),
-  property_type_id: z.coerce.string().min(1, 'This field is required'),
+  property_type_id: requiredString,
 
   // Dimensions (nullable for property types like land)
   bedrooms: optionalPositiveNumber,
@@ -77,7 +75,20 @@ export const propertySchema = z.object({
   seo_description_en: optionalString,
   seo_description_th: optionalString,
   seo_description_zh: optionalString,
-});
+}).refine(
+  (data) => {
+    // Titles & descriptions are required only when property does NOT belong to a project
+    if (!data.project_id) {
+      return !!data.title_en && !!data.title_th && !!data.title_zh
+        && !!data.description_en && !!data.description_th && !!data.description_zh;
+    }
+    return true;
+  },
+  {
+    message: 'Title and description are required for standalone properties',
+    path: ['title_en'],
+  },
+);
 
 export type PropertySchemaType = z.infer<typeof propertySchema>;
 
@@ -225,7 +236,7 @@ export const projectSchema = z.object({
   description_zh: requiredString.max(5000, 'Description is too long'),
 
   // Property type (must be one with has_projects = true)
-  property_type_id: z.coerce.string().min(1, 'This field is required'),
+  property_type_id: requiredString,
 
   // Project-specific fields
   developer_name: optionalString,

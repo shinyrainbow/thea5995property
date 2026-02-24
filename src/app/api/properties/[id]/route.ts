@@ -76,13 +76,29 @@ export async function PUT(
     }
 
     const data = validation.data;
+    const supabase = createServerClient();
+
+    // If property belongs to a project, inherit title & description from the project
+    if (data.project_id) {
+      const { data: project } = await supabase
+        .from('projects')
+        .select('name_en, name_th, name_zh, description_en, description_th, description_zh')
+        .eq('id', data.project_id)
+        .single();
+      if (project) {
+        data.title_en = data.title_en || project.name_en;
+        data.title_th = data.title_th || project.name_th;
+        data.title_zh = data.title_zh || project.name_zh;
+        data.description_en = data.description_en || project.description_en;
+        data.description_th = data.description_th || project.description_th;
+        data.description_zh = data.description_zh || project.description_zh;
+      }
+    }
 
     // Re-generate slugs if titles changed
-    const slug_en = generateSlug(data.title_en);
-    const slug_th = generateSlug(data.title_th);
-    const slug_zh = generateSlug(data.title_zh);
-
-    const supabase = createServerClient();
+    const slug_en = generateSlug(data.title_en || 'property');
+    const slug_th = generateSlug(data.title_th || 'property');
+    const slug_zh = generateSlug(data.title_zh || 'property');
 
     const { data: property, error } = await supabase
       .from('properties')

@@ -27,7 +27,7 @@ export default function EditPropertyPage() {
         const [propertyRes, typesRes, projectsRes] = await Promise.all([
           fetch(`/api/properties/${id}`),
           fetch('/api/property-types'),
-          fetch('/api/projects?perPage=100'),
+          fetch('/api/projects?perPage=100&status=active'),
         ]);
 
         if (!propertyRes.ok) {
