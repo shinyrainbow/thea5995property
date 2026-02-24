@@ -5,7 +5,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import InquiryForm from '@/components/public/InquiryForm';
-import { MapPin, Phone, Mail, Clock, Map } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 export function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'th' }, { locale: 'zh' }];
@@ -44,7 +44,7 @@ export default async function ContactPage({
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-primary-900 -mt-20 pt-36 pb-24 md:pt-44 md:pb-32">
+      <section className="relative overflow-hidden bg-primary-900 -mt-20 pt-44 pb-24 md:pt-52 md:pb-32">
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-900/70 to-primary-900/90" />
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -100,12 +100,17 @@ export default async function ContactPage({
 
               {/* Map */}
               <div className="mt-12">
-                <div className="flex h-72 items-center justify-center rounded-lg bg-luxury-50">
-                  <div className="text-center text-luxury-400">
-                    <Map className="mx-auto mb-2 h-8 w-8" />
-                    <p className="text-sm font-medium text-primary-900">Google Maps</p>
-                    <p className="mt-1 text-xs text-luxury-500">Add API key to enable</p>
-                  </div>
+                <div className="overflow-hidden rounded-lg">
+                  <iframe
+                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=Phraeksa,+Mueang+Samut+Prakan,+Samut+Prakan+10280&zoom=14`}
+                    width="100%"
+                    height="300"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="THE A 5995 Location"
+                  />
                 </div>
               </div>
             </div>

@@ -76,10 +76,9 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body
-        className={`${playfairDisplay.variable} ${inter.variable} ${kanit.variable} antialiased`}
-      >
+    <html lang={locale} className={`${playfairDisplay.variable} ${inter.variable} ${kanit.variable}`} suppressHydrationWarning>
+      <body className="antialiased">
+
         <NextIntlClientProvider messages={messages}>
           <div className="flex min-h-screen flex-col">
             <Header />

@@ -68,7 +68,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-t from-primary-900/90 via-primary-900/40 to-primary-900/60" />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-5xl px-4 pt-40 pb-32 text-center sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 pt-52 pb-32 text-center sm:px-6 lg:px-8">
         {/* Headline */}
         <h1
           className="font-heading text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl animate-hero-text"

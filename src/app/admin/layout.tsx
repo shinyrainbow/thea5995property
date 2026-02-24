@@ -47,8 +47,8 @@ export default async function AdminLayout({
   // If not authenticated, render a minimal wrapper (for the login page)
   if (!session) {
     return (
-      <html lang={locale} suppressHydrationWarning>
-        <body className={`${playfairDisplay.variable} ${inter.variable} antialiased`}>
+      <html lang={locale} className={`${playfairDisplay.variable} ${inter.variable}`} suppressHydrationWarning>
+        <body className="antialiased">
           <NextIntlClientProvider locale={locale} messages={messages}>
             {children}
           </NextIntlClientProvider>
@@ -59,8 +59,8 @@ export default async function AdminLayout({
 
   // Authenticated: render the full admin shell
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className={`${playfairDisplay.variable} ${inter.variable} antialiased`}>
+    <html lang={locale} className={`${playfairDisplay.variable} ${inter.variable}`} suppressHydrationWarning>
+      <body className="antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <SessionWrapper>
             <div className="min-h-screen bg-luxury-50">
