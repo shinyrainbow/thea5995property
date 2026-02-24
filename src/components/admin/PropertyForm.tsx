@@ -62,7 +62,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           description_zh: property.description_zh,
           price: property.price,
           transaction_type: property.transaction_type,
-          property_type_id: property.property_type_id,
+          property_type_id: String(property.property_type_id),
           project_id: property.project_id ?? null,
           bedrooms: property.bedrooms,
           bathrooms: property.bathrooms,

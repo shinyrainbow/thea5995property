@@ -64,7 +64,7 @@ export default function ProjectForm({ project, propertyTypes }: ProjectFormProps
           description_en: project.description_en,
           description_th: project.description_th,
           description_zh: project.description_zh,
-          property_type_id: project.property_type_id,
+          property_type_id: String(project.property_type_id),
           developer_name: project.developer_name || '',
           facilities: project.facilities || [],
           year_built: project.year_built,
