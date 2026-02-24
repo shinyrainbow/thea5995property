@@ -35,7 +35,8 @@ export default async function ContactPage({
 
   const contactDetails = [
     { icon: <MapPin className="h-5 w-5" />, label: t('address'), value: t('addressValue'), href: null },
-    { icon: <Phone className="h-5 w-5" />, label: t('phone'), value: t('phoneValue'), href: `tel:${t('phoneValue').replace(/\s/g, '')}` },
+    { icon: <Phone className="h-5 w-5" />, label: t('phone'), value: t('phoneValue'), href: `tel:${t('phoneValue').replace(/[^+\d]/g, '')}` },
+    { icon: <Phone className="h-5 w-5" />, label: t('phone'), value: t('phone2Value'), href: `tel:${t('phone2Value').replace(/[^+\d]/g, '')}` },
     { icon: <Mail className="h-5 w-5" />, label: t('email'), value: t('emailValue'), href: `mailto:${t('emailValue')}` },
     { icon: <Clock className="h-5 w-5" />, label: t('hours'), value: t('hoursValue'), href: null },
   ];

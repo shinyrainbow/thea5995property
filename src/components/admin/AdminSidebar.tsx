@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import {
   LayoutDashboard,
   Building2,
@@ -23,21 +24,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface NavItem {
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
-
-const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { label: 'Properties', href: '/admin/properties', icon: Building2 },
-  { label: 'Projects', href: '/admin/projects', icon: FolderKanban },
-  { label: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
-  { label: 'Blog', href: '/admin/blog', icon: FileText },
-  { label: 'Settings', href: '/admin/settings', icon: Settings },
-];
-
 interface AdminSidebarProps {
   userName?: string;
   userEmail?: string;
@@ -45,8 +31,18 @@ interface AdminSidebarProps {
 
 export default function AdminSidebar({ userName, userEmail }: AdminSidebarProps) {
   const pathname = usePathname();
+  const t = useTranslations('admin');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const navItems = [
+    { label: t('dashboard'), href: '/admin', icon: LayoutDashboard },
+    { label: t('properties'), href: '/admin/properties', icon: Building2 },
+    { label: t('projects'), href: '/admin/projects', icon: FolderKanban },
+    { label: t('inquiries'), href: '/admin/inquiries', icon: MessageSquare },
+    { label: t('blog'), href: '/admin/blog', icon: FileText },
+    { label: t('settings'), href: '/admin/settings', icon: Settings },
+  ];
 
   const isActive = (href: string) => {
     if (href === '/admin') {
@@ -121,7 +117,7 @@ export default function AdminSidebar({ userName, userEmail }: AdminSidebarProps)
           )}
         >
           <LogOut className="w-5 h-5 flex-shrink-0" />
-          {!isCollapsed && <span>Logout</span>}
+          {!isCollapsed && <span>{t('logout')}</span>}
         </button>
       </div>
 

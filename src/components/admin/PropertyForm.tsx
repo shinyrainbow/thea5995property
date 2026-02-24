@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { propertySchema, type PropertySchemaType } from '@/lib/validations';
 import ImageUploader, { type UploadedImage } from '@/components/admin/ImageUploader';
@@ -28,6 +29,7 @@ interface PropertyFormProps {
 
 export default function PropertyForm({ property, propertyTypes, projects = [] }: PropertyFormProps) {
   const router = useRouter();
+  const t = useTranslations('admin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [images, setImages] = useState<UploadedImage[]>(
@@ -185,15 +187,15 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
       {/* Status & Featured */}
       <div className="bg-white rounded-xl border border-luxury-200 p-5 flex flex-wrap gap-6">
         <div className="flex items-center gap-4">
-          <label className="text-sm font-medium text-primary-600">Status:</label>
+          <label className="text-sm font-medium text-primary-600">{t('status')}:</label>
           <select
             {...register('status')}
             className="px-3 py-2 border border-luxury-200 rounded-lg text-sm text-primary-700 focus:outline-none focus:ring-2 focus:ring-secondary-400"
           >
-            <option value="draft">Draft</option>
-            <option value="active">Active</option>
-            <option value="sold">Sold</option>
-            <option value="rented">Rented</option>
+            <option value="draft">{t('draft')}</option>
+            <option value="active">{t('active')}</option>
+            <option value="sold">{t('sold')}</option>
+            <option value="rented">{t('rented')}</option>
           </select>
           <span
             className={cn(
@@ -210,7 +212,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
         </div>
 
         <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-primary-600">Featured:</label>
+          <label className="text-sm font-medium text-primary-600">{t('featured')}:</label>
           <button
             type="button"
             onClick={() => setValue('featured', !featured)}
@@ -231,13 +233,13 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
       {/* Property Type & Project */}
       <div className={sectionClass}>
-        <h3 className={sectionTitle}>Property Classification</h3>
+        <h3 className={sectionTitle}>{t('propertyClassification')}</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label className={labelClass}>Property Type *</label>
+            <label className={labelClass}>{t('propertyType')} *</label>
             <select {...register('property_type_id')} className={inputClass}>
-              <option value="">Select property type</option>
+              <option value="">{t('selectPropertyType')}</option>
               {propertyTypes.map((type) => (
                 <option key={type.id} value={type.id}>
                   {type.name_en}
@@ -249,10 +251,10 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             )}
           </div>
           <div>
-            <label className={labelClass}>Transaction Type *</label>
+            <label className={labelClass}>{t('transactionType')} *</label>
             <select {...register('transaction_type')} className={inputClass}>
-              <option value="sale">For Sale</option>
-              <option value="rent">For Rent</option>
+              <option value="sale">{t('forSale')}</option>
+              <option value="rent">{t('forRent')}</option>
             </select>
             {errors.transaction_type && (
               <p className={errorClass}>{errors.transaction_type.message}</p>
@@ -262,13 +264,13 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
         {showProjectDropdown && (
           <div>
-            <label className={labelClass}>Project (Optional)</label>
+            <label className={labelClass}>{t('projectOptional')}</label>
             <select
               value={watch('project_id') || ''}
               onChange={(e) => setValue('project_id', e.target.value || null)}
               className={inputClass}
             >
-              <option value="">None (Standalone)</option>
+              <option value="">{t('noneStandalone')}</option>
               {filteredProjects.map((proj) => (
                 <option key={proj.id} value={proj.id}>
                   {proj.name_en}
@@ -279,13 +281,13 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
         )}
       </div>
 
-      {/* Title & Description — hidden when property belongs to a project */}
+      {/* Title — hidden when property belongs to a project */}
       {!hasProject && (
         <>
           <div className={sectionClass}>
-            <h3 className={sectionTitle}>English</h3>
+            <h3 className={sectionTitle}>{t('english')}</h3>
             <div>
-              <label className={labelClass}>Title (English) *</label>
+              <label className={labelClass}>{t('titleEn')} *</label>
               <input
                 {...register('title_en')}
                 className={inputClass}
@@ -293,24 +295,12 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
               />
               {errors.title_en && <p className={errorClass}>{errors.title_en.message}</p>}
             </div>
-            <div>
-              <label className={labelClass}>Description (English) *</label>
-              <textarea
-                {...register('description_en')}
-                rows={4}
-                className={cn(inputClass, 'resize-y')}
-                placeholder="Describe the property in detail..."
-              />
-              {errors.description_en && (
-                <p className={errorClass}>{errors.description_en.message}</p>
-              )}
-            </div>
           </div>
 
           <div className={sectionClass}>
-            <h3 className={sectionTitle}>Thai</h3>
+            <h3 className={sectionTitle}>{t('thai')}</h3>
             <div>
-              <label className={labelClass}>Title (Thai) *</label>
+              <label className={labelClass}>{t('titleTh')} *</label>
               <input
                 {...register('title_th')}
                 className={inputClass}
@@ -318,24 +308,12 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
               />
               {errors.title_th && <p className={errorClass}>{errors.title_th.message}</p>}
             </div>
-            <div>
-              <label className={labelClass}>Description (Thai) *</label>
-              <textarea
-                {...register('description_th')}
-                rows={4}
-                className={cn(inputClass, 'resize-y')}
-                placeholder="Enter Thai description"
-              />
-              {errors.description_th && (
-                <p className={errorClass}>{errors.description_th.message}</p>
-              )}
-            </div>
           </div>
 
           <div className={sectionClass}>
-            <h3 className={sectionTitle}>Chinese</h3>
+            <h3 className={sectionTitle}>{t('chinese')}</h3>
             <div>
-              <label className={labelClass}>Title (Chinese) *</label>
+              <label className={labelClass}>{t('titleZh')} *</label>
               <input
                 {...register('title_zh')}
                 className={inputClass}
@@ -343,28 +321,57 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
               />
               {errors.title_zh && <p className={errorClass}>{errors.title_zh.message}</p>}
             </div>
-            <div>
-              <label className={labelClass}>Description (Chinese) *</label>
-              <textarea
-                {...register('description_zh')}
-                rows={4}
-                className={cn(inputClass, 'resize-y')}
-                placeholder="Enter Chinese description"
-              />
-              {errors.description_zh && (
-                <p className={errorClass}>{errors.description_zh.message}</p>
-              )}
-            </div>
           </div>
         </>
       )}
 
+      {/* Description / Detail Box — ALWAYS visible */}
+      <div className={sectionClass}>
+        <h3 className={sectionTitle}>{t('propertyDetails')}</h3>
+        <div>
+          <label className={labelClass}>{t('descriptionEn')}{!hasProject && ' *'}</label>
+          <textarea
+            {...register('description_en')}
+            rows={4}
+            className={cn(inputClass, 'resize-y')}
+            placeholder="Describe the property in detail..."
+          />
+          {errors.description_en && (
+            <p className={errorClass}>{errors.description_en.message}</p>
+          )}
+        </div>
+        <div>
+          <label className={labelClass}>{t('descriptionTh')}{!hasProject && ' *'}</label>
+          <textarea
+            {...register('description_th')}
+            rows={4}
+            className={cn(inputClass, 'resize-y')}
+            placeholder="รายละเอียดทรัพย์สิน..."
+          />
+          {errors.description_th && (
+            <p className={errorClass}>{errors.description_th.message}</p>
+          )}
+        </div>
+        <div>
+          <label className={labelClass}>{t('descriptionZh')}{!hasProject && ' *'}</label>
+          <textarea
+            {...register('description_zh')}
+            rows={4}
+            className={cn(inputClass, 'resize-y')}
+            placeholder="房产描述..."
+          />
+          {errors.description_zh && (
+            <p className={errorClass}>{errors.description_zh.message}</p>
+          )}
+        </div>
+      </div>
+
       {/* Price & Specs */}
       <div className={sectionClass}>
-        <h3 className={sectionTitle}>Details</h3>
+        <h3 className={sectionTitle}>{t('details')}</h3>
 
         <div>
-          <label className={labelClass}>Price (THB) *</label>
+          <label className={labelClass}>{t('price')} *</label>
           <input
             type="number"
             {...register('price', { valueAsNumber: true })}
@@ -376,7 +383,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
           <div>
-            <label className={labelClass}>Bedrooms</label>
+            <label className={labelClass}>{t('bedrooms')}</label>
             <input
               type="number"
               {...register('bedrooms', { valueAsNumber: true })}
@@ -386,7 +393,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             {errors.bedrooms && <p className={errorClass}>{errors.bedrooms.message}</p>}
           </div>
           <div>
-            <label className={labelClass}>Bathrooms</label>
+            <label className={labelClass}>{t('bathrooms')}</label>
             <input
               type="number"
               {...register('bathrooms', { valueAsNumber: true })}
@@ -396,7 +403,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             {errors.bathrooms && <p className={errorClass}>{errors.bathrooms.message}</p>}
           </div>
           <div>
-            <label className={labelClass}>Land Size (sqm)</label>
+            <label className={labelClass}>{t('landSize')}</label>
             <input
               type="number"
               {...register('land_size', { valueAsNumber: true })}
@@ -406,7 +413,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             {errors.land_size && <p className={errorClass}>{errors.land_size.message}</p>}
           </div>
           <div>
-            <label className={labelClass}>Building Size (sqm)</label>
+            <label className={labelClass}>{t('buildingSize')}</label>
             <input
               type="number"
               {...register('building_size', { valueAsNumber: true })}
@@ -420,7 +427,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           {isUnitType && (
             <>
               <div>
-                <label className={labelClass}>Room Size (sqm)</label>
+                <label className={labelClass}>{t('roomSize')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -431,7 +438,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
                 {errors.room_size && <p className={errorClass}>{errors.room_size.message}</p>}
               </div>
               <div>
-                <label className={labelClass}>Floor</label>
+                <label className={labelClass}>{t('floor')}</label>
                 <input
                   type="number"
                   {...register('floor', { valueAsNumber: true })}
@@ -448,10 +455,10 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
       {/* Location — hidden when property belongs to a project */}
       {!hasProject && (
         <div className={sectionClass}>
-          <h3 className={sectionTitle}>Location</h3>
+          <h3 className={sectionTitle}>{t('location')}</h3>
 
           <div>
-            <label className={labelClass}>Address *</label>
+            <label className={labelClass}>{t('address')} *</label>
             <input
               {...register('address')}
               className={inputClass}
@@ -462,7 +469,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className={labelClass}>District *</label>
+              <label className={labelClass}>{t('district')} *</label>
               <input
                 {...register('district')}
                 className={inputClass}
@@ -471,9 +478,9 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
               {errors.district && <p className={errorClass}>{errors.district.message}</p>}
             </div>
             <div>
-              <label className={labelClass}>Province *</label>
+              <label className={labelClass}>{t('province')} *</label>
               <select {...register('province')} className={inputClass}>
-                <option value="">Select province</option>
+                <option value="">{t('selectProvince')}</option>
                 {THAI_PROVINCES.map((prov) => (
                   <option key={prov} value={prov}>
                     {prov}
@@ -494,32 +501,32 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
       {/* Images */}
       <div className={sectionClass}>
-        <h3 className={sectionTitle}>Images</h3>
+        <h3 className={sectionTitle}>{t('images')}</h3>
         <ImageUploader images={images} onChange={setImages} folder="properties" />
       </div>
 
       {/* SEO */}
       <div className={sectionClass}>
-        <h3 className={sectionTitle}>SEO (Optional)</h3>
+        <h3 className={sectionTitle}>{t('seo')}</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <div>
-            <label className={labelClass}>Meta Title (EN)</label>
+            <label className={labelClass}>{t('metaTitleEn')}</label>
             <input {...register('seo_title_en')} className={inputClass} placeholder="SEO title for English" />
           </div>
           <div>
-            <label className={labelClass}>Meta Title (TH)</label>
+            <label className={labelClass}>{t('metaTitleTh')}</label>
             <input {...register('seo_title_th')} className={inputClass} placeholder="SEO title for Thai" />
           </div>
           <div>
-            <label className={labelClass}>Meta Title (ZH)</label>
+            <label className={labelClass}>{t('metaTitleZh')}</label>
             <input {...register('seo_title_zh')} className={inputClass} placeholder="SEO title for Chinese" />
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <div>
-            <label className={labelClass}>Meta Description (EN)</label>
+            <label className={labelClass}>{t('metaDescEn')}</label>
             <textarea
               {...register('seo_description_en')}
               rows={2}
@@ -528,7 +535,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             />
           </div>
           <div>
-            <label className={labelClass}>Meta Description (TH)</label>
+            <label className={labelClass}>{t('metaDescTh')}</label>
             <textarea
               {...register('seo_description_th')}
               rows={2}
@@ -537,7 +544,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             />
           </div>
           <div>
-            <label className={labelClass}>Meta Description (ZH)</label>
+            <label className={labelClass}>{t('metaDescZh')}</label>
             <textarea
               {...register('seo_description_zh')}
               rows={2}
@@ -555,7 +562,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           onClick={() => router.push('/admin/properties')}
           className="px-6 py-2.5 border border-luxury-200 rounded-lg text-sm font-medium text-luxury-600 hover:bg-luxury-50 transition-colors"
         >
-          Cancel
+          {t('cancel')}
         </button>
         <button
           type="button"
@@ -565,7 +572,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           }}
           className="px-6 py-2.5 bg-luxury-200 text-primary-700 rounded-lg text-sm font-medium hover:bg-luxury-300 transition-colors"
         >
-          Save as Draft
+          {t('saveAsDraft')}
         </button>
         <button
           type="submit"
@@ -575,12 +582,12 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           {isSubmitting ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Saving...
+              {t('saving')}
             </>
           ) : (
             <>
               <Save className="w-4 h-4" />
-              {isEditing ? 'Update Property' : 'Create Property'}
+              {isEditing ? t('updateProperty') : t('createProperty')}
             </>
           )}
         </button>

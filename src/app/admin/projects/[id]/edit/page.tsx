@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import ProjectForm from '@/components/admin/ProjectForm';
 import type { PropertyType, ProjectWithDetails } from '@/types';
 import { Loader2, ArrowLeft, AlertCircle } from 'lucide-react';
@@ -14,6 +15,7 @@ import Link from 'next/link';
 export default function EditProjectPage() {
   const params = useParams();
   const id = params.id as string;
+  const t = useTranslations('admin');
 
   const [project, setProject] = useState<ProjectWithDetails | null>(null);
   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
@@ -29,7 +31,7 @@ export default function EditProjectPage() {
         ]);
 
         if (!projectRes.ok) {
-          setError('Project not found');
+          setError(t('projectNotFound'));
           return;
         }
 
@@ -51,7 +53,7 @@ export default function EditProjectPage() {
           }
         }
       } catch (err) {
-        setError('Failed to load project data');
+        setError(t('failedToLoad'));
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -72,13 +74,13 @@ export default function EditProjectPage() {
     return (
       <div className="text-center py-20">
         <AlertCircle className="w-12 h-12 mx-auto text-red-400 mb-3" />
-        <p className="text-red-600 font-medium">{error || 'Project not found'}</p>
+        <p className="text-red-600 font-medium">{error || t('projectNotFound')}</p>
         <Link
           href="/admin/projects"
           className="inline-flex items-center gap-2 mt-4 text-secondary-500 hover:text-secondary-600 text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Projects
+          {t('backToProjects')}
         </Link>
       </div>
     );
@@ -95,7 +97,7 @@ export default function EditProjectPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-heading font-bold text-primary-700">
-            Edit Project
+            {t('editProject')}
           </h1>
           <p className="text-luxury-500 mt-1">{project.name_en}</p>
         </div>

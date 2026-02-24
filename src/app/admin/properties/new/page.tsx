@@ -5,12 +5,14 @@
 // =============================================================================
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import PropertyForm from '@/components/admin/PropertyForm';
 import type { PropertyType } from '@/types';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CreatePropertyPage() {
+  const t = useTranslations('admin');
   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
   const [projects, setProjects] = useState<Array<{ id: string; name_en: string; property_type_id: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,10 +66,10 @@ export default function CreatePropertyPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-heading font-bold text-primary-700">
-            Add New Property
+            {t('addProperty')}
           </h1>
           <p className="text-luxury-500 mt-1">
-            Create a new property listing
+            {t('addProperty')}
           </p>
         </div>
       </div>

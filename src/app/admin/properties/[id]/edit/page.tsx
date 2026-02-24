@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import PropertyForm from '@/components/admin/PropertyForm';
 import type { PropertyType, PropertyWithDetails } from '@/types';
 import { Loader2, ArrowLeft, AlertCircle } from 'lucide-react';
@@ -14,6 +15,7 @@ import Link from 'next/link';
 export default function EditPropertyPage() {
   const params = useParams();
   const id = params.id as string;
+  const t = useTranslations('admin');
 
   const [property, setProperty] = useState<PropertyWithDetails | null>(null);
   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
@@ -31,7 +33,7 @@ export default function EditPropertyPage() {
         ]);
 
         if (!propertyRes.ok) {
-          setError('Property not found');
+          setError(t('propertyNotFound'));
           return;
         }
 
@@ -54,7 +56,7 @@ export default function EditPropertyPage() {
           );
         }
       } catch (err) {
-        setError('Failed to load property data');
+        setError(t('failedToLoad'));
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -75,13 +77,13 @@ export default function EditPropertyPage() {
     return (
       <div className="text-center py-20">
         <AlertCircle className="w-12 h-12 mx-auto text-red-400 mb-3" />
-        <p className="text-red-600 font-medium">{error || 'Property not found'}</p>
+        <p className="text-red-600 font-medium">{error || t('propertyNotFound')}</p>
         <Link
           href="/admin/properties"
           className="inline-flex items-center gap-2 mt-4 text-secondary-500 hover:text-secondary-600 text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Properties
+          {t('backToProperties')}
         </Link>
       </div>
     );
@@ -98,7 +100,7 @@ export default function EditPropertyPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-heading font-bold text-primary-700">
-            Edit Property
+            {t('editProperty')}
           </h1>
           <p className="text-luxury-500 mt-1">{property.title_en}</p>
         </div>

@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { formatPrice, formatDate, cn } from '@/lib/utils';
 import {
   Plus,
@@ -24,6 +25,7 @@ import type { PropertyWithDetails, PaginatedResponse } from '@/types';
 
 export default function AdminPropertiesPage() {
   const router = useRouter();
+  const t = useTranslations('admin');
   const [properties, setProperties] = useState<PropertyWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -106,7 +108,7 @@ export default function AdminPropertiesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-heading font-bold text-primary-700">Properties</h1>
+          <h1 className="text-2xl font-heading font-bold text-primary-700">{t('properties')}</h1>
           <p className="text-luxury-500 mt-1">{total} properties total</p>
         </div>
         <Link
@@ -114,7 +116,7 @@ export default function AdminPropertiesPage() {
           className="flex items-center gap-2 px-4 py-2.5 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition-colors text-sm font-medium"
         >
           <Plus className="w-4 h-4" />
-          Add Property
+          {t('addProperty')}
         </Link>
       </div>
 

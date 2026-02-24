@@ -8,7 +8,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Youtube, ArrowRight, Check } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function Footer() {
@@ -66,17 +66,10 @@ export default function Footer() {
             <Image src="/logo-image.png" alt="The A 5995 Property" width={56} height={56} className="h-14 w-auto brightness-0 invert mb-6" />
             <p className="text-sm text-white/50 leading-relaxed">{t('aboutDescription')}</p>
             <div className="mt-8 flex gap-3">
-              {[
-                { icon: Facebook, href: '#', label: 'Facebook' },
-                { icon: Instagram, href: '#', label: 'Instagram' },
-                { icon: Twitter, href: '#', label: 'Twitter' },
-                { icon: Youtube, href: '#', label: 'YouTube' },
-              ].map(({ icon: Icon, href, label }) => (
-                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                  className="flex h-10 w-10 items-center justify-center bg-white/5 text-white/40 transition-all hover:bg-secondary-500 hover:text-white">
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
+              <a href="https://web.facebook.com/thea5995" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                className="flex h-10 w-10 items-center justify-center bg-white/5 text-white/40 transition-all hover:bg-secondary-500 hover:text-white">
+                <Facebook className="h-4 w-4" />
+              </a>
             </div>
           </div>
 
@@ -123,8 +116,15 @@ export default function Footer() {
                 <span>{t('address')}</span>
               </li>
               <li>
-                <a href={`tel:${t('phone').replace(/\s/g, '')}`} className="flex items-center gap-3 text-sm text-white/50 transition-colors hover:text-secondary-400">
-                  <Phone className="h-4 w-4 shrink-0 text-secondary-400" />{t('phone')}
+                <a href={`tel:${t('phone').replace(/[-\s]/g, '')}`} className="flex items-center gap-3 text-sm text-white/50 transition-colors hover:text-secondary-400">
+                  <Phone className="h-4 w-4 shrink-0 text-secondary-400" />
+                  <span>{t('phoneName1')} {t('phone')}</span>
+                </a>
+              </li>
+              <li>
+                <a href={`tel:${t('phone2').replace(/[-\s]/g, '')}`} className="flex items-center gap-3 text-sm text-white/50 transition-colors hover:text-secondary-400">
+                  <Phone className="h-4 w-4 shrink-0 text-secondary-400" />
+                  <span>{t('phoneName2')} {t('phone2')}</span>
                 </a>
               </li>
               <li>

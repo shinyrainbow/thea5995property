@@ -76,7 +76,7 @@ export default async function AdminLayout({
                   <div className="flex items-center justify-between pl-12 lg:pl-0">
                     <div>
                       <h2 className="font-heading text-lg font-semibold text-primary-700">
-                        Admin Panel
+                        {messages.admin?.adminPanel || 'Admin Panel'}
                       </h2>
                     </div>
                     <div className="flex items-center gap-4">

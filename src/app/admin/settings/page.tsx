@@ -4,8 +4,9 @@
 // THE A 5995 - Admin Settings Page
 // =============================================================================
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import {
   Settings,
   User,
@@ -15,41 +16,149 @@ import {
   Save,
   Loader2,
   CheckCircle,
+  AlertCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type SettingsTab = 'profile' | 'homepage' | 'general';
 
-interface Tab {
-  key: SettingsTab;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
+interface HomepageSection {
+  id: number;
+  section_type: string;
+  title_en: string;
+  title_th: string;
+  title_zh: string;
+  is_active: boolean;
+  sort_order: number;
 }
 
-const settingsTabs: Tab[] = [
-  { key: 'profile', label: 'Profile', icon: User },
-  { key: 'homepage', label: 'Homepage', icon: Layout },
-  { key: 'general', label: 'General', icon: Globe },
-];
+// Fallback labels for section types (in case DB has no title)
+const SECTION_LABELS: Record<string, string> = {
+  hero: 'Hero Banner',
+  featured_properties: 'Featured Properties',
+  about: 'About Section',
+  services: 'Services',
+  testimonials: 'Testimonials',
+  cta: 'Call to Action',
+  stats: 'Statistics',
+  partners: 'Partners',
+};
 
 export default function AdminSettingsPage() {
   const { data: session } = useSession();
+  const t = useTranslations('admin');
+
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Homepage sections state
+  const [sections, setSections] = useState<HomepageSection[]>([]);
+  const [sectionsLoading, setSectionsLoading] = useState(false);
+
+  // Fetch homepage sections from DB
+  const fetchSections = useCallback(async () => {
+    setSectionsLoading(true);
+    try {
+      const res = await fetch('/api/homepage-sections');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && json.data.length > 0) {
+          setSections(json.data);
+        } else {
+          // If no sections in DB yet, seed with defaults
+          await seedDefaultSections();
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch homepage sections:', err);
+    } finally {
+      setSectionsLoading(false);
+    }
+  }, []);
+
+  // Seed default sections if none exist
+  const seedDefaultSections = async () => {
+    try {
+      const res = await fetch('/api/homepage-sections/seed', { method: 'POST' });
+      if (res.ok) {
+        const json = await res.json();
+        setSections(json.data || []);
+      }
+    } catch (err) {
+      console.error('Failed to seed homepage sections:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSections();
+  }, [fetchSections]);
+
+  // Toggle a section's visibility
+  const toggleSection = (sectionId: number) => {
+    setSections((prev) =>
+      prev.map((s) => (s.id === sectionId ? { ...s, is_active: !s.is_active } : s)),
+    );
+  };
+
+  // Save homepage section changes
+  const handleSaveHomepage = async () => {
+    setIsSaving(true);
+    setSavedMessage(null);
+    setErrorMessage(null);
+
+    try {
+      const payload = sections.map((s, index) => ({
+        id: s.id,
+        is_active: s.is_active,
+        sort_order: index,
+      }));
+
+      const res = await fetch('/api/homepage-sections', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sections: payload }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to save');
+      }
+
+      setSavedMessage(t('settingsSaved'));
+      setTimeout(() => setSavedMessage(null), 3000);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to save settings');
+      setTimeout(() => setErrorMessage(null), 5000);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // General save handler (placeholder for profile/general tabs)
   const handleSave = async () => {
+    if (activeTab === 'homepage') {
+      await handleSaveHomepage();
+      return;
+    }
+
     setIsSaving(true);
     setSavedMessage(null);
 
-    // Simulate save (placeholder for actual implementation)
+    // Placeholder for profile and general settings
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    setSavedMessage('Settings saved successfully');
+    setSavedMessage(t('settingsSaved'));
     setIsSaving(false);
-
     setTimeout(() => setSavedMessage(null), 3000);
   };
+
+  const settingsTabs = [
+    { key: 'profile' as const, label: t('profile'), icon: User },
+    { key: 'homepage' as const, label: t('homepage'), icon: Layout },
+    { key: 'general' as const, label: t('generalSettings'), icon: Globe },
+  ];
 
   const inputClass =
     'w-full px-4 py-2.5 border border-luxury-200 rounded-lg text-primary-700 placeholder:text-luxury-400 focus:outline-none focus:ring-2 focus:ring-secondary-400 focus:border-transparent transition-all text-sm';
@@ -61,9 +170,9 @@ export default function AdminSettingsPage() {
       <div>
         <h1 className="text-2xl font-heading font-bold text-primary-700 flex items-center gap-2">
           <Settings className="w-7 h-7 text-secondary-400" />
-          Settings
+          {t('settings')}
         </h1>
-        <p className="text-luxury-500 mt-1">Manage your account and site settings</p>
+        <p className="text-luxury-500 mt-1">{t('settingsDescription')}</p>
       </div>
 
       {/* Success message */}
@@ -71,6 +180,14 @@ export default function AdminSettingsPage() {
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
           <span>{savedMessage}</span>
+        </div>
+      )}
+
+      {/* Error message */}
+      {errorMessage && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center gap-2">
+          <AlertCircle className="w-5 h-5" />
+          <span>{errorMessage}</span>
         </div>
       )}
 
@@ -108,7 +225,7 @@ export default function AdminSettingsPage() {
                 <div className="flex items-center gap-3 pb-4 border-b border-luxury-200">
                   <Shield className="w-5 h-5 text-secondary-400" />
                   <h2 className="text-lg font-heading font-semibold text-primary-700">
-                    Admin Profile
+                    {t('adminProfile')}
                   </h2>
                 </div>
 
@@ -133,16 +250,16 @@ export default function AdminSettingsPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label className={labelClass}>Full Name</label>
+                    <label className={labelClass}>{t('fullName')}</label>
                     <input
                       type="text"
                       defaultValue={session?.user?.name || ''}
                       className={inputClass}
-                      placeholder="Your name"
+                      placeholder={t('fullName')}
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>Email Address</label>
+                    <label className={labelClass}>{t('emailAddress')}</label>
                     <input
                       type="email"
                       defaultValue={session?.user?.email || ''}
@@ -150,30 +267,30 @@ export default function AdminSettingsPage() {
                       disabled
                     />
                     <p className="mt-1 text-xs text-luxury-400">
-                      Email cannot be changed here
+                      {t('emailCannotChange')}
                     </p>
                   </div>
                 </div>
 
                 <div>
                   <h3 className="text-sm font-semibold text-primary-700 mb-3 uppercase tracking-wider">
-                    Change Password
+                    {t('changePassword')}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className={labelClass}>Current Password</label>
+                      <label className={labelClass}>{t('currentPassword')}</label>
                       <input
                         type="password"
                         className={inputClass}
-                        placeholder="Enter current password"
+                        placeholder={t('currentPassword')}
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>New Password</label>
+                      <label className={labelClass}>{t('newPassword')}</label>
                       <input
                         type="password"
                         className={inputClass}
-                        placeholder="Enter new password"
+                        placeholder={t('newPassword')}
                       />
                     </div>
                   </div>
@@ -187,67 +304,73 @@ export default function AdminSettingsPage() {
                 <div className="flex items-center gap-3 pb-4 border-b border-luxury-200">
                   <Layout className="w-5 h-5 text-secondary-400" />
                   <h2 className="text-lg font-heading font-semibold text-primary-700">
-                    Homepage Sections
+                    {t('homepageSections')}
                   </h2>
                 </div>
 
                 <p className="text-sm text-luxury-500">
-                  Manage the sections displayed on the homepage. Drag to reorder, toggle visibility.
+                  {t('homepageSectionsDescription')}
                 </p>
 
-                {/* Section list (placeholder) */}
-                <div className="space-y-3">
-                  {[
-                    { name: 'Hero Banner', type: 'hero', active: true },
-                    { name: 'Featured Properties', type: 'featured_properties', active: true },
-                    { name: 'About Section', type: 'about', active: true },
-                    { name: 'Services', type: 'services', active: false },
-                    { name: 'Testimonials', type: 'testimonials', active: false },
-                    { name: 'Call to Action', type: 'cta', active: true },
-                    { name: 'Statistics', type: 'stats', active: false },
-                    { name: 'Partners', type: 'partners', active: false },
-                  ].map((section) => (
-                    <div
-                      key={section.type}
-                      className={cn(
-                        'flex items-center justify-between p-4 rounded-lg border transition-colors',
-                        section.active
-                          ? 'border-luxury-200 bg-white'
-                          : 'border-luxury-100 bg-luxury-50 opacity-60',
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="cursor-grab text-luxury-400">
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 8h16M4 16h16"
-                            />
-                          </svg>
+                {sectionsLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 text-secondary-400 animate-spin" />
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {sections.map((section) => (
+                      <div
+                        key={section.id}
+                        className={cn(
+                          'flex items-center justify-between p-4 rounded-lg border transition-colors',
+                          section.is_active
+                            ? 'border-luxury-200 bg-white'
+                            : 'border-luxury-100 bg-luxury-50 opacity-60',
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="cursor-grab text-luxury-400">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 8h16M4 16h16"
+                              />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-primary-700">
+                              {section.title_en || SECTION_LABELS[section.section_type] || section.section_type}
+                            </p>
+                            <p className="text-xs text-luxury-400">{section.section_type}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-primary-700">{section.name}</p>
-                          <p className="text-xs text-luxury-400">{section.type}</p>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => toggleSection(section.id)}
+                          className={cn(
+                            'relative w-9 h-5 rounded-full transition-colors duration-200',
+                            section.is_active ? 'bg-secondary-400' : 'bg-luxury-300',
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              'absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm',
+                              section.is_active && 'translate-x-4',
+                            )}
+                          />
+                        </button>
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          defaultChecked={section.active}
-                          className="sr-only peer"
-                        />
-                        <div className="w-9 h-5 bg-luxury-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary-400 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-secondary-400 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
-                      </label>
-                    </div>
-                  ))}
-                </div>
+                    ))}
 
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
-                  Homepage section management is a placeholder. Full implementation will allow
-                  editing content for each section and saving to the database.
-                </div>
+                    {sections.length === 0 && !sectionsLoading && (
+                      <p className="text-sm text-luxury-400 text-center py-8">
+                        {t('noSectionsFound')}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -257,13 +380,13 @@ export default function AdminSettingsPage() {
                 <div className="flex items-center gap-3 pb-4 border-b border-luxury-200">
                   <Globe className="w-5 h-5 text-secondary-400" />
                   <h2 className="text-lg font-heading font-semibold text-primary-700">
-                    General Settings
+                    {t('generalSettings')}
                   </h2>
                 </div>
 
                 <div className="space-y-5">
                   <div>
-                    <label className={labelClass}>Site Name</label>
+                    <label className={labelClass}>{t('siteName')}</label>
                     <input
                       type="text"
                       defaultValue="THE A 5995"
@@ -271,7 +394,7 @@ export default function AdminSettingsPage() {
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>Site Description</label>
+                    <label className={labelClass}>{t('siteDescription')}</label>
                     <textarea
                       defaultValue="Discover exceptional luxury properties across Thailand."
                       rows={3}
@@ -280,31 +403,31 @@ export default function AdminSettingsPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className={labelClass}>Contact Email</label>
+                      <label className={labelClass}>{t('contactEmail')}</label>
                       <input
                         type="email"
-                        defaultValue="info@thea5995.com"
+                        defaultValue="thea5995property@gmail.com"
                         className={inputClass}
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Contact Phone</label>
+                      <label className={labelClass}>{t('contactPhone')}</label>
                       <input
                         type="tel"
-                        defaultValue="+66 2 XXX XXXX"
+                        defaultValue="083-017-5957"
                         className={inputClass}
                       />
                     </div>
                   </div>
                   <div>
-                    <label className={labelClass}>Default Currency</label>
+                    <label className={labelClass}>{t('defaultCurrency')}</label>
                     <select className={inputClass} defaultValue="THB">
                       <option value="THB">Thai Baht (THB)</option>
                       <option value="USD">US Dollar (USD)</option>
                     </select>
                   </div>
                   <div>
-                    <label className={labelClass}>Default Language</label>
+                    <label className={labelClass}>{t('defaultLanguage')}</label>
                     <select className={inputClass} defaultValue="en">
                       <option value="en">English</option>
                       <option value="th">Thai</option>
@@ -325,12 +448,12 @@ export default function AdminSettingsPage() {
                 {isSaving ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Saving...
+                    {t('saving')}
                   </>
                 ) : (
                   <>
                     <Save className="w-4 h-4" />
-                    Save Settings
+                    {t('saveSettings')}
                   </>
                 )}
               </button>

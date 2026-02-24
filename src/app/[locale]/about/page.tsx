@@ -5,6 +5,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
+import Image from 'next/image';
 import { MapPin, Users, Shield, ArrowRight, Target, Globe, Handshake } from 'lucide-react';
 
 export function generateStaticParams() {
@@ -137,6 +138,59 @@ export default async function AboutPage({
                 <p className="text-luxury-600 leading-relaxed">{feature.text}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Team */}
+      <section className="py-24 md:py-32 bg-luxury-50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
+            <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
+              Our Team
+            </p>
+            <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl">
+              {t('teamTitle')}
+            </h2>
+            <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
+          </div>
+
+          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 max-w-3xl mx-auto">
+            {/* Person 1 */}
+            <div className="group text-center">
+              <div className="relative mx-auto mb-6 h-64 w-64 overflow-hidden rounded-full border-4 border-white shadow-lg transition-transform duration-500 group-hover:scale-105">
+                <Image
+                  src="/person1.jpeg"
+                  alt="ณภัทค์สภรณ์ เพชรณรงค์ชัย"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-primary-900">
+                ณภัทค์สภรณ์ เพชรณรงค์ชัย
+              </h3>
+              <p className="mt-1 text-sm font-medium uppercase tracking-wider text-secondary-500">
+                CEO &amp; Founder
+              </p>
+            </div>
+
+            {/* Person 2 */}
+            <div className="group text-center">
+              <div className="relative mx-auto mb-6 h-64 w-64 overflow-hidden rounded-full border-4 border-white shadow-lg transition-transform duration-500 group-hover:scale-105">
+                <Image
+                  src="/person2.jpeg"
+                  alt="อัญนินทร์ เกียรติพัฒนภักดี"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-primary-900">
+                อัญนินทร์ เกียรติพัฒนภักดี
+              </h3>
+              <p className="mt-1 text-sm font-medium uppercase tracking-wider text-secondary-500">
+                ผู้อำนวยการฝ่ายการตลาด
+              </p>
+            </div>
           </div>
         </div>
       </section>
