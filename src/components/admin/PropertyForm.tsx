@@ -113,11 +113,16 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
       // Save images to property_images table
       if (propertyId) {
-        await fetch(`/api/properties/${propertyId}/images`, {
+        const imgRes = await fetch(`/api/properties/${propertyId}/images`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ images }),
         });
+        if (!imgRes.ok) {
+          const imgErr = await imgRes.json();
+          console.error('Failed to save images:', imgErr);
+          throw new Error(imgErr.error || 'Failed to save images');
+        }
       }
 
       router.push('/admin/properties');
