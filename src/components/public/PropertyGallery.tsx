@@ -90,14 +90,32 @@ export default function PropertyGallery({
   const mainImage = galleryImages[0];
   const sideImages = galleryImages.slice(1, 5);
   const remainingCount = galleryImages.length - 5;
+  const imageCount = galleryImages.length;
+
+  // Determine grid layout based on number of images
+  const gridClass =
+    imageCount === 1
+      ? 'grid grid-cols-1'
+      : imageCount === 2
+        ? 'grid grid-cols-1 gap-2 md:grid-cols-2'
+        : 'grid grid-cols-1 gap-2 md:grid-cols-[3fr_2fr]';
+
+  // Side grid: 1 col for ≤2 side images, 2 cols for 3-4 side images
+  const sideGridClass =
+    sideImages.length <= 2
+      ? 'grid grid-rows-2 gap-2 h-48 md:h-full'
+      : 'grid grid-cols-2 grid-rows-2 gap-2 h-48 md:h-full';
 
   return (
     <>
       {/* Split Gallery: big left + grid right */}
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:h-90">
+      <div className={cn(gridClass, 'md:h-105')}>
         {/* Left - Main big image */}
         <div
-          className="relative h-70 md:h-full cursor-pointer overflow-hidden rounded-xl md:rounded-r-none bg-luxury-100"
+          className={cn(
+            'relative h-64 md:h-full cursor-pointer overflow-hidden bg-luxury-100',
+            imageCount === 1 ? 'rounded-xl' : 'rounded-xl md:rounded-r-none',
+          )}
           onClick={() => { setSelectedIndex(0); setLightboxOpen(true); }}
         >
           <img
@@ -117,16 +135,17 @@ export default function PropertyGallery({
 
         {/* Right - Grid of remaining images */}
         {sideImages.length > 0 && (
-          <div className="grid grid-cols-2 gap-2 h-45 md:h-full">
+          <div className={sideGridClass}>
             {sideImages.map((image, index) => (
               <div
                 key={index}
                 className={cn(
                   'relative cursor-pointer overflow-hidden bg-luxury-100',
-                  index === 0 && 'rounded-tl-none md:rounded-tl-none',
-                  index === 1 && 'rounded-tr-xl md:rounded-tr-xl',
-                  index === 2 && 'rounded-bl-none md:rounded-bl-none',
-                  index === 3 && 'rounded-br-xl md:rounded-br-xl',
+                  // Top-right corner for last image in first row
+                  sideImages.length <= 2 && index === 0 && 'md:rounded-tr-xl',
+                  sideImages.length <= 2 && index === 1 && 'md:rounded-br-xl',
+                  sideImages.length > 2 && index === 1 && 'md:rounded-tr-xl',
+                  sideImages.length > 2 && index === 3 && 'md:rounded-br-xl',
                 )}
                 onClick={() => { setSelectedIndex(index + 1); setLightboxOpen(true); }}
               >

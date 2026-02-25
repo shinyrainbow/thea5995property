@@ -223,9 +223,14 @@ export default function AdminPropertiesPage() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-primary-700 text-sm line-clamp-1">
+                          <a
+                            href={`/en/properties/${property.slug_en}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-primary-700 text-sm line-clamp-1 hover:text-secondary-500 transition-colors"
+                          >
                             {property.title_en}
-                          </p>
+                          </a>
                           <p className="text-xs text-luxury-500">{property.province}</p>
                         </div>
                       </div>
@@ -249,6 +254,15 @@ export default function AdminPropertiesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
+                        <a
+                          href={`/en/properties/${property.slug_en}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 text-luxury-500 hover:text-secondary-500 hover:bg-luxury-100 rounded-lg transition-colors"
+                          title="View"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </a>
                         <Link
                           href={`/admin/properties/${property.id}/edit`}
                           className="p-2 text-luxury-500 hover:text-primary-700 hover:bg-luxury-100 rounded-lg transition-colors"
