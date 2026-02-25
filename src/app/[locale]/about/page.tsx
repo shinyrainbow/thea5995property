@@ -67,15 +67,15 @@ export default async function AboutPage({
       <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
-            {/* Image placeholder */}
-            <div className="relative h-[480px] overflow-hidden rounded-lg bg-primary-900">
-              <div
-                className="absolute inset-0 opacity-[0.04]"
-                style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }}
+            {/* Image */}
+            <div className="relative h-[480px] overflow-hidden rounded-lg">
+              <Image
+                src="/images/hero-bg.jpg"
+                alt={t('storyTitle')}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Globe className="h-20 w-20 text-white/10" />
-              </div>
             </div>
 
             {/* Text */}

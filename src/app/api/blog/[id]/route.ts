@@ -26,7 +26,7 @@ export async function GET(
         `
         *,
         author:admin_users(id, name),
-        content_blocks:blog_content(*)
+        content_blocks:blog_contents(*)
         `,
       )
       .eq('id', id)
@@ -146,7 +146,7 @@ export async function DELETE(
 
     // Delete content blocks first
     await supabase
-      .from('blog_content')
+      .from('blog_contents')
       .delete()
       .eq('blog_post_id', id);
 

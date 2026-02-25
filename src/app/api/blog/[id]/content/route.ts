@@ -20,7 +20,7 @@ export async function GET(
     const supabase = createServerClient();
 
     const { data, error } = await supabase
-      .from('blog_content')
+      .from('blog_contents')
       .select('*')
       .eq('blog_post_id', id)
       .order('sort_order', { ascending: true });
@@ -74,7 +74,7 @@ export async function POST(
     const supabase = createServerClient();
 
     const { data: block, error } = await supabase
-      .from('blog_content')
+      .from('blog_contents')
       .insert(validation.data)
       .select()
       .single();
@@ -129,7 +129,7 @@ export async function PUT(
 
     // Delete existing blocks for this post
     await supabase
-      .from('blog_content')
+      .from('blog_contents')
       .delete()
       .eq('blog_post_id', id);
 
@@ -151,7 +151,7 @@ export async function PUT(
 
     if (blocksToInsert.length > 0) {
       const { error: insertError } = await supabase
-        .from('blog_content')
+        .from('blog_contents')
         .insert(blocksToInsert);
 
       if (insertError) {
@@ -165,7 +165,7 @@ export async function PUT(
 
     // Fetch updated blocks
     const { data: updatedBlocks, error: fetchError } = await supabase
-      .from('blog_content')
+      .from('blog_contents')
       .select('*')
       .eq('blog_post_id', id)
       .order('sort_order', { ascending: true });
