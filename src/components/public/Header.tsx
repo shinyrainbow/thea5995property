@@ -66,7 +66,7 @@ export default function Header() {
       className={cn(
         'fixed inset-x-0 top-0 z-40 transition-all duration-500',
         scrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-sm'
+          ? 'bg-white shadow-sm'
           : 'bg-transparent',
       )}
     >
