@@ -123,3 +123,70 @@ html[lang="th"] {
   background-color: var(--color-secondary-400);
   color: white;
 }
+
+/* Quill Rich Text Editor */
+.quill-wrapper .ql-toolbar.ql-snow {
+  border: 1px solid var(--color-luxury-200);
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: var(--color-luxury-50);
+  font-family: var(--font-sans);
+}
+
+.quill-wrapper .ql-container.ql-snow {
+  border: 1px solid var(--color-luxury-200);
+  border-top: none;
+  border-radius: 0 0 0.5rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  min-height: 320px;
+}
+
+.quill-wrapper .ql-editor {
+  min-height: 320px;
+  color: var(--color-primary-700);
+  line-height: 1.7;
+}
+
+.quill-wrapper .ql-editor.ql-blank::before {
+  color: var(--color-luxury-400);
+  font-style: normal;
+}
+
+.quill-wrapper .ql-snow .ql-stroke {
+  stroke: var(--color-luxury-500);
+}
+
+.quill-wrapper .ql-snow .ql-fill {
+  fill: var(--color-luxury-500);
+}
+
+.quill-wrapper .ql-snow .ql-picker-label {
+  color: var(--color-luxury-600);
+}
+
+.quill-wrapper .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
+  border-color: var(--color-luxury-200);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.quill-wrapper .ql-snow.ql-toolbar button:hover,
+.quill-wrapper .ql-snow .ql-toolbar button:hover,
+.quill-wrapper .ql-snow.ql-toolbar button.ql-active,
+.quill-wrapper .ql-snow .ql-toolbar button.ql-active {
+  color: var(--color-primary-700);
+}
+
+.quill-wrapper .ql-snow.ql-toolbar button:hover .ql-stroke,
+.quill-wrapper .ql-snow .ql-toolbar button:hover .ql-stroke,
+.quill-wrapper .ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.quill-wrapper .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--color-primary-700);
+}
+
+.quill-wrapper .ql-snow.ql-toolbar button:hover .ql-fill,
+.quill-wrapper .ql-snow .ql-toolbar button:hover .ql-fill,
+.quill-wrapper .ql-snow.ql-toolbar button.ql-active .ql-fill,
+.quill-wrapper .ql-snow .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--color-primary-700);
+}

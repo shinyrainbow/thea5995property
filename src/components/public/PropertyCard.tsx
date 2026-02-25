@@ -74,9 +74,9 @@ export default function PropertyCard({
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-primary-900/80 via-transparent to-transparent" />
 
-        {/* Property type badge - top left */}
+        {/* Property type badge - top left (pushed down when featured ribbon is shown) */}
         {typeName ? (
-          <div className="absolute left-3 top-3">
+          <div className={cn("absolute left-3", property.featured ? "top-12" : "top-3")}>
             <Badge variant="default" className="text-xs shadow-sm bg-white/90 text-primary-700 backdrop-blur-sm">
               {typeName.toUpperCase()}
             </Badge>

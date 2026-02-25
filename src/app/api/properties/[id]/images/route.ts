@@ -60,7 +60,7 @@ export async function PUT(
     for (const image of images) {
       if (image.id && existingIds.has(image.id)) {
         // Update existing image
-        await supabase
+        const { error: updateErr } = await supabase
           .from('property_images')
           .update({
             url: image.url,
@@ -71,9 +71,17 @@ export async function PUT(
             is_primary: image.is_primary,
           })
           .eq('id', image.id);
+
+        if (updateErr) {
+          console.error('Failed to update property image:', updateErr);
+          return NextResponse.json(
+            { error: `Failed to update image: ${updateErr.message}` },
+            { status: 500 },
+          );
+        }
       } else {
         // Insert new image
-        await supabase.from('property_images').insert({
+        const { error: insertErr } = await supabase.from('property_images').insert({
           property_id: id,
           url: image.url,
           alt_en: image.alt_en || null,
@@ -82,6 +90,14 @@ export async function PUT(
           sort_order: image.sort_order,
           is_primary: image.is_primary,
         });
+
+        if (insertErr) {
+          console.error('Failed to insert property image:', insertErr);
+          return NextResponse.json(
+            { error: `Failed to save image: ${insertErr.message}` },
+            { status: 500 },
+          );
+        }
       }
     }
 

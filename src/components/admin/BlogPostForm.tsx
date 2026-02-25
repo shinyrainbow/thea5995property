@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// THE A 5995 - Blog Post Form Component (Canvas Block Editor)
+// THE A 5995 - Blog Post Form Component (Rich Text Editor with Language Tabs)
 // =============================================================================
 
 import { useState } from 'react';
@@ -10,49 +10,26 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { blogPostSchema, type BlogPostSchemaType } from '@/lib/validations';
 import ImageUploader, { type UploadedImage } from '@/components/admin/ImageUploader';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 import { cn } from '@/lib/utils';
 import {
   Save,
   Loader2,
-  Plus,
-  Trash2,
-  ChevronUp,
-  ChevronDown,
   AlertCircle,
-  Type,
-  Image as ImageIcon,
-  GripVertical,
 } from 'lucide-react';
-import type { BlogPostWithContent, BlogContentType } from '@/types';
+import type { BlogPostWithContent } from '@/types';
 
 // ---------------------------------------------------------------------------
-// Content Block Types
+// Language Tabs
 // ---------------------------------------------------------------------------
 
-interface ContentBlock {
-  id?: string;
-  content_type: BlogContentType;
-  content_en: string;
-  content_th: string;
-  content_zh: string;
-  image_url: string;
-  image_alt_en: string;
-  image_alt_th: string;
-  image_alt_zh: string;
-  sort_order: number;
-}
+const LANGS = [
+  { key: 'en', label: 'EN', full: 'English' },
+  { key: 'th', label: 'TH', full: 'ไทย' },
+  { key: 'zh', label: 'ZH', full: '中文' },
+] as const;
 
-const emptyBlock = (sortOrder: number, type: BlogContentType = 'text'): ContentBlock => ({
-  content_type: type,
-  content_en: '',
-  content_th: '',
-  content_zh: '',
-  image_url: '',
-  image_alt_en: '',
-  image_alt_th: '',
-  image_alt_zh: '',
-  sort_order: sortOrder,
-});
+type LangKey = (typeof LANGS)[number]['key'];
 
 // ---------------------------------------------------------------------------
 // Component
@@ -66,6 +43,7 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeLang, setActiveLang] = useState<LangKey>('en');
 
   const isEditing = !!post;
 
@@ -76,21 +54,17 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
       : [],
   );
 
-  // Content blocks state
-  const [blocks, setBlocks] = useState<ContentBlock[]>(
-    post?.content_blocks?.map((b) => ({
-      id: b.id,
-      content_type: b.content_type,
-      content_en: b.content_en || '',
-      content_th: b.content_th || '',
-      content_zh: b.content_zh || '',
-      image_url: b.image_url || '',
-      image_alt_en: b.image_alt_en || '',
-      image_alt_th: b.image_alt_th || '',
-      image_alt_zh: b.image_alt_zh || '',
-      sort_order: b.sort_order,
-    })) ?? [],
-  );
+  // Rich text content state (HTML strings per language)
+  const firstBlock = post?.content_blocks?.[0];
+  const [contentEn, setContentEn] = useState(firstBlock?.content_en || '');
+  const [contentTh, setContentTh] = useState(firstBlock?.content_th || '');
+  const [contentZh, setContentZh] = useState(firstBlock?.content_zh || '');
+
+  const contentMap: Record<LangKey, { value: string; onChange: (v: string) => void }> = {
+    en: { value: contentEn, onChange: setContentEn },
+    th: { value: contentTh, onChange: setContentTh },
+    zh: { value: contentZh, onChange: setContentZh },
+  };
 
   const {
     register,
@@ -124,45 +98,9 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
 
   const status = watch('status');
 
-  // Update featured_image when images change
   const handleFeaturedImageChange = (imgs: UploadedImage[]) => {
     setFeaturedImages(imgs);
     setValue('featured_image', imgs[0]?.url || '');
-  };
-
-  // Block management
-  const addBlock = (type: BlogContentType) => {
-    setBlocks([...blocks, emptyBlock(blocks.length, type)]);
-  };
-
-  const removeBlock = (index: number) => {
-    const updated = blocks.filter((_, i) => i !== index);
-    updated.forEach((b, i) => (b.sort_order = i));
-    setBlocks(updated);
-  };
-
-  const moveBlock = (index: number, direction: 'up' | 'down') => {
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= blocks.length) return;
-
-    const updated = [...blocks];
-    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
-    updated.forEach((b, i) => (b.sort_order = i));
-    setBlocks(updated);
-  };
-
-  const updateBlock = (index: number, field: keyof ContentBlock, value: string) => {
-    const updated = [...blocks];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (updated[index] as any)[field] = value;
-    setBlocks(updated);
-  };
-
-  // Handle image upload inside an image block
-  const handleBlockImageChange = (index: number, imgs: UploadedImage[]) => {
-    const updated = [...blocks];
-    updated[index].image_url = imgs[0]?.url || '';
-    setBlocks(updated);
   };
 
   const onSubmit = async (data: BlogPostSchemaType) => {
@@ -187,16 +125,30 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
       const result = await response.json();
       const postId = result.data?.id || post?.id;
 
-      // Save content blocks
+      // Save content as a single rich-text block
       if (postId) {
         const blocksResponse = await fetch(`/api/blog/${postId}/content`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ blocks }),
+          body: JSON.stringify({
+            blocks: [
+              {
+                content_type: 'text',
+                content_en: contentEn,
+                content_th: contentTh,
+                content_zh: contentZh,
+                image_url: '',
+                image_alt_en: '',
+                image_alt_th: '',
+                image_alt_zh: '',
+                sort_order: 0,
+              },
+            ],
+          }),
         });
 
         if (!blocksResponse.ok) {
-          console.error('Failed to save content blocks');
+          console.error('Failed to save content');
         }
       }
 
@@ -326,209 +278,47 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
         />
       </div>
 
-      {/* Content Canvas */}
+      {/* Content Editor with Language Tabs */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between pb-2 border-b border-luxury-100">
           <h3 className="text-sm font-semibold text-primary-700 uppercase tracking-wider">
-            Content Blocks ({blocks.length})
+            Content
           </h3>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => addBlock('text')}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-700 text-white rounded-lg text-sm hover:bg-primary-800 transition-colors"
-            >
-              <Type className="w-3.5 h-3.5" />
-              Text
-            </button>
-            <button
-              type="button"
-              onClick={() => addBlock('image')}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary-400 text-white rounded-lg text-sm hover:bg-secondary-500 transition-colors"
-            >
-              <ImageIcon className="w-3.5 h-3.5" />
-              Image
-            </button>
-          </div>
         </div>
 
-        {blocks.length === 0 ? (
-          <div className="text-center py-16 border-2 border-dashed border-luxury-300 rounded-xl">
-            <Plus className="w-10 h-10 mx-auto text-luxury-300 mb-2" />
-            <p className="text-luxury-500 text-sm">No content yet</p>
-            <p className="text-luxury-400 text-xs mt-1">
-              Add text or image blocks to build your blog post
-            </p>
-            <div className="flex items-center justify-center gap-3 mt-4">
-              <button
-                type="button"
-                onClick={() => addBlock('text')}
-                className="flex items-center gap-1.5 px-4 py-2 bg-primary-700 text-white rounded-lg text-sm hover:bg-primary-800 transition-colors"
-              >
-                <Type className="w-4 h-4" />
-                Add Text Block
-              </button>
-              <button
-                type="button"
-                onClick={() => addBlock('image')}
-                className="flex items-center gap-1.5 px-4 py-2 bg-secondary-400 text-white rounded-lg text-sm hover:bg-secondary-500 transition-colors"
-              >
-                <ImageIcon className="w-4 h-4" />
-                Add Image Block
-              </button>
-            </div>
+        {/* Language Tabs */}
+        <div className="flex items-center gap-1 rounded-lg border border-luxury-200 p-1 w-fit">
+          {LANGS.map((lang) => (
+            <button
+              key={lang.key}
+              type="button"
+              onClick={() => setActiveLang(lang.key)}
+              className={cn(
+                'px-4 py-2 rounded-md text-sm font-medium transition-colors',
+                activeLang === lang.key
+                  ? 'bg-primary-700 text-white'
+                  : 'text-luxury-600 hover:bg-luxury-50',
+              )}
+            >
+              {lang.label}
+              <span className="ml-1.5 text-xs opacity-70">{lang.full}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Editor per language (render all, show active) */}
+        {LANGS.map((lang) => (
+          <div
+            key={lang.key}
+            className={activeLang === lang.key ? 'block' : 'hidden'}
+          >
+            <RichTextEditor
+              value={contentMap[lang.key].value}
+              onChange={contentMap[lang.key].onChange}
+              placeholder={`Write ${lang.full} content...`}
+            />
           </div>
-        ) : (
-          <div className="space-y-4">
-            {blocks.map((block, index) => (
-              <div
-                key={index}
-                className="border border-luxury-200 rounded-xl overflow-hidden"
-              >
-                {/* Block Header */}
-                <div className="flex items-center justify-between px-4 py-2.5 bg-luxury-50 border-b border-luxury-200">
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="w-4 h-4 text-luxury-400" />
-                    {block.content_type === 'text' ? (
-                      <Type className="w-4 h-4 text-primary-600" />
-                    ) : (
-                      <ImageIcon className="w-4 h-4 text-secondary-500" />
-                    )}
-                    <span className="text-sm font-medium text-primary-700">
-                      {block.content_type === 'text' ? 'Text' : 'Image'} Block
-                    </span>
-                    <span className="text-xs text-luxury-400">#{index + 1}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => moveBlock(index, 'up')}
-                      disabled={index === 0}
-                      className="p-1 text-luxury-400 hover:text-primary-700 disabled:opacity-30 transition-colors"
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveBlock(index, 'down')}
-                      disabled={index === blocks.length - 1}
-                      className="p-1 text-luxury-400 hover:text-primary-700 disabled:opacity-30 transition-colors"
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeBlock(index)}
-                      className="p-1 text-luxury-400 hover:text-red-600 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Block Content */}
-                <div className="p-4">
-                  {block.content_type === 'text' && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div>
-                        <label className="text-xs font-medium text-luxury-500 mb-1 block">EN</label>
-                        <textarea
-                          value={block.content_en}
-                          onChange={(e) => updateBlock(index, 'content_en', e.target.value)}
-                          rows={5}
-                          className={cn(inputClass, 'resize-y')}
-                          placeholder="English content..."
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-luxury-500 mb-1 block">TH</label>
-                        <textarea
-                          value={block.content_th}
-                          onChange={(e) => updateBlock(index, 'content_th', e.target.value)}
-                          rows={5}
-                          className={cn(inputClass, 'resize-y')}
-                          placeholder="Thai content..."
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-luxury-500 mb-1 block">ZH</label>
-                        <textarea
-                          value={block.content_zh}
-                          onChange={(e) => updateBlock(index, 'content_zh', e.target.value)}
-                          rows={5}
-                          className={cn(inputClass, 'resize-y')}
-                          placeholder="Chinese content..."
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {block.content_type === 'image' && (
-                    <div className="space-y-4">
-                      <ImageUploader
-                        images={block.image_url ? [{ url: block.image_url, sort_order: 0, is_primary: true }] : []}
-                        onChange={(imgs) => handleBlockImageChange(index, imgs)}
-                        folder="blog"
-                        maxImages={1}
-                      />
-                      {block.image_url && (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          <div>
-                            <label className="text-xs font-medium text-luxury-500 mb-1 block">Alt (EN)</label>
-                            <input
-                              value={block.image_alt_en}
-                              onChange={(e) => updateBlock(index, 'image_alt_en', e.target.value)}
-                              className={inputClass}
-                              placeholder="Image alt text (EN)"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs font-medium text-luxury-500 mb-1 block">Alt (TH)</label>
-                            <input
-                              value={block.image_alt_th}
-                              onChange={(e) => updateBlock(index, 'image_alt_th', e.target.value)}
-                              className={inputClass}
-                              placeholder="Alt text (TH)"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs font-medium text-luxury-500 mb-1 block">Alt (ZH)</label>
-                            <input
-                              value={block.image_alt_zh}
-                              onChange={(e) => updateBlock(index, 'image_alt_zh', e.target.value)}
-                              className={inputClass}
-                              placeholder="Alt text (ZH)"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {/* Add block buttons at the bottom */}
-            <div className="flex items-center justify-center gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => addBlock('text')}
-                className="flex items-center gap-1.5 px-4 py-2 border border-luxury-200 text-primary-700 rounded-lg text-sm hover:bg-luxury-50 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Text
-              </button>
-              <button
-                type="button"
-                onClick={() => addBlock('image')}
-                className="flex items-center gap-1.5 px-4 py-2 border border-luxury-200 text-primary-700 rounded-lg text-sm hover:bg-luxury-50 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Image
-              </button>
-            </div>
-          </div>
-        )}
+        ))}
       </div>
 
       {/* SEO */}

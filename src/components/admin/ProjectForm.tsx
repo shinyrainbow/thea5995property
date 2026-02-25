@@ -133,11 +133,16 @@ export default function ProjectForm({ project, propertyTypes }: ProjectFormProps
 
       // Save images to project_images table
       if (projectId) {
-        await fetch(`/api/projects/${projectId}/images`, {
+        const imgRes = await fetch(`/api/projects/${projectId}/images`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ images }),
         });
+
+        if (!imgRes.ok) {
+          const imgErr = await imgRes.json().catch(() => ({}));
+          throw new Error(imgErr.error || 'Failed to save images');
+        }
       }
 
       router.push('/admin/projects');
