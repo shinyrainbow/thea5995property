@@ -23,7 +23,6 @@ const navLinks: NavLink[] = [
   { href: '/properties', labelKey: 'properties', namespace: 'common' },
   { href: '/projects', labelKey: 'projects', namespace: 'common' },
   { href: '/about', labelKey: 'about', namespace: 'common' },
-  { href: '/contact', labelKey: 'contact', namespace: 'common' },
   { href: '/blog', labelKey: 'blog', namespace: 'common' },
 ];
 
@@ -126,6 +125,18 @@ export default function Header() {
             <LanguageSwitcher variant={scrolled ? 'dark' : 'light'} />
           </div>
 
+          <Link
+            href="/contact"
+            className={cn(
+              'hidden lg:inline-flex items-center px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300',
+              scrolled
+                ? 'bg-primary-900 text-white hover:bg-primary-800'
+                : 'bg-white text-primary-900 hover:bg-white/90',
+            )}
+          >
+            {common('contact')}
+          </Link>
+
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -171,7 +182,13 @@ export default function Header() {
             </Link>
           ))}
         </nav>
-        <div className="border-t border-luxury-100 px-4 py-4">
+        <div className="border-t border-luxury-100 px-4 py-4 space-y-4">
+          <Link
+            href="/contact"
+            className="block w-full rounded-lg bg-primary-900 px-4 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-primary-800"
+          >
+            {common('contact')}
+          </Link>
           <LanguageSwitcher />
         </div>
       </div>
