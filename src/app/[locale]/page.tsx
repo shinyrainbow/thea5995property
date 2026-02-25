@@ -136,6 +136,40 @@ export default async function HomePage({
     <>
       {show('hero') && <Hero />}
 
+      {/* Featured Properties */}
+      {show('featured_properties') && (
+        <section className="py-24 md:py-32 bg-luxury-50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-16 text-center">
+              <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
+                Featured
+              </p>
+              <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
+                {t('featuredProperties')}
+              </h2>
+              <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
+              <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
+                {t('featuredSubtitle')}
+              </p>
+            </div>
+
+            <PropertyGrid properties={properties} />
+
+            {properties.length > 0 && (
+              <div className="mt-16 text-center">
+                <Link
+                  href="/properties"
+                  className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
+                >
+                  {t('viewAllProperties')}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Property Types - Bento Grid */}
       <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -194,40 +228,6 @@ export default async function HomePage({
           </div>
         </div>
       </section>
-
-      {/* Featured Properties */}
-      {show('featured_properties') && (
-        <section className="py-24 md:py-32 bg-luxury-50">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-16 text-center">
-              <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
-                Featured
-              </p>
-              <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
-                {t('featuredProperties')}
-              </h2>
-              <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
-              <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
-                {t('featuredSubtitle')}
-              </p>
-            </div>
-
-            <PropertyGrid properties={properties} />
-
-            {properties.length > 0 && (
-              <div className="mt-16 text-center">
-                <Link
-                  href="/properties"
-                  className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
-                >
-                  {t('viewAllProperties')}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
-      )}
 
       {/* Latest Properties */}
       {show('latest_properties') && latestProperties.length > 0 && (
