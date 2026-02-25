@@ -103,6 +103,9 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           bedrooms: property.bedrooms,
           bathrooms: property.bathrooms,
           land_size: property.land_size,
+          land_rai: property.land_rai,
+          land_ngan: property.land_ngan,
+          land_square_wa: property.land_square_wa,
           building_size: property.building_size,
           room_size: property.room_size,
           floor: property.floor,
@@ -193,6 +196,19 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
       setValue('project_id', null);
     }
   }, [showProjectDropdown, setValue]);
+
+  // Auto-calculate land_size (sqm) from Thai land units
+  const watchedRai = watch('land_rai');
+  const watchedNgan = watch('land_ngan');
+  const watchedSquareWa = watch('land_square_wa');
+  const hasThaiLandUnits = (watchedRai ?? 0) > 0 || (watchedNgan ?? 0) > 0 || (watchedSquareWa ?? 0) > 0;
+
+  useEffect(() => {
+    if (hasThaiLandUnits) {
+      const sqm = ((watchedRai ?? 0) * 1600) + ((watchedNgan ?? 0) * 400) + ((watchedSquareWa ?? 0) * 4);
+      setValue('land_size', sqm > 0 ? sqm : null);
+    }
+  }, [watchedRai, watchedNgan, watchedSquareWa, hasThaiLandUnits, setValue]);
 
   // Map pin handler
   const handleLocationChange = useCallback(
@@ -440,12 +456,46 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             {errors.bathrooms && <p className={errorClass}>{errors.bathrooms.message}</p>}
           </div>
           <div>
+            <label className={labelClass}>{t('landRai')}</label>
+            <NumberInput
+              value={watch('land_rai')}
+              onChange={(val) => setValue('land_rai', val, { shouldValidate: true })}
+              allowDecimal
+              className={inputClass}
+              placeholder="0"
+            />
+          </div>
+          <div>
+            <label className={labelClass}>{t('landNgan')}</label>
+            <NumberInput
+              value={watch('land_ngan')}
+              onChange={(val) => setValue('land_ngan', val, { shouldValidate: true })}
+              allowDecimal
+              className={inputClass}
+              placeholder="0"
+            />
+          </div>
+          <div>
+            <label className={labelClass}>{t('landSquareWa')}</label>
+            <NumberInput
+              value={watch('land_square_wa')}
+              onChange={(val) => setValue('land_square_wa', val, { shouldValidate: true })}
+              allowDecimal
+              className={inputClass}
+              placeholder="0"
+            />
+          </div>
+          <div>
             <label className={labelClass}>{t('landSize')}</label>
             <NumberInput
               value={watch('land_size')}
-              onChange={(val) => setValue('land_size', val, { shouldValidate: true })}
-              className={inputClass}
+              onChange={(val) => {
+                if (!hasThaiLandUnits) setValue('land_size', val, { shouldValidate: true });
+              }}
+              allowDecimal
+              className={cn(inputClass, hasThaiLandUnits && 'bg-luxury-50 text-luxury-400')}
               placeholder="400"
+              readOnly={hasThaiLandUnits}
             />
             {errors.land_size && <p className={errorClass}>{errors.land_size.message}</p>}
           </div>

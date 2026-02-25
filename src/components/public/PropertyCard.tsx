@@ -138,6 +138,17 @@ export default function PropertyCard({
               <Maximize className="h-4 w-4 text-luxury-400" />
               <span>{property.room_size} sqm</span>
             </div>
+          ) : (property.land_rai || property.land_ngan || property.land_square_wa) ? (
+            <div className="flex items-center gap-1.5 text-sm text-luxury-600">
+              <Maximize className="h-4 w-4 text-luxury-400" />
+              <span>
+                {[
+                  property.land_rai ? `${property.land_rai}` : '0',
+                  property.land_ngan ? `${property.land_ngan}` : '0',
+                  property.land_square_wa ? `${property.land_square_wa}` : '0',
+                ].join('-')} ไร่
+              </span>
+            </div>
           ) : Number(property.building_size || property.land_size) > 0 ? (
             <div className="flex items-center gap-1.5 text-sm text-luxury-600">
               <Maximize className="h-4 w-4 text-luxury-400" />

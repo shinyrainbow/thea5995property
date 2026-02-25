@@ -330,12 +330,32 @@ export default async function PropertyDetailPage({
                   {property.land_size !== null && (
                     <div className="flex flex-col items-center gap-2 rounded-lg bg-luxury-50 p-4">
                       <Ruler className="h-6 w-6 text-secondary-400" />
-                      <span className="text-2xl font-bold text-primary-700">
-                        {property.land_size}
-                      </span>
-                      <span className="text-xs text-luxury-500">
-                        {t('landSize')} ({t('sqm')})
-                      </span>
+                      {(property.land_rai || property.land_ngan || property.land_square_wa) ? (
+                        <>
+                          <span className="text-2xl font-bold text-primary-700">
+                            {[
+                              property.land_rai ? `${property.land_rai}` : null,
+                              property.land_ngan ? `${property.land_ngan}` : null,
+                              property.land_square_wa ? `${property.land_square_wa}` : null,
+                            ].filter(Boolean).join('-')}
+                          </span>
+                          <span className="text-xs text-luxury-500">
+                            {t('rai')}-{t('ngan')}-{t('squareWa')}
+                          </span>
+                          <span className="text-xs text-luxury-400">
+                            ({property.land_size} {t('sqm')})
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-2xl font-bold text-primary-700">
+                            {property.land_size}
+                          </span>
+                          <span className="text-xs text-luxury-500">
+                            {t('landSize')} ({t('sqm')})
+                          </span>
+                        </>
+                      )}
                     </div>
                   )}
                   {property.building_size !== null && (
