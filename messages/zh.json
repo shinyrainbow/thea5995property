@@ -1,7 +1,7 @@
 {
   "common": {
     "siteTitle": "THE A 5995",
-    "siteDescription": "泰国豪华房地产 - 出售和出租的优质房产",
+    "siteDescription": "泰国实惠优质房地产 - 出售和出租的优质房产",
     "home": "首页",
     "properties": "房产",
     "about": "关于我们",
@@ -137,7 +137,7 @@
     "building": "大楼"
   },
   "hero": {
-    "headline": "泰国豪华房地产",
+    "headline": "泰国实惠优质房地产",
     "subtitle": "在泰国最理想的地段发现卓越房产。从海滨别墅到城市顶层公寓，找到您的完美之家。",
     "searchPlaceholder": "按位置、房产名称搜索...",
     "exploreProperties": "搜索",
@@ -150,7 +150,7 @@
   },
   "home": {
     "featuredProperties": "精选房产",
-    "featuredSubtitle": "精心挑选的泰国最受追捧地段的豪华房产",
+    "featuredSubtitle": "精心挑选的泰国最受追捧地段的优质房产",
     "propertyTypes": "房产类型",
     "propertyTypesSubtitle": "探索我们多样化的优质房地产系列",
     "statsTitle": "深受数千客户信赖",
@@ -169,9 +169,9 @@
   },
   "about": {
     "title": "关于我们",
-    "metaDescription": "了解THE A 5995，泰国领先的豪华房地产公司。",
+    "metaDescription": "了解THE A 5995，泰国领先的实惠优质房地产公司。",
     "heroTitle": "关于 THE A 5995",
-    "heroSubtitle": "自2015年以来，您在泰国豪华房地产市场的可信赖伙伴",
+    "heroSubtitle": "自2015年以来，您在泰国房地产市场的可信赖伙伴",
     "storyTitle": "我们的故事",
     "storyText1": "THE A 5995 以单一愿景成立：在泰国提供诚实真诚的房地产服务。凭借超过10年的房地产市场经验，我们以诚信、专业和卓越的客户服务建立了良好的声誉。",
     "storyText2": "我们的专家团队深知买卖房产是人生中最重要的决定之一。我们致力于以透明和专注引导客户完成每一步。",
@@ -191,7 +191,7 @@
   },
   "contact": {
     "title": "联系我们",
-    "metaDescription": "联系THE A 5995，咨询泰国豪华房产。",
+    "metaDescription": "联系THE A 5995，咨询泰国房产。",
     "heroTitle": "联系我们",
     "heroSubtitle": "我们很想听到您的声音。联系我们的团队咨询任何房产问题或预约咨询。",
     "infoTitle": "联系信息",
@@ -209,7 +209,7 @@
   },
   "blog": {
     "title": "博客",
-    "metaDescription": "关于泰国豪华房地产市场的见解、市场更新和指南。",
+    "metaDescription": "关于泰国房地产市场的见解、市场更新和指南。",
     "heroTitle": "见解与新闻",
     "heroSubtitle": "了解我们房地产专家提供的最新趋势、市场分析和生活方式文章。",
     "readMore": "阅读更多",
@@ -385,9 +385,9 @@
   },
   "metadata": {
     "propertiesTitle": "房产 | THE A 5995",
-    "propertiesDescription": "浏览泰国各地出售和出租的豪华房产",
+    "propertiesDescription": "浏览泰国各地出售和出租的优质房产",
     "projectsTitle": "项目 | THE A 5995",
-    "projectsDescription": "浏览泰国各地的豪华房产项目",
+    "projectsDescription": "浏览泰国各地的优质房产项目",
     "blogTitle": "博客 | THE A 5995",
     "blogDescription": "房地产见解、市场更新和生活方式指南"
   }

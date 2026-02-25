@@ -1,7 +1,7 @@
 {
   "common": {
     "siteTitle": "THE A 5995",
-    "siteDescription": "Luxury Real Estate in Thailand - Premium Properties for Sale and Rent",
+    "siteDescription": "Real Estate in Thailand - Quality Properties for Sale and Rent",
     "home": "Home",
     "properties": "Properties",
     "about": "About",
@@ -137,7 +137,7 @@
     "building": "Building"
   },
   "hero": {
-    "headline": "Luxury Real Estate in Thailand",
+    "headline": "Affordable Quality Real Estate in Thailand",
     "subtitle": "Discover exceptional properties across Thailand's most desirable locations. From beachfront villas to city penthouses, find your perfect home.",
     "searchPlaceholder": "Search by location, property name...",
     "exploreProperties": "Search",
@@ -150,7 +150,7 @@
   },
   "home": {
     "featuredProperties": "Featured Properties",
-    "featuredSubtitle": "Handpicked luxury properties in Thailand's most sought-after locations",
+    "featuredSubtitle": "Handpicked quality properties in Thailand's most sought-after locations",
     "propertyTypes": "Property Types",
     "propertyTypesSubtitle": "Explore our diverse collection of premium real estate",
     "statsTitle": "Trusted by Thousands",
@@ -169,14 +169,14 @@
   },
   "about": {
     "title": "About Us",
-    "metaDescription": "Learn about THE A 5995, Thailand's premier luxury real estate agency.",
+    "metaDescription": "Learn about THE A 5995, Thailand's premier affordable real estate agency.",
     "heroTitle": "About THE A 5995",
-    "heroSubtitle": "Your trusted partner in Thailand's luxury real estate market since 2015",
+    "heroSubtitle": "Your trusted partner in Thailand's real estate market since 2015",
     "storyTitle": "Our Story",
     "storyText1": "THE A 5995 was founded with a singular vision: to provide honest and sincere real estate services in Thailand. With over 10 years of experience in the property market, we have built a reputation for integrity, professionalism, and exceptional client service.",
     "storyText2": "Our team of experts understands that buying or selling property is one of the most important decisions in life. We are committed to guiding our clients through every step with transparency and dedication.",
     "missionTitle": "Our Mission",
-    "missionText": "To connect discerning buyers and investors with Thailand's finest properties, delivering a seamless and luxurious real estate experience from first inquiry to final handover.",
+    "missionText": "To connect buyers and investors with Thailand's best-value properties, delivering a seamless real estate experience from first inquiry to final handover.",
     "whyChooseUs": "Why Choose Us",
     "feature1Title": "Expert Local Knowledge",
     "feature1Text": "Our team possesses deep expertise in Thailand's property market, from bustling Bangkok to serene island retreats. We know every neighborhood, every development, and every opportunity.",
@@ -191,7 +191,7 @@
   },
   "contact": {
     "title": "Contact Us",
-    "metaDescription": "Get in touch with THE A 5995 for luxury property inquiries in Thailand.",
+    "metaDescription": "Get in touch with THE A 5995 for property inquiries in Thailand.",
     "heroTitle": "Get In Touch",
     "heroSubtitle": "We would love to hear from you. Reach out to our team for any property inquiries or consultations.",
     "infoTitle": "Contact Information",
@@ -209,7 +209,7 @@
   },
   "blog": {
     "title": "Blog",
-    "metaDescription": "Insights, market updates, and guides about Thailand's luxury real estate market.",
+    "metaDescription": "Insights, market updates, and guides about Thailand's real estate market.",
     "heroTitle": "Insights & News",
     "heroSubtitle": "Stay informed with the latest trends, market analysis, and lifestyle articles from our real estate experts.",
     "readMore": "Read More",
@@ -385,9 +385,9 @@
   },
   "metadata": {
     "propertiesTitle": "Properties | THE A 5995",
-    "propertiesDescription": "Browse luxury properties for sale and rent across Thailand",
+    "propertiesDescription": "Browse quality properties for sale and rent across Thailand",
     "projectsTitle": "Projects | THE A 5995",
-    "projectsDescription": "Browse luxury property projects across Thailand",
+    "projectsDescription": "Browse quality property projects across Thailand",
     "blogTitle": "Blog | THE A 5995",
     "blogDescription": "Real estate insights, market updates, and lifestyle guides"
   }
