@@ -5,7 +5,6 @@
 // =============================================================================
 
 import { useState, useCallback, useEffect } from 'react';
-import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -40,7 +39,7 @@ export default function PropertyGallery({
       ? images
       : [{ url: '/images/placeholder-property.jpg', alt: propertyTitle }];
 
-  const currentImage = galleryImages[selectedIndex] || galleryImages[0];
+  const lightboxImage = galleryImages[selectedIndex] || galleryImages[0];
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
@@ -88,64 +87,62 @@ export default function PropertyGallery({
     );
   }
 
+  const mainImage = galleryImages[0];
+  const sideImages = galleryImages.slice(1, 5);
+  const remainingCount = galleryImages.length - 5;
+
   return (
     <>
-      {/* Main Image */}
-      <div className="space-y-3">
+      {/* Split Gallery: big left + grid right */}
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:h-90">
+        {/* Left - Main big image */}
         <div
-          className="relative aspect-[16/10] cursor-pointer overflow-hidden rounded-xl bg-luxury-100"
-          onClick={() => setLightboxOpen(true)}
+          className="relative h-70 md:h-full cursor-pointer overflow-hidden rounded-xl md:rounded-r-none bg-luxury-100"
+          onClick={() => { setSelectedIndex(0); setLightboxOpen(true); }}
         >
           <img
-            src={currentImage.url}
-            alt={currentImage.alt}
+            src={mainImage.url}
+            alt={mainImage.alt}
             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
           />
-
-          {/* Expand icon */}
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setLightboxOpen(true);
-            }}
+            onClick={(e) => { e.stopPropagation(); setSelectedIndex(0); setLightboxOpen(true); }}
             className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-lg bg-black/50 text-white transition-colors hover:bg-black/70"
             aria-label="Open fullscreen gallery"
           >
             <Maximize2 className="h-5 w-5" />
           </button>
-
-          {/* Image counter */}
-          {galleryImages.length > 1 && (
-            <div className="absolute bottom-3 right-3 rounded-lg bg-black/50 px-3 py-1.5 text-sm font-medium text-white">
-              {selectedIndex + 1} / {galleryImages.length}
-            </div>
-          )}
         </div>
 
-        {/* Thumbnail Strip */}
-        {galleryImages.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {galleryImages.map((image, index) => (
-              <button
+        {/* Right - Grid of remaining images */}
+        {sideImages.length > 0 && (
+          <div className="grid grid-cols-2 gap-2 h-45 md:h-full">
+            {sideImages.map((image, index) => (
+              <div
                 key={index}
-                type="button"
-                onClick={() => setSelectedIndex(index)}
                 className={cn(
-                  'relative h-20 w-20 shrink-0 overflow-hidden rounded-lg transition-all',
-                  index === selectedIndex
-                    ? 'ring-2 ring-secondary-400 ring-offset-2'
-                    : 'opacity-60 hover:opacity-100',
+                  'relative cursor-pointer overflow-hidden bg-luxury-100',
+                  index === 0 && 'rounded-tl-none md:rounded-tl-none',
+                  index === 1 && 'rounded-tr-xl md:rounded-tr-xl',
+                  index === 2 && 'rounded-bl-none md:rounded-bl-none',
+                  index === 3 && 'rounded-br-xl md:rounded-br-xl',
                 )}
-                aria-label={`View image ${index + 1}`}
+                onClick={() => { setSelectedIndex(index + 1); setLightboxOpen(true); }}
               >
                 <img
                   src={image.url}
                   alt={image.alt}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   loading="lazy"
                 />
-              </button>
+                {/* Show "+N more" overlay on last image if there are more */}
+                {index === sideImages.length - 1 && remainingCount > 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                    <span className="text-lg font-bold text-white">+{remainingCount} more</span>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         )}
@@ -188,8 +185,8 @@ export default function PropertyGallery({
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={currentImage.url}
-              alt={currentImage.alt}
+              src={lightboxImage.url}
+              alt={lightboxImage.alt}
               className="max-h-[85vh] max-w-full rounded-lg object-contain"
             />
           </div>

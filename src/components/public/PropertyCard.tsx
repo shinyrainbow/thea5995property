@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { Link } from '@/i18n/routing';
-import { MapPin, BedDouble, Bath, Maximize, Star } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Maximize, Layers, Star } from 'lucide-react';
 import { cn, getLocalizedField, formatPrice, getLocalizedProvince } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
 import type { Property, PropertyImage, PropertyType } from '@/types';
@@ -120,7 +120,7 @@ export default function PropertyCard({
         </div>
 
         {/* Amenities row - fixed min-height */}
-        <div className="mt-auto flex items-center gap-4 border-t border-luxury-100 pt-3 min-h-10">
+        <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-luxury-100 pt-3 min-h-10">
           {Number(property.bedrooms) > 0 ? (
             <div className="flex items-center gap-1.5 text-sm text-luxury-600">
               <BedDouble className="h-4 w-4 text-luxury-400" />
@@ -133,10 +133,21 @@ export default function PropertyCard({
               <span>{property.bathrooms} Bath</span>
             </div>
           ) : null}
-          {Number(property.building_size || property.land_size) > 0 ? (
+          {Number(property.room_size) > 0 ? (
+            <div className="flex items-center gap-1.5 text-sm text-luxury-600">
+              <Maximize className="h-4 w-4 text-luxury-400" />
+              <span>{property.room_size} sqm</span>
+            </div>
+          ) : Number(property.building_size || property.land_size) > 0 ? (
             <div className="flex items-center gap-1.5 text-sm text-luxury-600">
               <Maximize className="h-4 w-4 text-luxury-400" />
               <span>{property.building_size || property.land_size} sqm</span>
+            </div>
+          ) : null}
+          {Number(property.floor) > 0 ? (
+            <div className="flex items-center gap-1.5 text-sm text-luxury-600">
+              <Layers className="h-4 w-4 text-luxury-400" />
+              <span>F.{property.floor}</span>
             </div>
           ) : null}
         </div>
