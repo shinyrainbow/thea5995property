@@ -343,7 +343,23 @@
     "createProperty": "สร้างอสังหาริมทรัพย์",
     "updateProperty": "อัปเดตอสังหาริมทรัพย์",
     "createProject": "สร้างโครงการ",
-    "updateProject": "อัปเดตโครงการ"
+    "updateProject": "อัปเดตโครงการ",
+
+    "dashboardWelcome": "ยินดีต้อนรับกลับ นี่คือภาพรวมของแพลตฟอร์มของคุณ",
+    "totalProperties": "อสังหาริมทรัพย์ทั้งหมด",
+    "activeListings": "ประกาศที่ใช้งาน",
+    "totalInquiries": "การสอบถามทั้งหมด",
+    "newInquiries": "การสอบถามใหม่",
+    "createNewListing": "สร้างประกาศใหม่",
+    "viewInquiries": "ดูการสอบถาม",
+    "newMessagesCount": "{count} ข้อความใหม่",
+    "writeBlogPost": "เขียนบทความ",
+    "createNewContent": "สร้างเนื้อหาใหม่",
+    "recentInquiries": "การสอบถามล่าสุด",
+    "recentProperties": "อสังหาริมทรัพย์ล่าสุด",
+    "viewAllLink": "ดูทั้งหมด",
+    "noInquiriesYet": "ยังไม่มีการสอบถาม",
+    "noPropertiesYet": "ยังไม่มีอสังหาริมทรัพย์"
   },
   "project": {
     "allProjects": "โครงการ",

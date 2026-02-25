@@ -343,7 +343,23 @@
     "createProperty": "Create Property",
     "updateProperty": "Update Property",
     "createProject": "Create Project",
-    "updateProject": "Update Project"
+    "updateProject": "Update Project",
+
+    "dashboardWelcome": "Welcome back. Here is an overview of your platform.",
+    "totalProperties": "Total Properties",
+    "activeListings": "Active Listings",
+    "totalInquiries": "Total Inquiries",
+    "newInquiries": "New Inquiries",
+    "createNewListing": "Create a new listing",
+    "viewInquiries": "View Inquiries",
+    "newMessagesCount": "{count} new messages",
+    "writeBlogPost": "Write Blog Post",
+    "createNewContent": "Create new content",
+    "recentInquiries": "Recent Inquiries",
+    "recentProperties": "Recent Properties",
+    "viewAllLink": "View all",
+    "noInquiriesYet": "No inquiries yet",
+    "noPropertiesYet": "No properties yet"
   },
   "project": {
     "allProjects": "Projects",

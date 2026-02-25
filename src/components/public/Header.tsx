@@ -30,16 +30,21 @@ export default function Header() {
   const common = useTranslations('common');
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isHomePage = pathname === '/';
-  const [scrolled, setScrolled] = useState(!isHomePage);
+  // Pages with dark hero banners get a transparent header that turns white on scroll
+  const segments = pathname.split('/').filter(Boolean);
+  const hasDarkHero =
+    pathname === '/' ||
+    ['about', 'properties', 'projects', 'blog', 'contact'].includes(segments[0]) && segments.length === 1 ||
+    (segments.length === 1 && segments[0] !== '');
+  const [scrolled, setScrolled] = useState(!hasDarkHero);
 
   useEffect(() => {
-    if (!isHomePage) { setScrolled(true); return; }
+    if (!hasDarkHero) { setScrolled(true); return; }
     function handleScroll() { setScrolled(window.scrollY > 10); }
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isHomePage]);
+  }, [hasDarkHero]);
 
   useEffect(() => { setMobileMenuOpen(false); }, [pathname]);
 

@@ -343,7 +343,23 @@
     "createProperty": "创建房产",
     "updateProperty": "更新房产",
     "createProject": "创建项目",
-    "updateProject": "更新项目"
+    "updateProject": "更新项目",
+
+    "dashboardWelcome": "欢迎回来。这是您平台的概览。",
+    "totalProperties": "总房产数",
+    "activeListings": "活跃列表",
+    "totalInquiries": "总咨询数",
+    "newInquiries": "新咨询",
+    "createNewListing": "创建新列表",
+    "viewInquiries": "查看咨询",
+    "newMessagesCount": "{count} 条新消息",
+    "writeBlogPost": "撰写博客文章",
+    "createNewContent": "创建新内容",
+    "recentInquiries": "最近咨询",
+    "recentProperties": "最近房产",
+    "viewAllLink": "查看全部",
+    "noInquiriesYet": "暂无咨询",
+    "noPropertiesYet": "暂无房产"
   },
   "project": {
     "allProjects": "项目",

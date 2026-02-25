@@ -5,6 +5,7 @@
 // =============================================================================
 
 import { Building2, Home, MessageSquare, AlertCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 interface StatCard {
@@ -12,7 +13,6 @@ interface StatCard {
   value: number | string;
   icon: React.ComponentType<{ className?: string }>;
   color: 'blue' | 'green' | 'yellow' | 'red';
-  change?: string;
 }
 
 interface DashboardStatsProps {
@@ -51,27 +51,29 @@ export default function DashboardStats({
   totalInquiries,
   newInquiries,
 }: DashboardStatsProps) {
+  const t = useTranslations('admin');
+
   const stats: StatCard[] = [
     {
-      label: 'Total Properties',
+      label: t('totalProperties'),
       value: totalProperties,
       icon: Building2,
       color: 'blue',
     },
     {
-      label: 'Active Listings',
+      label: t('activeListings'),
       value: activeListings,
       icon: Home,
       color: 'green',
     },
     {
-      label: 'Total Inquiries',
+      label: t('totalInquiries'),
       value: totalInquiries,
       icon: MessageSquare,
       color: 'yellow',
     },
     {
-      label: 'New Inquiries',
+      label: t('newInquiries'),
       value: newInquiries,
       icon: AlertCircle,
       color: 'red',
