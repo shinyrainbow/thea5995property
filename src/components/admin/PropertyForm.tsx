@@ -182,7 +182,8 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
   // Determine if the selected property type supports projects
   const selectedPropertyType = propertyTypes.find((t) => String(t.id) === String(watchedPropertyTypeId));
-  const isUnitType = ['condo', 'apartment', 'office'].includes(selectedPropertyType?.slug_en || '');
+  const slug = selectedPropertyType?.slug_en || '';
+  const isUnitType = ['condo', 'apartment'].includes(slug);
   const filteredProjects = projects.filter((p) => String(p.property_type_id) === String(watchedPropertyTypeId));
   const showProjectDropdown = selectedPropertyType?.has_projects === true || filteredProjects.length > 0;
 
@@ -417,7 +418,7 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           {errors.price && <p className={errorClass}>{errors.price.message}</p>}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
           <div>
             <label className={labelClass}>{t('bedrooms')}</label>
             <NumberInput
@@ -460,31 +461,27 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
               <p className={errorClass}>{errors.building_size.message}</p>
             )}
           </div>
-          {isUnitType && (
-            <>
-              <div>
-                <label className={labelClass}>{t('roomSize')}</label>
-                <NumberInput
-                  value={watch('room_size')}
-                  onChange={(val) => setValue('room_size', val, { shouldValidate: true })}
-                  allowDecimal
-                  className={inputClass}
-                  placeholder="35.5"
-                />
-                {errors.room_size && <p className={errorClass}>{errors.room_size.message}</p>}
-              </div>
-              <div>
-                <label className={labelClass}>{t('floor')}</label>
-                <NumberInput
-                  value={watch('floor')}
-                  onChange={(val) => setValue('floor', val, { shouldValidate: true })}
-                  className={inputClass}
-                  placeholder="12"
-                />
-                {errors.floor && <p className={errorClass}>{errors.floor.message}</p>}
-              </div>
-            </>
-          )}
+          <div>
+            <label className={labelClass}>{t('roomSize')}</label>
+            <NumberInput
+              value={watch('room_size')}
+              onChange={(val) => setValue('room_size', val, { shouldValidate: true })}
+              allowDecimal
+              className={inputClass}
+              placeholder="35.5"
+            />
+            {errors.room_size && <p className={errorClass}>{errors.room_size.message}</p>}
+          </div>
+          <div>
+            <label className={labelClass}>{t('floor')}</label>
+            <NumberInput
+              value={watch('floor')}
+              onChange={(val) => setValue('floor', val, { shouldValidate: true })}
+              className={inputClass}
+              placeholder="12"
+            />
+            {errors.floor && <p className={errorClass}>{errors.floor.message}</p>}
+          </div>
         </div>
       </div>
 

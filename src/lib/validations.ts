@@ -20,6 +20,12 @@ const optionalPositiveNumber = z
   .nullable()
   .optional();
 
+const optionalNonNegativeNumber = z
+  .number()
+  .min(0, 'Cannot be negative')
+  .nullable()
+  .optional();
+
 const emailField = z.string().email('Please enter a valid email address');
 
 const phoneField = z
@@ -49,8 +55,8 @@ export const propertySchema = z.object({
   property_type_id: requiredString,
 
   // Dimensions (nullable for property types like land)
-  bedrooms: optionalPositiveNumber,
-  bathrooms: optionalPositiveNumber,
+  bedrooms: optionalNonNegativeNumber,
+  bathrooms: optionalNonNegativeNumber,
   land_size: optionalPositiveNumber,
   building_size: optionalPositiveNumber,
   room_size: optionalPositiveNumber,
