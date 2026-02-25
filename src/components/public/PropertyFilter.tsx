@@ -14,8 +14,9 @@ import {
   X,
   ChevronDown,
 } from 'lucide-react';
-import { cn, PROPERTY_TYPE_SLUGS, THAI_PROVINCES, getLocalizedField } from '@/lib/utils';
+import { cn, PROPERTY_TYPE_SLUGS, THAI_PROVINCES_DATA, getLocalizedField, getLocalizedProvince } from '@/lib/utils';
 import Input from '@/components/ui/Input';
+import NumberInput from '@/components/ui/NumberInput';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 
@@ -41,11 +42,11 @@ export default function PropertyFilter() {
   const [transactionType, setTransactionType] = useState(
     searchParams.get('transaction_type') || '',
   );
-  const [minPrice, setMinPrice] = useState(
-    searchParams.get('min_price') || '',
+  const [minPrice, setMinPrice] = useState<number | null>(
+    searchParams.get('min_price') ? Number(searchParams.get('min_price')) : null,
   );
-  const [maxPrice, setMaxPrice] = useState(
-    searchParams.get('max_price') || '',
+  const [maxPrice, setMaxPrice] = useState<number | null>(
+    searchParams.get('max_price') ? Number(searchParams.get('max_price')) : null,
   );
   const [bedrooms, setBedrooms] = useState(
     searchParams.get('bedrooms') || '',
@@ -64,8 +65,8 @@ export default function PropertyFilter() {
     if (search.trim()) params.set('search', search.trim());
     if (propertyType) params.set('property_type', propertyType);
     if (transactionType) params.set('transaction_type', transactionType);
-    if (minPrice) params.set('min_price', minPrice);
-    if (maxPrice) params.set('max_price', maxPrice);
+    if (minPrice) params.set('min_price', String(minPrice));
+    if (maxPrice) params.set('max_price', String(maxPrice));
     if (bedrooms) params.set('bedrooms', bedrooms);
     if (province) params.set('province', province);
     if (sortBy && sortBy !== 'newest') params.set('sort_by', sortBy);
@@ -94,8 +95,8 @@ export default function PropertyFilter() {
     setSearch('');
     setPropertyType('');
     setTransactionType('');
-    setMinPrice('');
-    setMaxPrice('');
+    setMinPrice(null);
+    setMaxPrice(null);
     setBedrooms('');
     setProvince('');
     setSortBy('newest');
@@ -121,7 +122,7 @@ export default function PropertyFilter() {
   // ---- Province options ----
   const provinceOptions = [
     { value: '', label: t('anyLocation') },
-    ...THAI_PROVINCES.map((p) => ({ value: p, label: p })),
+    ...THAI_PROVINCES_DATA.map((p) => ({ value: p.value, label: getLocalizedProvince(p.value, locale) })),
   ];
 
   // ---- Bedrooms options ----
@@ -235,19 +236,17 @@ export default function PropertyFilter() {
             {t('priceRange')}
           </label>
           <div className="flex gap-2">
-            <Input
-              type="number"
-              placeholder={t('minPrice')}
+            <NumberInput
               value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="text-sm"
+              onChange={setMinPrice}
+              placeholder={t('minPrice')}
+              className="w-full rounded-lg border border-luxury-200 bg-white px-4 py-2.5 text-sm text-primary-700 placeholder:text-luxury-400 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:border-primary-400 focus:ring-primary-100"
             />
-            <Input
-              type="number"
-              placeholder={t('maxPrice')}
+            <NumberInput
               value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="text-sm"
+              onChange={setMaxPrice}
+              placeholder={t('maxPrice')}
+              className="w-full rounded-lg border border-luxury-200 bg-white px-4 py-2.5 text-sm text-primary-700 placeholder:text-luxury-400 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:border-primary-400 focus:ring-primary-100"
             />
           </div>
         </div>

@@ -6,16 +6,17 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
 import { Search, ChevronDown, MapPin, Home, Tag } from 'lucide-react';
 import type { PropertyType } from '@/types';
-import { THAI_PROVINCES } from '@/lib/utils';
+import { THAI_PROVINCES_DATA, getLocalizedProvince } from '@/lib/utils';
 
 export default function Hero() {
   const t = useTranslations('hero');
   const tTypes = useTranslations('propertyTypes');
   const router = useRouter();
+  const locale = useLocale();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [transactionType, setTransactionType] = useState('');
@@ -140,9 +141,9 @@ export default function Hero() {
                 className={selectClass}
               >
                 <option value="" className="text-primary-900">{t('allLocations')}</option>
-                {THAI_PROVINCES.map((p) => (
-                  <option key={p} value={p} className="text-primary-900">
-                    {p}
+                {THAI_PROVINCES_DATA.map((p) => (
+                  <option key={p.value} value={p.value} className="text-primary-900">
+                    {getLocalizedProvince(p.value, locale)}
                   </option>
                 ))}
               </select>

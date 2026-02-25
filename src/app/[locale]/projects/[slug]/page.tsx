@@ -8,7 +8,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { createServerClient } from '@/lib/supabase';
 const supabase = createServerClient();
-import { getLocalizedField } from '@/lib/utils';
+import { getLocalizedField, getLocalizedProvince } from '@/lib/utils';
 import PropertyGallery from '@/components/public/PropertyGallery';
 import PropertyGrid from '@/components/public/PropertyGrid';
 import Badge from '@/components/ui/Badge';
@@ -248,7 +248,7 @@ export default async function ProjectDetailPage({
                 </h1>
                 <div className="mt-2 flex items-center gap-1.5 text-luxury-500">
                   <MapPin className="h-4 w-4 text-secondary-400" />
-                  <span>{project.address}, {project.district}, {project.province}</span>
+                  <span>{project.address}, {project.district}, {getLocalizedProvince(project.province, locale)}</span>
                 </div>
               </div>
             </div>
@@ -339,7 +339,7 @@ export default async function ProjectDetailPage({
                 </h2>
                 <div className="mb-4 flex items-start gap-2 text-luxury-600">
                   <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-secondary-400" />
-                  <span>{project.address}, {project.district}, {project.province}</span>
+                  <span>{project.address}, {project.district}, {getLocalizedProvince(project.province, locale)}</span>
                 </div>
                 <div className="flex h-64 items-center justify-center rounded-lg bg-luxury-100 border-2 border-dashed border-luxury-300">
                   <div className="text-center text-luxury-400">
@@ -391,7 +391,7 @@ export default async function ProjectDetailPage({
                     <div className="flex justify-between">
                       <dt className="text-sm text-luxury-500">{t('location')}</dt>
                       <dd className="text-sm font-medium text-primary-700 text-right">
-                        {project.district}, {project.province}
+                        {project.district}, {getLocalizedProvince(project.province, locale)}
                       </dd>
                     </div>
                     <div className="flex justify-between">

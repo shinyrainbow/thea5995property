@@ -8,7 +8,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { createServerClient } from '@/lib/supabase';
 const supabase = createServerClient();
-import { getLocalizedField, formatPrice } from '@/lib/utils';
+import { getLocalizedField, formatPrice, getLocalizedProvince } from '@/lib/utils';
 import PropertyGallery from '@/components/public/PropertyGallery';
 import InquiryForm from '@/components/public/InquiryForm';
 import PropertyGrid from '@/components/public/PropertyGrid';
@@ -288,7 +288,7 @@ export default async function PropertyDetailPage({
                     </h1>
                     <div className="mt-2 flex items-center gap-1.5 text-luxury-500">
                       <MapPin className="h-4 w-4 text-secondary-400" />
-                      <span>{property.address}, {property.district}, {property.province}</span>
+                      <span>{property.address}, {property.district}, {getLocalizedProvince(property.province, locale)}</span>
                     </div>
                   </div>
 
@@ -411,7 +411,7 @@ export default async function PropertyDetailPage({
                 </h2>
                 <div className="mb-4 flex items-start gap-2 text-luxury-600">
                   <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-secondary-400" />
-                  <span>{property.address}, {property.district}, {property.province}</span>
+                  <span>{property.address}, {property.district}, {getLocalizedProvince(property.province, locale)}</span>
                 </div>
                 {/* Map placeholder */}
                 <div className="flex h-64 items-center justify-center rounded-lg bg-luxury-100 border-2 border-dashed border-luxury-300">

@@ -4,7 +4,7 @@
 
 import { Link } from '@/i18n/routing';
 import { MapPin, BedDouble, Bath, Maximize, Star } from 'lucide-react';
-import { cn, getLocalizedField, formatPrice } from '@/lib/utils';
+import { cn, getLocalizedField, formatPrice, getLocalizedProvince } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
 import type { Property, PropertyImage, PropertyType } from '@/types';
 
@@ -115,7 +115,7 @@ export default function PropertyCard({
         <div className="mb-3 flex items-center gap-1 text-sm text-luxury-500">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-secondary-400" />
           <span className="truncate">
-            {[property.district, property.province].filter(Boolean).join(', ')}
+            {[property.district, property.province ? getLocalizedProvince(property.province, locale) : ''].filter(Boolean).join(', ')}
           </span>
         </div>
 

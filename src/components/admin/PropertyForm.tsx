@@ -12,6 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { propertySchema, type PropertySchemaType } from '@/lib/validations';
 import ImageUploader, { type UploadedImage } from '@/components/admin/ImageUploader';
 import MapPicker from '@/components/admin/MapPicker';
+import NumberInput from '@/components/ui/NumberInput';
 import { THAI_PROVINCES } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 import {
@@ -407,11 +408,11 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
 
         <div>
           <label className={labelClass}>{t('price')} *</label>
-          <input
-            type="number"
-            {...register('price', { valueAsNumber: true })}
+          <NumberInput
+            value={watch('price')}
+            onChange={(val) => setValue('price', val as number, { shouldValidate: true })}
             className={inputClass}
-            placeholder="5000000"
+            placeholder="5,000,000"
           />
           {errors.price && <p className={errorClass}>{errors.price.message}</p>}
         </div>
@@ -419,9 +420,9 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
           <div>
             <label className={labelClass}>{t('bedrooms')}</label>
-            <input
-              type="number"
-              {...register('bedrooms', { valueAsNumber: true })}
+            <NumberInput
+              value={watch('bedrooms')}
+              onChange={(val) => setValue('bedrooms', val, { shouldValidate: true })}
               className={inputClass}
               placeholder="3"
             />
@@ -429,9 +430,9 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           </div>
           <div>
             <label className={labelClass}>{t('bathrooms')}</label>
-            <input
-              type="number"
-              {...register('bathrooms', { valueAsNumber: true })}
+            <NumberInput
+              value={watch('bathrooms')}
+              onChange={(val) => setValue('bathrooms', val, { shouldValidate: true })}
               className={inputClass}
               placeholder="2"
             />
@@ -439,9 +440,9 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           </div>
           <div>
             <label className={labelClass}>{t('landSize')}</label>
-            <input
-              type="number"
-              {...register('land_size', { valueAsNumber: true })}
+            <NumberInput
+              value={watch('land_size')}
+              onChange={(val) => setValue('land_size', val, { shouldValidate: true })}
               className={inputClass}
               placeholder="400"
             />
@@ -449,9 +450,9 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           </div>
           <div>
             <label className={labelClass}>{t('buildingSize')}</label>
-            <input
-              type="number"
-              {...register('building_size', { valueAsNumber: true })}
+            <NumberInput
+              value={watch('building_size')}
+              onChange={(val) => setValue('building_size', val, { shouldValidate: true })}
               className={inputClass}
               placeholder="200"
             />
@@ -463,20 +464,20 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
             <>
               <div>
                 <label className={labelClass}>{t('roomSize')}</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  {...register('room_size', { valueAsNumber: true })}
+                <NumberInput
+                  value={watch('room_size')}
+                  onChange={(val) => setValue('room_size', val, { shouldValidate: true })}
+                  allowDecimal
                   className={inputClass}
-                  placeholder="35"
+                  placeholder="35.5"
                 />
                 {errors.room_size && <p className={errorClass}>{errors.room_size.message}</p>}
               </div>
               <div>
                 <label className={labelClass}>{t('floor')}</label>
-                <input
-                  type="number"
-                  {...register('floor', { valueAsNumber: true })}
+                <NumberInput
+                  value={watch('floor')}
+                  onChange={(val) => setValue('floor', val, { shouldValidate: true })}
                   className={inputClass}
                   placeholder="12"
                 />

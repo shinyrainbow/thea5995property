@@ -12,6 +12,7 @@ import { projectSchema, type ProjectSchemaType } from '@/lib/validations';
 import type { ProjectWithDetails, PropertyType } from '@/types';
 import ImageUploader, { type UploadedImage } from '@/components/admin/ImageUploader';
 import MapPicker from '@/components/admin/MapPicker';
+import NumberInput from '@/components/ui/NumberInput';
 import { THAI_PROVINCES } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 import {
@@ -273,11 +274,11 @@ export default function ProjectForm({ project, propertyTypes }: ProjectFormProps
           </div>
           <div>
             <label className={labelClass}>Total Units</label>
-            <input
-              type="number"
-              {...register('total_units', { valueAsNumber: true })}
+            <NumberInput
+              value={watch('total_units')}
+              onChange={(val) => setValue('total_units', val, { shouldValidate: true })}
               className={inputClass}
-              placeholder="500"
+              placeholder="1,500"
             />
             {errors.total_units && <p className={errorClass}>{errors.total_units.message}</p>}
           </div>

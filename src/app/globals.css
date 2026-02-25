@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Primary - Blue (#15A1CF) */
-  --color-primary-50: #eef9fd;
-  --color-primary-100: #d0effa;
-  --color-primary-200: #a1dff5;
-  --color-primary-300: #61c9ec;
-  --color-primary-400: #2fb5de;
-  --color-primary-500: #15A1CF;
-  --color-primary-600: #1189b1;
-  --color-primary-700: #0e7194;
-  --color-primary-800: #0c5a77;
-  --color-primary-900: #094962;
+  /* Primary - Teal (#80DCE0) */
+  --color-primary-50: #f0fbfb;
+  --color-primary-100: #ccf2f3;
+  --color-primary-200: #a6e8ea;
+  --color-primary-300: #80DCE0;
+  --color-primary-400: #55cfd3;
+  --color-primary-500: #36bfc4;
+  --color-primary-600: #2b9a9e;
+  --color-primary-700: #227a7e;
+  --color-primary-800: #1a5e61;
+  --color-primary-900: #134648;
 
   /* Secondary - Rich Gold (techproperty.co) */
   --color-secondary-50: #fdf8eb;

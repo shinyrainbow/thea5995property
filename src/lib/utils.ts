@@ -324,28 +324,46 @@ export const PROPERTY_TYPE_SLUGS: Record<
 } as const;
 
 // ---------------------------------------------------------------------------
-// Province list (common Thai provinces for real estate)
+// Province list (common Thai provinces for real estate) — multilingual
 // ---------------------------------------------------------------------------
 
-export const THAI_PROVINCES = [
-  'Bangkok',
-  'Chiang Mai',
-  'Chiang Rai',
-  'Chonburi',
-  'Hua Hin',
-  'Kanchanaburi',
-  'Khon Kaen',
-  'Krabi',
-  'Nakhon Ratchasima',
-  'Nonthaburi',
-  'Pathum Thani',
-  'Pattaya',
-  'Phang Nga',
-  'Phuket',
-  'Prachuap Khiri Khan',
-  'Rayong',
-  'Samut Prakan',
-  'Samut Sakhon',
-  'Surat Thani',
-  'Udon Thani',
-] as const;
+export interface ProvinceData {
+  value: string;    // English name (used as DB key)
+  name_en: string;
+  name_th: string;
+  name_zh: string;
+}
+
+export const THAI_PROVINCES_DATA: ProvinceData[] = [
+  { value: 'Bangkok', name_en: 'Bangkok', name_th: 'กรุงเทพมหานคร', name_zh: '曼谷' },
+  { value: 'Chiang Mai', name_en: 'Chiang Mai', name_th: 'เชียงใหม่', name_zh: '清迈' },
+  { value: 'Chiang Rai', name_en: 'Chiang Rai', name_th: 'เชียงราย', name_zh: '清莱' },
+  { value: 'Chonburi', name_en: 'Chonburi', name_th: 'ชลบุรี', name_zh: '春武里' },
+  { value: 'Hua Hin', name_en: 'Hua Hin', name_th: 'หัวหิน', name_zh: '华欣' },
+  { value: 'Kanchanaburi', name_en: 'Kanchanaburi', name_th: 'กาญจนบุรี', name_zh: '北碧' },
+  { value: 'Khon Kaen', name_en: 'Khon Kaen', name_th: 'ขอนแก่น', name_zh: '孔敬' },
+  { value: 'Krabi', name_en: 'Krabi', name_th: 'กระบี่', name_zh: '甲米' },
+  { value: 'Nakhon Ratchasima', name_en: 'Nakhon Ratchasima', name_th: 'นครราชสีมา', name_zh: '呵叻' },
+  { value: 'Nonthaburi', name_en: 'Nonthaburi', name_th: 'นนทบุรี', name_zh: '暖武里' },
+  { value: 'Pathum Thani', name_en: 'Pathum Thani', name_th: 'ปทุมธานี', name_zh: '巴吞他尼' },
+  { value: 'Pattaya', name_en: 'Pattaya', name_th: 'พัทยา', name_zh: '芭提雅' },
+  { value: 'Phang Nga', name_en: 'Phang Nga', name_th: 'พังงา', name_zh: '攀牙' },
+  { value: 'Phuket', name_en: 'Phuket', name_th: 'ภูเก็ต', name_zh: '普吉' },
+  { value: 'Prachuap Khiri Khan', name_en: 'Prachuap Khiri Khan', name_th: 'ประจวบคีรีขันธ์', name_zh: '巴蜀' },
+  { value: 'Rayong', name_en: 'Rayong', name_th: 'ระยอง', name_zh: '罗勇' },
+  { value: 'Samut Prakan', name_en: 'Samut Prakan', name_th: 'สมุทรปราการ', name_zh: '北榄' },
+  { value: 'Samut Sakhon', name_en: 'Samut Sakhon', name_th: 'สมุทรสาคร', name_zh: '龙仔厝' },
+  { value: 'Surat Thani', name_en: 'Surat Thani', name_th: 'สุราษฎร์ธานี', name_zh: '素叻他尼' },
+  { value: 'Udon Thani', name_en: 'Udon Thani', name_th: 'อุดรธานี', name_zh: '乌隆他尼' },
+];
+
+/** Backward-compatible array of province English names (for DB values) */
+export const THAI_PROVINCES = THAI_PROVINCES_DATA.map((p) => p.value);
+
+/** Get localized province name from the English DB value */
+export function getLocalizedProvince(value: string, locale: string): string {
+  const province = THAI_PROVINCES_DATA.find((p) => p.value === value);
+  if (!province) return value;
+  const key = `name_${locale}` as keyof ProvinceData;
+  return (province[key] as string) || province.name_en;
+}

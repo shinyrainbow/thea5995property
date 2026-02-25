@@ -4,7 +4,7 @@
 
 import { Link } from '@/i18n/routing';
 import { MapPin, Building2, Users, Calendar } from 'lucide-react';
-import { cn, getLocalizedField } from '@/lib/utils';
+import { cn, getLocalizedField, getLocalizedProvince } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
 import type { Project, ProjectImage, PropertyType } from '@/types';
 
@@ -123,7 +123,7 @@ export default function ProjectCard({
         <div className="mb-3 flex items-center gap-1 text-sm text-luxury-500">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-secondary-400" />
           <span className="truncate">
-            {[project.district, project.province].filter(Boolean).join(', ')}
+            {[project.district, project.province ? getLocalizedProvince(project.province, locale) : ''].filter(Boolean).join(', ')}
           </span>
         </div>
 
