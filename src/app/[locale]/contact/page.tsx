@@ -102,7 +102,7 @@ export default async function ContactPage({
               <div className="mt-12">
                 <div className="overflow-hidden rounded-lg">
                   <iframe
-                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=Phraeksa,+Mueang+Samut+Prakan,+Samut+Prakan+10280&zoom=14`}
+                    src="https://www.google.com/maps?q=13.5950,100.6367&z=15&output=embed"
                     width="100%"
                     height="300"
                     style={{ border: 0 }}

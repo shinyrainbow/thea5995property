@@ -42,8 +42,8 @@ function stripLocalePrefix(pathname: string): string {
  */
 function isProtectedAdminRoute(pathname: string): boolean {
   const stripped = stripLocalePrefix(pathname);
-  // The login page is public
-  if (stripped === '/admin/login') return false;
+  // Login and register pages are public
+  if (stripped === '/admin/login' || stripped === '/admin/register') return false;
   // Everything else under /admin is protected
   return stripped.startsWith('/admin');
 }
@@ -72,8 +72,9 @@ export default function middleware(request: NextRequest) {
       }
     }
 
-    // If already logged in, redirect away from login page to dashboard
-    if (stripLocalePrefix(pathname) === '/admin/login' && sessionToken) {
+    // If already logged in, redirect away from login/register page to dashboard
+    const stripped = stripLocalePrefix(pathname);
+    if ((stripped === '/admin/login' || stripped === '/admin/register') && sessionToken) {
       return NextResponse.redirect(new URL('/admin', request.url));
     }
 
