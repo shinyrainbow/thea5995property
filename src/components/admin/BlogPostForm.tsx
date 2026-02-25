@@ -1,10 +1,10 @@
 'use client';
 
 // =============================================================================
-// THE A 5995 - Blog Post Form Component (Rich Text Editor with Language Tabs)
+// THE A 5995 - Blog Post Form Component (Multi-Section Content Editor)
 // =============================================================================
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,6 +16,13 @@ import {
   Save,
   Loader2,
   AlertCircle,
+  Plus,
+  Trash2,
+  GripVertical,
+  Type,
+  ImageIcon,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import type { BlogPostWithContent } from '@/types';
 
@@ -30,6 +37,67 @@ const LANGS = [
 ] as const;
 
 type LangKey = (typeof LANGS)[number]['key'];
+
+// ---------------------------------------------------------------------------
+// Content Block Types
+// ---------------------------------------------------------------------------
+
+interface TextBlock {
+  type: 'text';
+  content_en: string;
+  content_th: string;
+  content_zh: string;
+}
+
+interface ImageBlock {
+  type: 'image';
+  image_url: string;
+  image_alt_en: string;
+  image_alt_th: string;
+  image_alt_zh: string;
+}
+
+type ContentBlock = TextBlock | ImageBlock;
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function createTextBlock(): TextBlock {
+  return { type: 'text', content_en: '', content_th: '', content_zh: '' };
+}
+
+function createImageBlock(): ImageBlock {
+  return { type: 'image', image_url: '', image_alt_en: '', image_alt_th: '', image_alt_zh: '' };
+}
+
+/** Convert existing blog content_blocks from DB into our editor format */
+function parseExistingBlocks(
+  blocks: BlogPostWithContent['content_blocks'],
+): ContentBlock[] {
+  if (!blocks || blocks.length === 0) return [createTextBlock()];
+
+  const sorted = [...blocks].sort((a, b) => a.sort_order - b.sort_order);
+
+  return sorted.map((block) => {
+    if (block.content_type === 'image') {
+      return {
+        type: 'image',
+        image_url: block.image_url || '',
+        image_alt_en: block.image_alt_en || '',
+        image_alt_th: block.image_alt_th || '',
+        image_alt_zh: block.image_alt_zh || '',
+      } satisfies ImageBlock;
+    }
+    // text, heading, quote, gallery → treat as text
+    return {
+      type: 'text',
+      content_en: block.content_en || '',
+      content_th: block.content_th || '',
+      content_zh: block.content_zh || '',
+    } satisfies TextBlock;
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -54,17 +122,10 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
       : [],
   );
 
-  // Rich text content state (HTML strings per language)
-  const firstBlock = post?.content_blocks?.[0];
-  const [contentEn, setContentEn] = useState(firstBlock?.content_en || '');
-  const [contentTh, setContentTh] = useState(firstBlock?.content_th || '');
-  const [contentZh, setContentZh] = useState(firstBlock?.content_zh || '');
-
-  const contentMap: Record<LangKey, { value: string; onChange: (v: string) => void }> = {
-    en: { value: contentEn, onChange: setContentEn },
-    th: { value: contentTh, onChange: setContentTh },
-    zh: { value: contentZh, onChange: setContentZh },
-  };
+  // Multi-section content blocks
+  const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>(
+    post?.content_blocks ? parseExistingBlocks(post.content_blocks) : [createTextBlock()],
+  );
 
   const {
     register,
@@ -103,6 +164,66 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
     setValue('featured_image', imgs[0]?.url || '');
   };
 
+  // ---------------------------------------------------------------------------
+  // Block management
+  // ---------------------------------------------------------------------------
+
+  const addBlock = useCallback((type: 'text' | 'image') => {
+    setContentBlocks((prev) => [
+      ...prev,
+      type === 'text' ? createTextBlock() : createImageBlock(),
+    ]);
+  }, []);
+
+  const removeBlock = useCallback((index: number) => {
+    setContentBlocks((prev) => {
+      if (prev.length <= 1) return prev; // Keep at least one block
+      return prev.filter((_, i) => i !== index);
+    });
+  }, []);
+
+  const moveBlock = useCallback((index: number, direction: 'up' | 'down') => {
+    setContentBlocks((prev) => {
+      const newBlocks = [...prev];
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= newBlocks.length) return prev;
+      [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]];
+      return newBlocks;
+    });
+  }, []);
+
+  const updateTextBlock = useCallback(
+    (index: number, lang: LangKey, value: string) => {
+      setContentBlocks((prev) => {
+        const newBlocks = [...prev];
+        const block = newBlocks[index];
+        if (block.type === 'text') {
+          newBlocks[index] = { ...block, [`content_${lang}`]: value };
+        }
+        return newBlocks;
+      });
+    },
+    [],
+  );
+
+  const updateImageBlock = useCallback(
+    (index: number, field: keyof ImageBlock, value: string) => {
+      setContentBlocks((prev) => {
+        const newBlocks = [...prev];
+        const block = newBlocks[index];
+        if (block.type === 'image') {
+          newBlocks[index] = { ...block, [field]: value };
+        }
+        return newBlocks;
+      });
+    },
+    [],
+  );
+
+  // ---------------------------------------------------------------------------
+  // Submit
+  // ---------------------------------------------------------------------------
+
   const onSubmit = async (data: BlogPostSchemaType) => {
     setIsSubmitting(true);
     setError(null);
@@ -125,30 +246,43 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
       const result = await response.json();
       const postId = result.data?.id || post?.id;
 
-      // Save content as a single rich-text block
+      // Save all content blocks
       if (postId) {
+        const blocks = contentBlocks.map((block, index) => {
+          if (block.type === 'image') {
+            return {
+              content_type: 'image',
+              content_en: '',
+              content_th: '',
+              content_zh: '',
+              image_url: block.image_url,
+              image_alt_en: block.image_alt_en,
+              image_alt_th: block.image_alt_th,
+              image_alt_zh: block.image_alt_zh,
+              sort_order: index,
+            };
+          }
+          return {
+            content_type: 'text',
+            content_en: block.content_en,
+            content_th: block.content_th,
+            content_zh: block.content_zh,
+            image_url: '',
+            image_alt_en: '',
+            image_alt_th: '',
+            image_alt_zh: '',
+            sort_order: index,
+          };
+        });
+
         const blocksResponse = await fetch(`/api/blog/${postId}/content`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            blocks: [
-              {
-                content_type: 'text',
-                content_en: contentEn,
-                content_th: contentTh,
-                content_zh: contentZh,
-                image_url: '',
-                image_alt_en: '',
-                image_alt_th: '',
-                image_alt_zh: '',
-                sort_order: 0,
-              },
-            ],
-          }),
+          body: JSON.stringify({ blocks }),
         });
 
         if (!blocksResponse.ok) {
-          console.error('Failed to save content');
+          console.error('Failed to save content blocks');
         }
       }
 
@@ -278,47 +412,182 @@ export default function BlogPostForm({ post }: BlogPostFormProps) {
         />
       </div>
 
-      {/* Content Editor with Language Tabs */}
-      <div className={sectionClass}>
-        <div className="flex items-center justify-between pb-2 border-b border-luxury-100">
+      {/* ================================================================== */}
+      {/* Content Sections (Multi-Block Editor) */}
+      {/* ================================================================== */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-primary-700 uppercase tracking-wider">
-            Content
+            Content Sections
           </h3>
+          <div className="flex items-center gap-2">
+            {/* Language Tabs */}
+            <div className="flex items-center gap-1 rounded-lg border border-luxury-200 p-1">
+              {LANGS.map((lang) => (
+                <button
+                  key={lang.key}
+                  type="button"
+                  onClick={() => setActiveLang(lang.key)}
+                  className={cn(
+                    'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
+                    activeLang === lang.key
+                      ? 'bg-primary-700 text-white'
+                      : 'text-luxury-600 hover:bg-luxury-50',
+                  )}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Language Tabs */}
-        <div className="flex items-center gap-1 rounded-lg border border-luxury-200 p-1 w-fit">
-          {LANGS.map((lang) => (
-            <button
-              key={lang.key}
-              type="button"
-              onClick={() => setActiveLang(lang.key)}
-              className={cn(
-                'px-4 py-2 rounded-md text-sm font-medium transition-colors',
-                activeLang === lang.key
-                  ? 'bg-primary-700 text-white'
-                  : 'text-luxury-600 hover:bg-luxury-50',
-              )}
-            >
-              {lang.label}
-              <span className="ml-1.5 text-xs opacity-70">{lang.full}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Editor per language (render all, show active) */}
-        {LANGS.map((lang) => (
+        {/* Render each content block */}
+        {contentBlocks.map((block, index) => (
           <div
-            key={lang.key}
-            className={activeLang === lang.key ? 'block' : 'hidden'}
+            key={index}
+            className="bg-white rounded-xl border border-luxury-200 overflow-hidden"
           >
-            <RichTextEditor
-              value={contentMap[lang.key].value}
-              onChange={contentMap[lang.key].onChange}
-              placeholder={`Write ${lang.full} content...`}
-            />
+            {/* Block header */}
+            <div className="flex items-center gap-2 px-4 py-3 bg-luxury-50 border-b border-luxury-200">
+              <GripVertical className="w-4 h-4 text-luxury-400" />
+              <div className="flex items-center gap-1.5">
+                {block.type === 'text' ? (
+                  <Type className="w-4 h-4 text-primary-600" />
+                ) : (
+                  <ImageIcon className="w-4 h-4 text-primary-600" />
+                )}
+                <span className="text-sm font-medium text-primary-700">
+                  {block.type === 'text' ? 'Text Section' : 'Image Section'}
+                </span>
+              </div>
+              <span className="text-xs text-luxury-400 ml-1">#{index + 1}</span>
+
+              {/* Block actions */}
+              <div className="ml-auto flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => moveBlock(index, 'up')}
+                  disabled={index === 0}
+                  className="p-1.5 text-luxury-400 hover:text-primary-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="Move up"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveBlock(index, 'down')}
+                  disabled={index === contentBlocks.length - 1}
+                  className="p-1.5 text-luxury-400 hover:text-primary-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="Move down"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeBlock(index)}
+                  disabled={contentBlocks.length <= 1}
+                  className="p-1.5 text-red-400 hover:text-red-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="Remove section"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Block content */}
+            <div className="p-5">
+              {block.type === 'text' ? (
+                /* --- Text Block: Rich Text Editor per language --- */
+                <>
+                  {LANGS.map((lang) => (
+                    <div
+                      key={lang.key}
+                      className={activeLang === lang.key ? 'block' : 'hidden'}
+                    >
+                      <RichTextEditor
+                        value={(block as TextBlock)[`content_${lang.key}`]}
+                        onChange={(v) => updateTextBlock(index, lang.key, v)}
+                        placeholder={`Write ${lang.full} content...`}
+                      />
+                    </div>
+                  ))}
+                </>
+              ) : (
+                /* --- Image Block: Upload + Alt text --- */
+                <div className="space-y-4">
+                  <ImageUploader
+                    images={
+                      (block as ImageBlock).image_url
+                        ? [{ url: (block as ImageBlock).image_url, sort_order: 0, is_primary: true }]
+                        : []
+                    }
+                    onChange={(imgs) => {
+                      updateImageBlock(index, 'image_url', imgs[0]?.url || '');
+                    }}
+                    folder="blog"
+                    maxImages={1}
+                  />
+                  {/* Alt text inputs */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className={labelClass}>Caption / Alt (EN)</label>
+                      <input
+                        type="text"
+                        value={(block as ImageBlock).image_alt_en}
+                        onChange={(e) => updateImageBlock(index, 'image_alt_en', e.target.value)}
+                        className={inputClass}
+                        placeholder="Image description (EN)"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Caption / Alt (TH)</label>
+                      <input
+                        type="text"
+                        value={(block as ImageBlock).image_alt_th}
+                        onChange={(e) => updateImageBlock(index, 'image_alt_th', e.target.value)}
+                        className={inputClass}
+                        placeholder="Image description (TH)"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Caption / Alt (ZH)</label>
+                      <input
+                        type="text"
+                        value={(block as ImageBlock).image_alt_zh}
+                        onChange={(e) => updateImageBlock(index, 'image_alt_zh', e.target.value)}
+                        className={inputClass}
+                        placeholder="Image description (ZH)"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
+
+        {/* Add Section Buttons */}
+        <div className="flex items-center justify-center gap-3 py-4">
+          <button
+            type="button"
+            onClick={() => addBlock('text')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-dashed border-luxury-300 text-sm font-medium text-luxury-600 hover:border-primary-400 hover:text-primary-700 hover:bg-luxury-50 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <Type className="w-4 h-4" />
+            Add Text Section
+          </button>
+          <button
+            type="button"
+            onClick={() => addBlock('image')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-dashed border-luxury-300 text-sm font-medium text-luxury-600 hover:border-secondary-400 hover:text-secondary-600 hover:bg-luxury-50 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <ImageIcon className="w-4 h-4" />
+            Add Image Section
+          </button>
+        </div>
       </div>
 
       {/* SEO */}

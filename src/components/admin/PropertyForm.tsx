@@ -129,6 +129,15 @@ export default function PropertyForm({ property, propertyTypes, projects = [] }:
           featured: false,
           transaction_type: 'sale',
           amenities: [],
+          bedrooms: null,
+          bathrooms: null,
+          land_size: null,
+          land_rai: null,
+          land_ngan: null,
+          land_square_wa: null,
+          building_size: null,
+          room_size: null,
+          floor: null,
         },
   });
 
