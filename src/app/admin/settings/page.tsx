@@ -36,12 +36,9 @@ interface HomepageSection {
 const SECTION_LABELS: Record<string, string> = {
   hero: 'Hero Banner',
   featured_properties: 'Featured Properties',
-  about: 'About Section',
-  services: 'Services',
-  testimonials: 'Testimonials',
-  cta: 'Call to Action',
+  latest_properties: 'Latest Properties',
   stats: 'Statistics',
-  partners: 'Partners',
+  cta: 'Call to Action',
 };
 
 export default function AdminSettingsPage() {

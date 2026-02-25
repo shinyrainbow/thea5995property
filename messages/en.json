@@ -157,7 +157,9 @@
     "ctaTitle": "Find Your Dream Property",
     "ctaSubtitle": "Let our expert team help you discover the perfect property in Thailand. Contact us today for a personalized consultation.",
     "ctaButton": "Get Started",
-    "viewAllProperties": "View All Properties"
+    "viewAllProperties": "View All Properties",
+    "latestProperties": "Latest Properties",
+    "latestSubtitle": "Newly added properties available for sale and rent"
   },
   "stats": {
     "properties": "Properties",

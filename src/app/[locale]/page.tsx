@@ -95,6 +95,20 @@ export default async function HomePage({
     properties = [];
   }
 
+  // Fetch latest properties (newest added, not necessarily featured)
+  let latestProperties: PropertyWithDetails[] = [];
+  try {
+    const { data } = await supabase
+      .from('properties')
+      .select('*, property_type:property_types(*), images:property_images(*)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(6);
+    latestProperties = (data as PropertyWithDetails[]) || [];
+  } catch {
+    latestProperties = [];
+  }
+
   // Fetch property types
   let propertyTypes: PropertyType[] = [];
   try {
@@ -211,6 +225,38 @@ export default async function HomePage({
                 </Link>
               </div>
             )}
+          </div>
+        </section>
+      )}
+
+      {/* Latest Properties */}
+      {show('latest_properties') && latestProperties.length > 0 && (
+        <section className="py-24 md:py-32 bg-white">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-16 text-center">
+              <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
+                New Listings
+              </p>
+              <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
+                {t('latestProperties')}
+              </h2>
+              <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
+              <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
+                {t('latestSubtitle')}
+              </p>
+            </div>
+
+            <PropertyGrid properties={latestProperties} />
+
+            <div className="mt-16 text-center">
+              <Link
+                href="/properties"
+                className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
+              >
+                {t('viewAllProperties')}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </section>
       )}

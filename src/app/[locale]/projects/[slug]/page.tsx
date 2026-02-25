@@ -205,7 +205,7 @@ export default async function ProjectDetailPage({
 
       <div className="min-h-screen bg-luxury-50">
         {/* Back navigation */}
-        <div className="bg-white border-b border-luxury-200 pt-20">
+        <div className="bg-white border-b border-luxury-200">
           <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
             <Link
               href="/projects"

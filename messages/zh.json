@@ -157,7 +157,9 @@
     "ctaTitle": "找到您的梦想房产",
     "ctaSubtitle": "让我们的专家团队帮助您发现泰国的完美房产。今天就联系我们进行个性化咨询。",
     "ctaButton": "开始",
-    "viewAllProperties": "查看所有房产"
+    "viewAllProperties": "查看所有房产",
+    "latestProperties": "最新房产",
+    "latestSubtitle": "新上架的出售和出租房产"
   },
   "stats": {
     "properties": "房产",
