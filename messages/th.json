@@ -163,8 +163,8 @@
   },
   "stats": {
     "properties": "อสังหาริมทรัพย์",
-    "happyClients": "ลูกค้าที่มีความสุข",
-    "propertiesSold": "ขายแล้ว",
+    "happyClients": "ลูกค้าที่ติดตาม",
+    "propertiesSold": "ทรัพย์ที่ราคาดี",
     "yearsExperience": "ปีประสบการณ์"
   },
   "about": {
