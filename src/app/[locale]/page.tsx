@@ -142,7 +142,7 @@ export default async function HomePage({
               return (
                 <Link
                   key={type.id}
-                  href={`/properties?type=${type.id}`}
+                  href={`/properties?property_type=${type.id}`}
                   className={`group relative overflow-hidden rounded-2xl ${layoutClass}`}
                 >
                   {/* Background Image */}

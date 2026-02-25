@@ -66,6 +66,7 @@ export default async function PropertiesPage({
     if (province) query = query.eq('province', province);
     if (minPrice) query = query.gte('price', Number(minPrice));
     if (maxPrice) query = query.lte('price', Number(maxPrice));
+    if (propertyTypeFilter) query = query.eq('property_type_id', propertyTypeFilter);
     if (bedrooms) query = query.gte('bedrooms', Number(bedrooms));
 
     switch (sortBy) {
