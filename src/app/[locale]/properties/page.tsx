@@ -125,7 +125,7 @@ export default async function PropertiesPage({
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-10 -mt-10 relative z-10">
+        <div className="mb-10 mt-2 relative z-10">
           <PropertyFilter />
         </div>
 
