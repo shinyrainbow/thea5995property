@@ -154,7 +154,7 @@ export default async function PropertyTypePage({
   return (
     <div className="min-h-screen bg-luxury-50">
       {/* Page Header */}
-      <div className="flex min-h-[50vh] items-center bg-primary-900">
+      <div className="flex min-h-[50vh] items-center bg-primary-900 -mt-20 pt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="font-heading text-3xl font-bold text-white md:text-4xl">
             {typeName}

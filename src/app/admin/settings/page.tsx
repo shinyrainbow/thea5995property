@@ -4,14 +4,13 @@
 // THE A 5995 - Admin Settings Page
 // =============================================================================
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import {
   Settings,
   User,
   Globe,
-  Layout,
   Shield,
   Save,
   Loader2,
@@ -20,26 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type SettingsTab = 'profile' | 'homepage' | 'general';
-
-interface HomepageSection {
-  id: number;
-  section_type: string;
-  title_en: string;
-  title_th: string;
-  title_zh: string;
-  is_active: boolean;
-  sort_order: number;
-}
-
-// Fallback labels for section types (in case DB has no title)
-const SECTION_LABELS: Record<string, string> = {
-  hero: 'Hero Banner',
-  featured_properties: 'Featured Properties',
-  latest_properties: 'Latest Properties',
-  stats: 'Statistics',
-  cta: 'Call to Action',
-};
+type SettingsTab = 'profile' | 'general';
 
 export default function AdminSettingsPage() {
   const { data: session } = useSession();
@@ -48,98 +28,9 @@ export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage] = useState<string | null>(null);
 
-  // Homepage sections state
-  const [sections, setSections] = useState<HomepageSection[]>([]);
-  const [sectionsLoading, setSectionsLoading] = useState(false);
-
-  // Fetch homepage sections from DB
-  const fetchSections = useCallback(async () => {
-    setSectionsLoading(true);
-    try {
-      const res = await fetch('/api/homepage-sections');
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data && json.data.length > 0) {
-          setSections(json.data);
-        } else {
-          // If no sections in DB yet, seed with defaults
-          await seedDefaultSections();
-        }
-      }
-    } catch (err) {
-      console.error('Failed to fetch homepage sections:', err);
-    } finally {
-      setSectionsLoading(false);
-    }
-  }, []);
-
-  // Seed default sections if none exist
-  const seedDefaultSections = async () => {
-    try {
-      const res = await fetch('/api/homepage-sections/seed', { method: 'POST' });
-      if (res.ok) {
-        const json = await res.json();
-        setSections(json.data || []);
-      }
-    } catch (err) {
-      console.error('Failed to seed homepage sections:', err);
-    }
-  };
-
-  useEffect(() => {
-    fetchSections();
-  }, [fetchSections]);
-
-  // Toggle a section's visibility
-  const toggleSection = (sectionId: number) => {
-    setSections((prev) =>
-      prev.map((s) => (s.id === sectionId ? { ...s, is_active: !s.is_active } : s)),
-    );
-  };
-
-  // Save homepage section changes
-  const handleSaveHomepage = async () => {
-    setIsSaving(true);
-    setSavedMessage(null);
-    setErrorMessage(null);
-
-    try {
-      const payload = sections.map((s, index) => ({
-        id: s.id,
-        is_active: s.is_active,
-        sort_order: index,
-      }));
-
-      const res = await fetch('/api/homepage-sections', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections: payload }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Failed to save');
-      }
-
-      setSavedMessage(t('settingsSaved'));
-      setTimeout(() => setSavedMessage(null), 3000);
-    } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Failed to save settings');
-      setTimeout(() => setErrorMessage(null), 5000);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // General save handler (placeholder for profile/general tabs)
   const handleSave = async () => {
-    if (activeTab === 'homepage') {
-      await handleSaveHomepage();
-      return;
-    }
-
     setIsSaving(true);
     setSavedMessage(null);
 
@@ -153,7 +44,6 @@ export default function AdminSettingsPage() {
 
   const settingsTabs = [
     { key: 'profile' as const, label: t('profile'), icon: User },
-    { key: 'homepage' as const, label: t('homepage'), icon: Layout },
     { key: 'general' as const, label: t('generalSettings'), icon: Globe },
   ];
 
@@ -292,82 +182,6 @@ export default function AdminSettingsPage() {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Homepage Tab */}
-            {activeTab === 'homepage' && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 pb-4 border-b border-luxury-200">
-                  <Layout className="w-5 h-5 text-secondary-400" />
-                  <h2 className="text-lg font-heading font-semibold text-primary-700">
-                    {t('homepageSections')}
-                  </h2>
-                </div>
-
-                <p className="text-sm text-luxury-500">
-                  {t('homepageSectionsDescription')}
-                </p>
-
-                {sectionsLoading ? (
-                  <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-6 h-6 text-secondary-400 animate-spin" />
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {sections.map((section) => (
-                      <div
-                        key={section.id}
-                        className={cn(
-                          'flex items-center justify-between p-4 rounded-lg border transition-colors',
-                          section.is_active
-                            ? 'border-luxury-200 bg-white'
-                            : 'border-luxury-100 bg-luxury-50',
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="cursor-grab text-luxury-400">
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 8h16M4 16h16"
-                              />
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-primary-700">
-                              {section.title_en || SECTION_LABELS[section.section_type] || section.section_type}
-                            </p>
-                            <p className="text-xs text-luxury-400">{section.section_type}</p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => toggleSection(section.id)}
-                          className={cn(
-                            'relative w-9 h-5 rounded-full transition-colors duration-200',
-                            section.is_active ? 'bg-secondary-400' : 'bg-luxury-300',
-                          )}
-                        >
-                          <span
-                            className={cn(
-                              'absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm',
-                              section.is_active && 'translate-x-4',
-                            )}
-                          />
-                        </button>
-                      </div>
-                    ))}
-
-                    {sections.length === 0 && !sectionsLoading && (
-                      <p className="text-sm text-luxury-400 text-center py-8">
-                        {t('noSectionsFound')}
-                      </p>
-                    )}
-                  </div>
-                )}
               </div>
             )}
 

@@ -222,7 +222,7 @@ export default async function PropertyDetailPage({
 
       <div className="min-h-screen bg-luxury-50">
         {/* Back navigation */}
-        <div className="bg-luxury-50">
+        <div className="bg-luxury-50 pt-20">
           <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
             <div className="flex items-center gap-2 text-sm">
               <Link

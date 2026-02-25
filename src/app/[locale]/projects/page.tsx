@@ -94,7 +94,7 @@ export default async function ProjectsPage({
   return (
     <div className="min-h-screen bg-luxury-50">
       {/* Header */}
-      <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden bg-primary-900">
+      <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden bg-primary-900 -mt-20 pt-20">
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-900/70 to-primary-900/90" />
         <div
           className="absolute inset-0 opacity-[0.03]"
