@@ -106,13 +106,13 @@ function ContentBlock({
       if (isHtml) {
         return (
           <div
-            className="prose prose-lg max-w-none mb-6 prose-headings:font-heading prose-headings:text-primary-700 prose-p:text-luxury-600 prose-p:leading-relaxed prose-a:text-secondary-500 prose-a:underline prose-strong:text-primary-700 prose-blockquote:border-l-secondary-400 prose-blockquote:text-primary-700 prose-img:rounded-xl"
+            className="prose prose-lg max-w-none mb-6 break-words overflow-hidden prose-headings:font-heading prose-headings:text-primary-700 prose-p:text-luxury-600 prose-p:leading-relaxed prose-a:text-secondary-500 prose-a:underline prose-strong:text-primary-700 prose-blockquote:border-l-secondary-400 prose-blockquote:text-primary-700 prose-img:rounded-xl"
             dangerouslySetInnerHTML={{ __html: content }}
           />
         );
       }
       return (
-        <div className="prose prose-lg max-w-none text-luxury-600 leading-relaxed whitespace-pre-line mb-6">
+        <div className="prose prose-lg max-w-none text-luxury-600 leading-relaxed whitespace-pre-line break-words overflow-hidden mb-6">
           {content}
         </div>
       );

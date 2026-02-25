@@ -63,6 +63,24 @@ export default async function HomePage({
   const tCommon = await getTranslations({ locale, namespace: 'common' });
   const supabase = createServerClient();
 
+  // Fetch homepage section visibility settings
+  const activeSections = new Set<string>();
+  try {
+    const { data } = await supabase
+      .from('homepage_sections')
+      .select('section_type, is_active');
+    if (data) {
+      for (const s of data) {
+        if (s.is_active) activeSections.add(s.section_type);
+      }
+    }
+  } catch {
+    // fallback: show all
+  }
+  // If no sections in DB yet, default all to visible
+  const show = (type: string) =>
+    activeSections.size === 0 || activeSections.has(type);
+
   // Fetch featured properties
   let properties: PropertyWithDetails[] = [];
   try {
@@ -102,7 +120,7 @@ export default async function HomePage({
 
   return (
     <>
-      <Hero />
+      {show('hero') && <Hero />}
 
       {/* Property Types - Bento Grid */}
       <section className="py-24 md:py-32 bg-white">
@@ -164,70 +182,74 @@ export default async function HomePage({
       </section>
 
       {/* Featured Properties */}
-      <section className="py-24 md:py-32 bg-luxury-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
+      {show('featured_properties') && (
+        <section className="py-24 md:py-32 bg-luxury-50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-16 text-center">
+              <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
+                Featured
+              </p>
+              <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
+                {t('featuredProperties')}
+              </h2>
+              <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
+              <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
+                {t('featuredSubtitle')}
+              </p>
+            </div>
+
+            <PropertyGrid properties={properties} />
+
+            {properties.length > 0 && (
+              <div className="mt-16 text-center">
+                <Link
+                  href="/properties"
+                  className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
+                >
+                  {t('viewAllProperties')}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Stats */}
+      {show('stats') && <StatsSection />}
+
+      {/* CTA */}
+      {show('cta') && (
+        <section className="py-24 md:py-32 bg-white">
+          <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
-              Featured
+              Get Started
             </p>
             <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
-              {t('featuredProperties')}
+              {t('ctaTitle')}
             </h2>
             <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
             <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
-              {t('featuredSubtitle')}
+              {t('ctaSubtitle')}
             </p>
-          </div>
-
-          <PropertyGrid properties={properties} />
-
-          {properties.length > 0 && (
-            <div className="mt-16 text-center">
+            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
                 href="/properties"
-                className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
+                className="inline-flex items-center gap-2 bg-primary-900 px-8 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-primary-800"
               >
-                {t('viewAllProperties')}
+                {tCommon('properties')}
                 <ArrowRight className="h-4 w-4" />
               </Link>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
+              >
+                {t('ctaButton')}
+              </Link>
             </div>
-          )}
-        </div>
-      </section>
-
-      {/* Stats */}
-      <StatsSection />
-
-      {/* CTA */}
-      <section className="py-24 md:py-32 bg-white">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <p className="mb-4 text-xs font-medium uppercase tracking-luxury text-secondary-500">
-            Get Started
-          </p>
-          <h2 className="font-heading text-3xl font-bold text-primary-900 md:text-4xl lg:text-5xl">
-            {t('ctaTitle')}
-          </h2>
-          <div className="mx-auto mt-6 h-px w-12 bg-secondary-500" />
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-luxury-500 leading-relaxed">
-            {t('ctaSubtitle')}
-          </p>
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/properties"
-              className="inline-flex items-center gap-2 bg-primary-900 px-8 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-primary-800"
-            >
-              {tCommon('properties')}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 border border-primary-900 px-8 py-3.5 text-sm font-semibold text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
-            >
-              {t('ctaButton')}
-            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

@@ -325,7 +325,7 @@ export default function AdminSettingsPage() {
                           'flex items-center justify-between p-4 rounded-lg border transition-colors',
                           section.is_active
                             ? 'border-luxury-200 bg-white'
-                            : 'border-luxury-100 bg-luxury-50 opacity-60',
+                            : 'border-luxury-100 bg-luxury-50',
                         )}
                       >
                         <div className="flex items-center gap-3">

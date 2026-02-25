@@ -43,7 +43,7 @@ export default async function AboutPage({
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative flex min-h-105 items-center justify-center overflow-hidden bg-primary-900 -mt-20 pt-20">
+      <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden bg-primary-900 -mt-20 pt-28 pb-12">
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-900/70 to-primary-900/90" />
         <div
           className="absolute inset-0 opacity-[0.03]"
