@@ -413,18 +413,28 @@ export default async function PropertyDetailPage({
                   <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-secondary-400" />
                   <span>{property.address}, {property.district}, {getLocalizedProvince(property.province, locale)}</span>
                 </div>
-                {/* Map placeholder */}
-                <div className="flex h-64 items-center justify-center rounded-lg bg-luxury-100 border-2 border-dashed border-luxury-300">
-                  <div className="text-center text-luxury-400">
-                    <Map className="mx-auto mb-2 h-10 w-10" />
-                    <p className="text-sm font-medium">Map Integration</p>
-                    <p className="text-xs">
-                      {property.latitude && property.longitude
-                        ? `${property.latitude}, ${property.longitude}`
-                        : 'Location coordinates not available'}
-                    </p>
+                {property.latitude && property.longitude ? (
+                  <div className="overflow-hidden rounded-lg">
+                    <iframe
+                      src={`https://www.google.com/maps?q=${property.latitude},${property.longitude}&z=15&output=embed`}
+                      width="100%"
+                      height="256"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Property location"
+                    />
                   </div>
-                </div>
+                ) : (
+                  <div className="flex h-64 items-center justify-center rounded-lg bg-luxury-100 border-2 border-dashed border-luxury-300">
+                    <div className="text-center text-luxury-400">
+                      <Map className="mx-auto mb-2 h-10 w-10" />
+                      <p className="text-sm font-medium">{t('location')}</p>
+                      <p className="text-xs">Location coordinates not available</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -29,20 +29,9 @@ const propertyTypeImages: Record<string, string> = {
   building: '/images/property-types/building.jpg',
 };
 
-// Bento grid layout: index -> CSS class for grid span
-// Creates an asymmetric, visually interesting layout
+// Bento grid layout: first item is large, rest are uniform 1x1
 const bentoLayout = [
-  'sm:col-span-2 sm:row-span-2',  // 0: large
-  'sm:col-span-1 sm:row-span-1',  // 1: small
-  'sm:col-span-1 sm:row-span-1',  // 2: small
-  'sm:col-span-1 sm:row-span-2',  // 3: tall
-  'sm:col-span-1 sm:row-span-1',  // 4: small
-  'sm:col-span-1 sm:row-span-1',  // 5: small
-  'sm:col-span-1 sm:row-span-1',  // 6: small
-  'sm:col-span-2 sm:row-span-1',  // 7: wide
-  'sm:col-span-1 sm:row-span-1',  // 8: small
-  'sm:col-span-1 sm:row-span-1',  // 9: small
-  'sm:col-span-1 sm:row-span-1',  // 10: small
+  'sm:col-span-2 sm:row-span-2',  // 0: featured large
 ];
 
 export function generateStaticParams() {
@@ -132,7 +121,7 @@ export default async function HomePage({
           </div>
 
           {/* Bento grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 auto-rows-[180px] gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-[180px] gap-4 grid-flow-dense">
             {propertyTypes.map((type, index) => {
               const name = getLocalizedField(type, 'name', locale);
               const slug = getLocalizedField(type, 'slug', locale);
