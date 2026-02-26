@@ -224,7 +224,7 @@ export default function AdminPropertiesPage() {
                         </div>
                         <div>
                           <a
-                            href={`/en/properties/${property.slug_en}`}
+                            href={`/en/properties/${property.slug_en}?preview=true`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-medium text-primary-700 text-sm line-clamp-1 hover:text-secondary-500 transition-colors"
@@ -255,11 +255,11 @@ export default function AdminPropertiesPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
                         <a
-                          href={`/en/properties/${property.slug_en}`}
+                          href={`/en/properties/${property.slug_en}?preview=true`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 text-luxury-500 hover:text-secondary-500 hover:bg-luxury-100 rounded-lg transition-colors"
-                          title="View"
+                          title="Preview"
                         >
                           <Eye className="w-4 h-4" />
                         </a>

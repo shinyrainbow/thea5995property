@@ -38,29 +38,32 @@ import {
 async function getPropertyBySlug(
   slug: string,
   locale: string,
+  preview = false,
 ): Promise<PropertyWithDetails | null> {
   try {
     // Try matching slug against the locale-specific slug column
     const slugColumn = `slug_${locale}`;
-    const { data, error } = await supabase
+    let query = supabase
       .from('properties')
       .select('*, property_type:property_types(*), images:property_images(*), project:projects(*)')
-      .eq(slugColumn, slug)
-      .eq('status', 'active')
-      .single();
+      .eq(slugColumn, slug);
 
+    if (!preview) query = query.eq('status', 'active');
+
+    const { data } = await query.single();
     if (data) return data as PropertyWithDetails;
 
     // Fallback: try all slug columns
     for (const loc of ['en', 'th', 'zh']) {
       if (loc === locale) continue;
-      const { data: fallbackData } = await supabase
+      let fallbackQuery = supabase
         .from('properties')
         .select('*, property_type:property_types(*), images:property_images(*), project:projects(*)')
-        .eq(`slug_${loc}`, slug)
-        .eq('status', 'active')
-        .single();
+        .eq(`slug_${loc}`, slug);
 
+      if (!preview) fallbackQuery = fallbackQuery.eq('status', 'active');
+
+      const { data: fallbackData } = await fallbackQuery.single();
       if (fallbackData) return fallbackData as PropertyWithDetails;
     }
 
@@ -96,11 +99,15 @@ async function getSimilarProperties(
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const property = await getPropertyBySlug(slug, locale);
+  const resolvedSearchParams = await searchParams;
+  const preview = resolvedSearchParams.preview === 'true';
+  const property = await getPropertyBySlug(slug, locale, preview);
 
   if (!property) {
     return { title: 'Property Not Found | THE A 5995' };
@@ -131,16 +138,20 @@ export async function generateMetadata({
 
 export default async function PropertyDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
+  const resolvedSearchParams = await searchParams;
+  const preview = resolvedSearchParams.preview === 'true';
 
   const t = await getTranslations({ locale, namespace: 'property' });
   const tCommon = await getTranslations({ locale, namespace: 'common' });
 
-  const property = await getPropertyBySlug(slug, locale);
+  const property = await getPropertyBySlug(slug, locale, preview);
 
   if (!property) {
     notFound();
@@ -221,6 +232,12 @@ export default async function PropertyDetailPage({
       />
 
       <div className="min-h-screen bg-luxury-50">
+        {/* Preview banner */}
+        {preview && property.status !== 'active' && (
+          <div className="bg-amber-500 text-white text-center py-2 text-sm font-medium mt-16">
+            Preview Mode — This property is currently &quot;{property.status}&quot; and not visible to the public.
+          </div>
+        )}
         {/* Back navigation */}
         <div className="bg-luxury-50 pt-20">
           <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
