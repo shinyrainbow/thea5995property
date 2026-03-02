@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { useState, useCallback, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
@@ -89,81 +89,74 @@ export default function PropertyGallery({
 
   const mainImage = galleryImages[0];
   const sideImages = galleryImages.slice(1, 5);
-  const remainingCount = galleryImages.length - 5;
-  const imageCount = galleryImages.length;
-
-  // Determine grid layout based on number of images
-  const gridClass =
-    imageCount === 1
-      ? 'grid grid-cols-1'
-      : imageCount === 2
-        ? 'grid grid-cols-1 gap-2 md:grid-cols-2'
-        : 'grid grid-cols-1 gap-2 md:grid-cols-[3fr_2fr]';
-
-  // Side grid: 1 col for ≤2 side images, 2 cols for 3-4 side images
-  const sideGridClass =
-    sideImages.length <= 2
-      ? 'grid grid-rows-2 gap-2 h-48 md:h-full'
-      : 'grid grid-cols-2 grid-rows-2 gap-2 h-48 md:h-full';
+  const totalCount = galleryImages.length;
 
   return (
     <>
-      {/* Split Gallery: big left + grid right */}
-      <div className={cn(gridClass, 'md:h-[66vh]')}>
-        {/* Left - Main big image */}
-        <div
-          className={cn(
-            'relative h-56 md:h-full cursor-pointer overflow-hidden bg-luxury-100',
-            imageCount === 1 ? 'rounded-xl' : 'rounded-xl md:rounded-r-none',
-          )}
-          onClick={() => { setSelectedIndex(0); setLightboxOpen(true); }}
-        >
-          <img
-            src={mainImage.url}
-            alt={mainImage.alt}
-            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-          />
+      {/* Gallery Grid - Proplify style */}
+      <div className="relative overflow-hidden rounded-xl">
+        {totalCount === 1 ? (
+          /* Single image */
+          <div
+            className="relative h-64 cursor-pointer md:h-105"
+            onClick={() => { setSelectedIndex(0); setLightboxOpen(true); }}
+          >
+            <img
+              src={mainImage.url}
+              alt={mainImage.alt}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          /* Multi-image grid: big left + 2x2 right */
+          <div className="grid h-64 grid-cols-1 gap-1 md:h-105 md:grid-cols-2">
+            {/* Left - Main image */}
+            <div
+              className="relative cursor-pointer overflow-hidden"
+              onClick={() => { setSelectedIndex(0); setLightboxOpen(true); }}
+            >
+              <img
+                src={mainImage.url}
+                alt={mainImage.alt}
+                className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+
+            {/* Right - 2x2 grid */}
+            <div
+              className={cn(
+                'hidden gap-1 md:grid',
+                sideImages.length <= 2 ? 'grid-rows-2' : 'grid-cols-2 grid-rows-2',
+              )}
+            >
+              {sideImages.map((image, index) => (
+                <div
+                  key={index}
+                  className="relative cursor-pointer overflow-hidden"
+                  onClick={() => { setSelectedIndex(index + 1); setLightboxOpen(true); }}
+                >
+                  <img
+                    src={image.url}
+                    alt={image.alt}
+                    className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* See all photos button */}
+        {totalCount > 1 && (
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); setSelectedIndex(0); setLightboxOpen(true); }}
-            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-lg bg-black/50 text-white transition-colors hover:bg-black/70"
-            aria-label="Open fullscreen gallery"
+            onClick={() => { setSelectedIndex(0); setLightboxOpen(true); }}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-md transition-colors hover:bg-gray-100"
           >
-            <Maximize2 className="h-5 w-5" />
+            <Camera className="h-4 w-4" />
+            <span>ดูรูปทั้งหมด ({totalCount})</span>
           </button>
-        </div>
-
-        {/* Right - Grid of remaining images */}
-        {sideImages.length > 0 && (
-          <div className={sideGridClass}>
-            {sideImages.map((image, index) => (
-              <div
-                key={index}
-                className={cn(
-                  'relative cursor-pointer overflow-hidden bg-luxury-100',
-                  // Top-right corner for last image in first row
-                  sideImages.length <= 2 && index === 0 && 'md:rounded-tr-xl',
-                  sideImages.length <= 2 && index === 1 && 'md:rounded-br-xl',
-                  sideImages.length > 2 && index === 1 && 'md:rounded-tr-xl',
-                  sideImages.length > 2 && index === 3 && 'md:rounded-br-xl',
-                )}
-                onClick={() => { setSelectedIndex(index + 1); setLightboxOpen(true); }}
-              >
-                <img
-                  src={image.url}
-                  alt={image.alt}
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                  loading="lazy"
-                />
-                {/* Show "+N more" overlay on last image if there are more */}
-                {index === sideImages.length - 1 && remainingCount > 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                    <span className="text-lg font-bold text-white">+{remainingCount} more</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
         )}
       </div>
 
