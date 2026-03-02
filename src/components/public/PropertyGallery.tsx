@@ -103,17 +103,17 @@ export default function PropertyGallery({
   // Side grid: 1 col for ≤2 side images, 2 cols for 3-4 side images
   const sideGridClass =
     sideImages.length <= 2
-      ? 'grid grid-rows-2 gap-2 h-48 md:h-full'
-      : 'grid grid-cols-2 grid-rows-2 gap-2 h-48 md:h-full';
+      ? 'grid grid-rows-2 gap-2 h-64 md:h-full'
+      : 'grid grid-cols-2 grid-rows-2 gap-2 h-64 md:h-full';
 
   return (
     <>
       {/* Split Gallery: big left + grid right */}
-      <div className={cn(gridClass, 'md:h-105')}>
+      <div className={cn(gridClass, 'md:h-[420px]')}>
         {/* Left - Main big image */}
         <div
           className={cn(
-            'relative h-64 md:h-full cursor-pointer overflow-hidden bg-luxury-100',
+            'relative h-72 md:h-full cursor-pointer overflow-hidden bg-luxury-100',
             imageCount === 1 ? 'rounded-xl' : 'rounded-xl md:rounded-r-none',
           )}
           onClick={() => { setSelectedIndex(0); setLightboxOpen(true); }}
