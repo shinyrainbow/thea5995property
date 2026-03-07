@@ -166,6 +166,29 @@ export const registerSchema = z.object({
 export type RegisterSchemaType = z.infer<typeof registerSchema>;
 
 // ---------------------------------------------------------------------------
+// Change Password Schema
+// ---------------------------------------------------------------------------
+
+export const changePasswordSchema = z.object({
+  currentPassword: z
+    .string()
+    .min(1, 'Current password is required'),
+  newPassword: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128, 'Password is too long'),
+  confirmNewPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmNewPassword'],
+}).refine((data) => data.currentPassword !== data.newPassword, {
+  message: 'New password must be different from current password',
+  path: ['newPassword'],
+});
+
+export type ChangePasswordSchemaType = z.infer<typeof changePasswordSchema>;
+
+// ---------------------------------------------------------------------------
 // Blog Post Schema
 // ---------------------------------------------------------------------------
 
