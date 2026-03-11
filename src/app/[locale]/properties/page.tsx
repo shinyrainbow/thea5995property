@@ -66,7 +66,20 @@ export default async function PropertiesPage({
     if (province) query = query.eq('province', province);
     if (minPrice) query = query.gte('price', Number(minPrice));
     if (maxPrice) query = query.lte('price', Number(maxPrice));
-    if (propertyTypeFilter) query = query.eq('property_type_id', propertyTypeFilter);
+    if (propertyTypeFilter) {
+      // propertyTypeFilter is a slug (e.g. 'land'), look up the ID
+      const { data: ptData } = await supabase
+        .from('property_types')
+        .select('id')
+        .eq('slug_en', propertyTypeFilter)
+        .single();
+      if (ptData) {
+        query = query.eq('property_type_id', ptData.id);
+      } else {
+        // No matching type found, return empty
+        query = query.eq('property_type_id', -1);
+      }
+    }
     if (bedrooms) query = query.gte('bedrooms', Number(bedrooms));
 
     switch (sortBy) {
