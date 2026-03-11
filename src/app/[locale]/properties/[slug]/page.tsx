@@ -477,8 +477,43 @@ export default async function PropertyDetailPage({
 
             {/* Right column - Sidebar */}
             <div className="space-y-6">
-              {/* Inquiry Form */}
-              <div className="sticky top-24">
+              <div className="sticky top-24 space-y-6">
+                {/* Agent Contact */}
+                <div className="rounded-xl border border-luxury-200 bg-white p-6 shadow-sm">
+                  <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-primary-700">
+                    {t('agentContact')}
+                  </h3>
+                  <div className="space-y-4">
+                    {/* Agent 1 */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-700 text-sm font-bold text-white">
+                        {locale === 'th' ? 'อ' : 'O'}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-primary-700">{locale === 'th' ? 'คุณอุ๊' : 'Khun Oo'}</p>
+                        <a href="tel:0830175957" className="text-sm text-secondary-500 hover:text-secondary-600">083-017-5957</a>
+                      </div>
+                      <a href="tel:0830175957" className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary-50 text-secondary-500 transition-colors hover:bg-secondary-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                      </a>
+                    </div>
+                    {/* Agent 2 */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-700 text-sm font-bold text-white">
+                        {locale === 'th' ? 'ต' : 'T'}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-primary-700">{locale === 'th' ? 'คุณตี้' : 'Khun Tee'}</p>
+                        <a href="tel:0834422234" className="text-sm text-secondary-500 hover:text-secondary-600">083-442-2234</a>
+                      </div>
+                      <a href="tel:0834422234" className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary-50 text-secondary-500 transition-colors hover:bg-secondary-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Inquiry Form */}
                 <InquiryForm propertyId={property.id} />
               </div>
             </div>
