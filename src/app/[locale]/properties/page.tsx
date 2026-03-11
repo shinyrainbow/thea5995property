@@ -2,11 +2,12 @@
 // THE A 5995 - Properties Listing Page (techproperty.co style)
 // =============================================================================
 
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { createServerClient } from '@/lib/supabase';
-const supabase = createServerClient();
 import PropertyGrid from '@/components/public/PropertyGrid';
 import PropertyFilter from '@/components/public/PropertyFilter';
 import type { PropertyWithDetails } from '@/types';
@@ -35,6 +36,7 @@ export default async function PropertiesPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
+  const supabase = createServerClient();
   const resolvedSearchParams = await searchParams;
   const t = await getTranslations({ locale, namespace: 'search' });
   const tCommon = await getTranslations({ locale, namespace: 'common' });
